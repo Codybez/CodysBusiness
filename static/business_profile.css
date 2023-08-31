@@ -1,0 +1,84 @@
+/* Update this section with your existing styles */
+
+.profile-container {
+  height: 800px;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.profile-link {
+  color: #fff;
+  background-color: #ff7148;
+  border-radius: 15px;
+  padding: 8px 15px; /* Adjust padding for a slightly larger button */
+  text-decoration: none; /* Remove underline */
+}
+
+.profile-box {
+  text-align: center;
+  position: relative;
+  background-color: #ff7148;
+  height: 300px;
+  width: 600px;
+  border-radius: 20px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 20px;
+}
+
+.profile-pic-container {
+  position: relative;
+  display: block;
+  align-items: center;
+  justify-content: center;
+  text-align: center; /* Center the contents */
+}
+
+.profile-pic {
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  object-fit: cover;
+}
+
+.profile-pic-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 5px;
+}
+
+.edit-pic-button {
+  background-color: #ff7148;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 5px;
+}
+.apply-button-hidden {
+  display: none;
+}
+
+.apply-button-visible {
+  display: block;
+  background-color: green;
+}

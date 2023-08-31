@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='business_home.css') }}">
+</head>
+<body>
+  {% extends 'base_business.html' %}
+
+  {% block title %}Business{% endblock %}
+
+  {% block content %}
+
+
+  <div class="info-container">
+    <h1>Business Dashboard</h1>
+  </div>
+     <div 
+
+          class="section-button-container">
+          
+          <h2>User Information</h2>
+          <p>{{ current_user.location }}</p>
+          <p>{{ current_user.email }}</p>
+          <p>Jobs Completed: 10</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum fugiat rerum nemo asperiores ratione provident eum doloremque, qui esse maxime praesentium eaque voluptatem? Quaerat, quam architecto repudiandae magni magnam ad debitis aliquid minima itaque, neque est nemo, nobis tempore maiores corporis exercitationem dolorem recusandae atque optio consequatur deserunt totam incidunt hic. Illum quasi aperiam atque quia. Doloremque repellat reprehenderit corrupti quo nihil facere, sed sapiente perspiciatis labore iste rerum ipsum, aliquid magnam distinctio quas cupiditate deleniti odio illum blanditiis molestias illo amet, inventore quod iusto! Laborum cum placeat cupiditate molestiae illum quo, ut repudiandae porro facilis sit amet expedita tempore aperiam nemo enim hic? Esse obcaecati delectus consequuntur vel corrupti maiores earum amet quis autem animi in sapiente ea praesentium sunt laborum ipsam, provident veritatis ex magni repellat molestias aliquid illo omnis. Sunt ad expedita vel in deleniti dolores iusto aliquid soluta! Voluptatum a, earum alias nesciunt eos quaerat tempora facere, delectus quibusdam accusamus, cumque laudantium libero amet minima quo at vel nemo fugiat animi sed atque eveniet. Blanditiis tempora adipisci sapiente, officia, quis ipsum praesentium fuga sint quasi quisquam vitae mollitia, repellendus perferendis magni dolorum! Repudiandae nobis quae repellendus corrupti? Praesentium neque eaque quam beatae repellendus libero voluptates. Earum, inventore maxime possimus eligendi labore illo quibusdam. Voluptas rem nihil ipsam totam inventore nulla doloribus numquam? Quod quidem iusto atque ipsam quis sapiente in, eveniet iste, ducimus laudantium quam nesciunt ad saepe delectus laboriosam natus? Sunt vitae consequatur veniam repellat vel officia mollitia maxime deserunt non! Ipsum incidunt iure maiores vel cumque quo, nisi necessitatibus facilis asperiores officia illum hic aliquid tenetur, commodi unde, velit quaerat est quos. Tenetur inventore, omnis eligendi assumenda modi dolorum est nulla nemo sint, illum, fuga odit blanditiis sit ullam eos? Incidunt eaque, autem rerum quis facere totam ullam ipsa quam quidem deserunt unde beatae nihil aliquid facilis, esse dicta qui similique nemo veritatis molestiae tempore. Repellat minima ratione sequi beatae sed sit assumenda corrupti quibusdam consectetur! Nostrum delectus ipsum nemo temporibus id rerum ex a. Ipsum consectetur iste nesciunt delectus reiciendis modi eveniet fugiat ex et numquam? Quae culpa cumque eveniet, cupiditate ducimus iste nihil debitis vero harum repellat, est sunt asperiores quis at dolor labore nobis consectetur temporibus incidunt nam obcaecati perspiciatis molestias! Corporis quisquam tempore fugiat numquam dicta expedita aut soluta tenetur maxime minima ad rerum illo, harum, exercitationem quod et voluptates vero odio voluptatibus culpa ratione nisi doloribus, porro in! Error!</p>
+          <!-- Add more user information here -->
+     <div>
+
+    {% endblock %}
+</body>
+</html>

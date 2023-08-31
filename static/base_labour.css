@@ -1,0 +1,91 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ccc;
+}
+
+.header {
+    background-color: #ff7148;
+    height: 6vh;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    z-index: 1000;
+    border-bottom-right-radius: 20px;
+    position: fixed; /* Change this to fixed */
+    top: 0;
+}
+
+.logo-button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.logo-icon {
+    font-size: 24px;
+    color: white;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+.content {
+    margin-top: 6vh; /* To ensure content is below the header */
+    padding: 20px; /* Add some padding to separate content from the header */
+}
+/* Your existing CSS styles */
+
+.footer {
+    background-color: white;
+    position: fixed;
+    height: 6vh;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding-top: 10px;
+    
+    box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.footers-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #ff7148;
+}
+
+.footers-button i {
+    font-size: 16px;
+}
+
+.footers-button p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+.logo {
+  color: #ff7148;
+  font-size: 29px;
+  margin-bottom: 25px;
+  margin-top: 40px;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.letter-o {
+  color: #ffffff;
+  font-size: 32px;
+  font-family: "Arial", sans-serif;
+  
+}
+h1 {
+  color: #ff7148;
+  font-family: "Arial", sans-serif;
+  margin-bottom: 10px;
+
+
+}

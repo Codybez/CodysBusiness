@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+  {% extends 'base.html' %}
+
+  {% block title %}Login Form{% endblock %}
+
+  {% block content %}
+    <div class="registration-container">
+      <form method="POST" action="{{ url_for('login') }}">
+        <div>
+          <h1>Login</h1>
+        </div>
+        <div>
+          <label for="email"></label>
+          <input type="email" name="email" required
+          placeholder="Email">
+          
+        </div>
+        <div>
+          <label for="password"></label>
+          <input type="password" name="password" required
+          placeholder="Password">
+        </div>
+        <button type="submit" id="login-button">Login</button>
+        <div>
+         <p>Dont have an account? <a href="{{ url_for('register') }}">Register</a></p>
+        </div>
+      </form>
+    </div>
+  {% endblock %}
+</body>
+</html>

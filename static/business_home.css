@@ -1,0 +1,22 @@
+
+
+.info-container {
+ 
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+ 
+}
+
+.info-container h1 {
+  color: #fff;
+}
+.section-button-container {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+h2 {
+  color: #ff7148;
+}

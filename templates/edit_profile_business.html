@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='edit_profile_business.css') }}">
+</head>
+<body>
+  
+{% extends 'base_business.html' %}
+
+{% block title %}Business{% endblock %}
+
+{% block content %}
+
+<div class="edit-form-container">
+    <h1>Edit Profile</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <label for="{{ form.first_name.id }}">First Name</label>
+            {{ form.first_name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.last_name.id }}">Last Name</label>
+            {{ form.last_name(class="form-control") }}
+        </div>  
+        <div class="form-group">
+            <label for="{{ form.phone_number.id }}">Phone Number</label>
+            {{ form.phone_number(class="form-control") }}
+        </div>    
+        <div class="form-group">
+            <label for="{{ form.business_name.id }}">Business Name</label>
+            {{ form.business_name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.business_type.id }}">Business Type</label>
+            {{ form.business_type(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.city.id }}">City</label>
+            {{ form.city(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.suburb.id }}">Suburb</label>
+            {{ form.suburb(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.street.id }}">Street</label>
+            {{ form.street(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.number.id }}">Number</label>
+            {{ form.number(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary submit-button") }}
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+  
+</body>
+<script>
+  
+
+</script>
+</html>

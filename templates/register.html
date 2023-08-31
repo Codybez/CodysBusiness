@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+</head>
+{% extends 'base.html' %}
+
+{% block title %}Registration Form{% endblock %}
+
+{% block content %}
+<body>
+
+  <div class="registration-container">
+    <div>  <h1 class="form-title">Register</h1></div>
+ 
+    <form action="{{ url_for('register') }}" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <label for="location">Location:</label>
+        <select id="location" name="location">
+            <option value="Northland">Northland</option>
+            <option value="Auckland">Auckland</option>
+            <option value="Waikato">Waikato</option>
+            <option value="Bay of Plenty">Bay of Plenty</option>
+            <option value="Gisborne">Gisborne</option>
+            <option value="Hawke's Bay">Hawke's Bay</option>
+            <option value="Taranaki">Taranaki</option>
+            <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+            <option value="Wellington">Wellington</option>
+            <option value="Tasman">Tasman</option>
+            <option value="Nelson">Nelson</option>
+            <option value="Marlborough">Marlborough</option>
+            <option value="West Coast">West Coast</option>
+            <option value="Canterbury">Canterbury</option>
+            <option value="Otago">Otago</option>
+            <option value="Southland">Southland</option>
+        </select><br><br>
+        
+        <label for="userType">User Type:</label>
+        <select id="userType" name="userType">
+            <option value="Labourer">Labourer</option>
+            <option value="Business">Business</option>
+        </select><br><br>
+        
+        <input type="submit" value="Register">
+        
+    </form>
+    <br>
+    <button onclick="window.location.href='{{ url_for('login') }}';">Go to Login</button>
+
+</body>
+{% endblock %}
+</html>

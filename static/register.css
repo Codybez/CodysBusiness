@@ -1,0 +1,48 @@
+/* base.css */
+.form-title {
+  margin-bottom: 30px;
+}
+/* Styles for the form container */
+.registration-container {
+    background-color: #ffffff;
+    padding: 20px;
+    padding-right: 40px;
+    border: 1px solid #ccc;
+    margin: 20px auto;
+    border-radius: 15px;
+    max-width: 400px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+/* Styles for form labels */
+.registration-container label {
+    font-weight: bold;
+}
+
+/* Styles for form input fields */
+.registration-container input[type="text"],
+.registration-container input[type="email"],
+.registration-container input[type="password"],
+.registration-container select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Styles for form buttons */
+.registration-container input[type="submit"],
+.registration-container button {
+    background-color: #ff7148;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.registration-container input[type="submit"]:hover,
+.registration-container button:hover {
+    background-color: #45a049;
+}

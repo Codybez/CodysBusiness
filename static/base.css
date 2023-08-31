@@ -1,0 +1,58 @@
+/* styles.css */
+.header {
+    background-color: #ff7148; /* Orange header bar */
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    border-bottom-right-radius: 10px;
+    position: fixed; /* Fixed position to keep it at the top */
+    top: 0; /* Positioned at the top of the viewport */
+  
+    left: 0;
+    right: 0;
+    z-index: 100; /* Higher z-index to keep it above other elements */
+}
+
+.header a {
+    text-decoration: none;
+    color: white;
+    margin: 0 40px; /* Add some space between links */
+}
+
+body {
+    background-color: #cccccc; /* Gray color */
+    margin: 0; 
+    padding-left: 10px;
+    padding-right: 10px;
+  
+}
+
+
+
+
+.logo {
+  color: #ff7148;
+  font-size: 29px;
+  margin-bottom: 25px;
+  margin-top: 40px;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.letter-o {
+  color: #ffffff;
+  font-size: 32px;
+  font-family: "Arial", sans-serif;
+  
+}
+h1 {
+  color: #ff7148;
+  font-family: "Arial", sans-serif;
+  margin-bottom: 10px;
+
+
+}
+footer {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
