@@ -4,14 +4,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    
-    
-    
-  </style>
-<head>
-    <title>Labourer Dashboard</title>
+  <title>Labourer Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_home.css') }}">
+ <style>
+  .sign-out-button {
+    text-decoration: none;
+   
+}
+</style>
 </head>
 <body>
  {% extends 'base_labour.html' %}
@@ -19,22 +19,24 @@
 {% block title %}Labour{% endblock %}
 
 {% block content %}
-<br>
-<br>
 
-<div class="container">
-    <h1>Welcome, {{ current_user.email }} to the Labourer Dashboard</h1>
-    <p>hellooooooooo</p>
-    <p>hellooooooooo</p>
-    <p>hellooooooooo</p>
-    <p>hellooooooooo</p>
-    <p>hellooooooooo</p>
-    <p>hellooooooooo</p>
-    <p>hellooooooooo</p>
+<div class="info-container">
+    <h1>Dashboard</h1>
 </div>
+
+<div class="section-button-container">    
+    <h2>User Information</h2>
+    <p>User: {{ current_user.email }}</p>
+    <p>Location: {{ current_user.location }}</p>
+    
+    <p>Jobs Completed: {{ current_user.jobs_completed }}</p>
+    <!-- Add more user information here -->
+</div>
+
+<div> 
+    <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
+</div>
+
 {% endblock %}
-<body>
-  
-
-
+</body>
 </html>

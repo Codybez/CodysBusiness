@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='business_home.css') }}">
+  <!-- Add any additional styles here -->
+  <style>
+    .job-details-container {
+      background-color: #fff;
+      padding-top: 15px;
+      padding-bottom: 10px;
+      padding-left: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ccc;
+     
+    }
+
+    .job-details-container h2 {
+      color: #000000d3;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .job-details-container p {
+      color: #555;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    .job-details-container .icon {
+      margin-right: 15px; /* Adjust the margin as needed */
+    }
+
+    #editbutton {
+      background-color: #ff7148;
+      color: white;
+      border: none;
+      padding: 10px 20px; /* Adjust the padding as needed */
+      cursor: pointer;
+      border-radius: 5px;
+      display: inline-block;
+      margin: 10px 0; /* Adjust the margin as needed */
+      text-decoration: none;
+      transition: background-color 0.3s ease; /* Add a smooth transition effect */
+    }
+
+    #editbutton:hover {
+      background-color: #e25d41;
+    }
+  </style>
+</head>
+<body>
+  {% extends 'base_business.html' %}
+
+  {% block title %}Job Details{% endblock %}
+
+  {% block content %}
+<br>
+<br>
+
+    <div class="job-details-container">
+      <h2>{{ job.job_name }}</h2>
+      <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
+      <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job.date.strftime('%d-%m-%Y') }}</span>  | {{ job.start_time.strftime('%I:%M %p') }} to {{ job.end_time.strftime('%I:%M %p') }}</p>
+      <p><i class="fas fa-tasks icon"></i>Tasks: {{ job.tasks }}</p>
+      <p><i class="fas fa-money-bill-alt icon"></i>Price per Hour: ${{ job.price_per_hour }}</p>
+      <p><i class="fas fa-info-circle icon"></i>Additional Details: {{ job.additional_details }}</p>
+
+      <!-- Display the name of the business owner -->
+      <p><i class="fas fa-user icon"></i>Posted by: {{ job.business_profile.first_name }}</p>
+      <!-- Add more job details as needed -->
+    </div>
+
+    <!-- Add an edit link to modify job details -->
+    {% if current_user.id == job.business_profile.user_id %}
+        <a href="{{ url_for('edit_job', job_id=job.id) }}" id="editbutton">Edit Job</a>
+      {% endif %}
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+  {% endblock %}
+   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Get the current time and job posting time
+      var currentTime = new Date();
+      var jobPostedTime = new Date("{{ job.date_created.strftime('%Y-%m-%dT%H:%M:%S') }}");
+
+      // Calculate the time difference
+      var timeDifference = currentTime - jobPostedTime;
+
+      // Convert the time difference to hours
+      var hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+
+      // Display the time posted
+      var timePostedElement = document.getElementById("timePosted");
+      if (hoursDifference < 24) {
+        timePostedElement.innerHTML = hoursDifference + "h ago";
+      } else {
+        var daysDifference = Math.floor(hoursDifference / 24);
+        timePostedElement.innerHTML = daysDifference + " day" + (daysDifference > 1 ? "s" : "") + " ago";
+      }
+    });
+  </script>
+</body>
+</html>

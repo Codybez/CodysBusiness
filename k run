@@ -1,0 +1,160 @@
+[33mcommit ecfdf8896fe4d3a734fca595e5cda232d98422c4[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Cody Beznec <cdbeznec@outlook.com>
+Date:   Thu Aug 31 12:34:37 2023 +1200
+
+    Initial commit
+
+[1mdiff --git a/.vscode/settings.json b/.vscode/settings.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6ba1afd[m
+[1m--- /dev/null[m
+[1m+++ b/.vscode/settings.json[m
+[36m@@ -0,0 +1,6 @@[m
+[32m+[m[32m{[m
+[32m+[m[32m  "[python]": {[m
+[32m+[m[32m    "editor.defaultFormatter": "ms-python.black-formatter"[m
+[32m+[m[32m  },[m
+[32m+[m[32m  "python.formatting.provider": "none"[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/__pycache__/app.cpython-311.pyc b/__pycache__/app.cpython-311.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..867e5df[m
+Binary files /dev/null and b/__pycache__/app.cpython-311.pyc differ
+[1mdiff --git a/app.py b/app.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a383b9d[m
+[1m--- /dev/null[m
+[1m+++ b/app.py[m
+[36m@@ -0,0 +1,215 @@[m
+[32m+[m[32mfrom flask import Flask, render_template, request, redirect, url_for, flash[m
+[32m+[m[32mfrom flask_sqlalchemy import SQLAlchemy[m
+[32m+[m[32mfrom flask_login import LoginManager, UserMixin, login_user, current_user, login_required[m
+[32m+[m[32mfrom werkzeug.utils import secure_filename[m
+[32m+[m[32mimport os[m
+[32m+[m[32mfrom werkzeug.security import generate_password_hash, check_password_hash[m
+[32m+[m[32mfrom flask_migrate import Migrate[m[41m [m
+[32m+[m[32mfrom flask_wtf import FlaskForm[m
+[32m+[m[32mfrom wtforms import StringField, TextAreaField, SubmitField[m
+[32m+[m[32mfrom wtforms.validators import DataRequired[m
+[32m+[m[32mfrom flask_wtf.file import FileField, FileAllowed[m[41m [m
+[32m+[m
+[32m+[m
+[32m+[m[32mapp = Flask(__name__)[m
+[32m+[m
+[32m+[m[32mapp.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key[m
+[32m+[m[32mapp.static_folder = 'static'[m[41m [m
+[32m+[m[32mapp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # You can use any database URL here[m
+[32m+[m[32mapp.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')[m
+[32m+[m
+[32m+[m[32mdb = SQLAlchemy(app)[m
+[32m+[m[32mmigrate = Migrate(app, db)[m
+[32m+[m
+[32m+[m[32mlogin_manager = LoginManager(app)  # Create a LoginManager instance[m
+[32m+[m[32mlogin_manager.login_view = 'login'  # Set the login view[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.route('/')[m
+[32m+[m[32mdef index():[m
+[32m+[m[32m    return render_template('index.html')[m
+[32m+[m
+[32m+[m[32mif __name__ == '__main__':[m
+[32m+[m[32m    app.run(debug=True)[m
+[32m+[m
+[32m+[m
+[32m+[m[32mclass User(UserMixin, db.Model):[m
+[32m+[m[41m    [m
+[32m+[m[32m    id = db.Column(db.Integer, primary_key=True)[m
+[32m+[m[32m    user_type = db.Column(db.String(20), nullable=False, default='labourer')[m
+[32m+[m[32m    location = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    email = db.Column(db.String(100), unique=True, nullable=False)[m[41m [m
+[32m+[m[32m    password = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)[m
+[32m+[m[32m    profile_image = db.relationship('UserProfileImage', backref='user', uselist=False)[m
+[32m+[m
+[32m+[m[32mclass UserProfileImage(db.Model):[m
+[32m+[m[32m    id = db.Column(db.Integer, primary_key=True)[m
+[32m+[m[32m    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)[m
+[32m+[m[32m    filename = db.Column(db.String(100), nullable=False)[m
+[32m+[m[41m    [m
+[32m+[m
+[32m+[m
+[32m+[m[32mclass BusinessProfile(db.Model):[m
+[32m+[m[32m    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))[m
+[32m+[m[32m    id = db.Column(db.Integer,[m[41m [m
+[32m+[m[32m    primary_key=True)[m
+[32m+[m[32m    business_name = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    business_type = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    city = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    suburb = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    street = db.Column(db.String(100), nullable=False)[m
+[32m+[m[32m    number = db.Column(db.String(10), nullable=False)[m
+[32m+[m[32m    phone_number = db.Column(db.String(20), nullable=False)[m
+[32m+[m[32m    first_name = db.Column(db.String(50), nullable=False)[m
+[32m+[m[32m    last_name = db.Column(db.String(50), nullable=False)[m
+[32m+[m
+[32m+[m[32mclass NewBusinessProfileForm(FlaskForm):[m
+[32m+[m[32m    business_name = StringField('Business Name', validators=[DataRequired()])[m
+[32m+[m[32m    business_type = StringField('Business Type', validators=[DataRequired()])[m
+[32m+[m[32m    city = StringField('City', validators=[DataRequired()])[m
+[32m+[m[32m    suburb = StringField('Suburb', validators=[DataRequired()])[m
+[32m+[m[32m    street = StringField('Street', validators=[DataRequired()])[m
+[32m+[m[32m    number = StringField('Number', validators=[DataRequired()])[m
+[32m+[m[32m    phone_number = StringField('Phone Number', validators=[DataRequired()])[m
+[32m+[m[32m    first_name = StringField('First Name', validators=[DataRequired()])[m
+[32m+[m[32m    last_name = StringField('Last Name', validators=[DataRequired()])[m
+[32m+[m[32m    submit = SubmitField('Save Changes')[m
+[32m+[m
+[32m+[m[32mclass UploadProfileImageForm(FlaskForm):[m
+[32m+[m[32m    profile_image = FileField('Upload Profile Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])[m
+[32m+[m[32m    submit = SubmitField('Upload')[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@login_manager.user_loader[m
+[32m+[m[32mdef load_user(user_id):[m
+[32m+[m[32m    return User.query.get(int(user_id))  # Load a user by ID[m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.route('/register', methods=['GET', 'POST'])[m
+[32m+[m[32mdef register():[m
+[32m+[m[32m    if request.method == 'POST':[m
+[32m+[m[32m        user_type = request.form.get('userType')[m
+[32m+[m[32m        location = request.form.get('location')[m
+[32m+[m[32m        email = request.form.get('email')[m
+[32m+[m[32m        password = request.form.get('password')[m
+[32m+[m[32m        hashed_password = generate_password_hash(password, method='sha256')[m
+[32m+[m[41m        [m
+[32m+[m[32m        new_user = User(user_type=user_type, location=location, email=email, password=hashed_password)[m
+[32m+[m[32m        db.session.add(new_user)[m
+[32m+[m[32m        db.session.commit()[m
+[32m+[m[41m        [m
+[32m+[m[32m        return redirect(url_for('login'))[m
+[32m+[m[41m        [m
+[32m+[m[32m    return render_template('register.html')[m[41m [m
+[32m+[m
+[32m+[m
+[32m+[m[32m@app.route('/login', methods=['GET', 'POST'])[m
+[32m+[m[32mdef login():[m
+[32m+[m[32m    if request.method == 'POST':[m
+[32m+[m[32m        email = request.form.get('email')[m
+[32m+[m[32m        password = request.form.get('password')[m
+[32m+[m[32m        user = User.query.filter_by(email=email).first()[m
+[32m+[m
+[32m+[m[32m        if user and check_password_hash(user.password, password):[m
+[32m+[m[32m            login_user(user)[m
+[32m+[m[32m            if user.user_type == 'labourer':[m
+[32m+[m[32m                return redirect(url_for('labourer_dashboard'))[m
+[32m+[m[32m            else:[m
+[32m+[m[32m                return redirect(url_for('business_dashboard'))[m
+[32m+[m
+[32m+[m[32m    return render_template('login.html')  # Create a corresponding HTML template[m
+[32m+[m
+[32m+[m[32m@app.route('/labourer/dashboard')[m
+[32m+[m[32m@login_required[m
+[32m+[m[32mdef labourer_dashboard():[m
+[32m+[m[32m    return render_template('labourer_home.html', current_user=current_user)[m
+[32m+[m
+[32m+[m[32m@app.route('/business/dashboard')[m
+[32m+[m[32m@login_required[m
+[32m+[m[32mdef busines

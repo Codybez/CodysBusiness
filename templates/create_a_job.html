@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Create a Job</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_create_a_job.css') }}">
+    <style>
+          .form-section {
+        display: none;
+    }
+
+    /* Display the first form section */
+    #section-1 {
+        display: block;
+    }
+
+    #review-section p {
+        margin-bottom: 10px;
+    }
+
+    .review-section {
+        border: 1px solid #ddd; /* Border color */
+        padding: 10px;
+        margin-bottom: 20px; /* Spacing between sections */
+        background-color: #f9f9f9; /* Background color */
+        border-radius: 8px; /* Rounded corners */
+    }
+
+    .review-title {
+        font-weight: bold;
+        color: #ff7148; /* Title color */
+    }
+
+    .review-data {
+        color: #333; /* Data color */
+    }
+
+    /* Add these styles to your existing stylesheet */
+    .info-container h1 {
+  color:#555;
+  font-size: small;
+  margin-top: -10px;
+  margin-left: 15px;
+
+}
+
+
+</style>
+</head>
+<body>
+{% extends 'base_business.html' %}
+{% block title %}Business{% endblock %}
+{% block content %}
+<br>
+<br>
+
+<div class="info-container">
+  <h1>Create a Job</h1>
+</div>
+
+<div class="container">
+  
+    <form id="job-form" method="POST" action="{{ url_for('submit_job') }}" enctype="multipart/form-data">
+        <div class="form-section" id="section-1">
+            <h2>Step 1: Job Details</h2>
+            <div class="form-group">
+                <label for="job_name">Job Name:</label>
+                <input type="text" id="job_name" name="job_name" required />
+            </div>
+            <div class="form-group">
+                <label for="job_category">Job Category:</label>
+                <select id="job-category" name="job-category" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="General Labouring">General Labouring</option>
+                    <option value="Construction">Construction</option>
+                    <option value="Landscaping">Landscaping</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="Painting">Painting</option>
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Carpentry">Carpentry</option>
+                    <option value="Roofing">Roofing</option>
+                    <option value="HVAC">HVAC</option>
+                    <option value="Moving">Moving</option>
+                    <option value="Gardening">Gardening</option>
+                    <option value="Handyman">Handyman</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required />
+            </div>
+            <div class="form-group">
+                <label for="start_time">Start Time:</label>
+                <input type="time" id="start_time" name="start_time" required />
+            </div>
+            <div class="form-group">
+                <label for="end_time">End Time:</label>
+                <input type="time" id="end_time" name="end_time" required />
+            </div>
+            <button type="button" class="next-button" onclick="nextStep(2)">
+                Next
+            </button>
+        </div>
+
+        <div class="form-section" id="section-2">
+            <h2>Step 2: Job Address</h2>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required />
+            </div>
+            <div class="form-group">
+                <label for="suburb">Suburb:</label>
+                <input type="text" id="suburb" name="suburb" required />
+            </div>
+            <div class="form-group">
+                <label for="street">Street:</label>
+                <input type="text" id="street" name="street" required />
+            </div>
+            <div class="form-group">
+                <label for="number">Number:</label>
+                <input type="text" id="number" name="number" required />
+            </div>
+            <button type="button" class="prev-button" onclick="prevStep(1)">
+                Previous
+            </button>
+            <button type="button" class="next-button" onclick="nextStep(3)">
+                Next
+            </button>
+        </div>
+
+        <div class="form-section" id="section-3">
+            <h2>Step 3: Basic Outline of Tasks</h2>
+            <div class="form-group">
+                <label for="tasks">Basic Outline of Tasks:</label>
+                <textarea id="tasks" name="tasks" rows="10" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price_per_hour">Price per Hour:</label>
+                <div class="price-input">
+                    <span>$</span>
+                    <input type="number" id="price_per_hour" name="price_per_hour" min="0" step="1" value="" />
+                </div>
+            </div>
+            <button type="button" class="prev-button" onclick="prevStep(2)">
+                Previous
+            </button>
+            <button type="button" class="next-button" onclick="nextStep(4)">
+                Next
+            </button>
+        </div>
+
+        <div class="form-section" id="section-4">
+            <h2>Step 4: Additional Details</h2>
+            <div class="form-group">
+                <label for="additional-details">Additional Details:</label>
+                <textarea id="additional-details" name="additional-details" rows="10"></textarea>
+            </div>
+            <div class="form-group">
+               <label for="photo-upload">Upload Photos (optional):</label>
+               <label for="photo-upload" class="custom-file-input">Choose File</label>
+               <input type="file" id="photo-upload" name="photo-upload" accept="image/*" />
+            </div>
+
+
+            <button type="button" class="prev-button" onclick="prevStep(3)">
+                Previous
+            </button>
+            <button type="button" class="next-button" onclick="nextStep(5)">
+                Next
+            </button>
+        </div>
+
+        <div class="form-section" id="section-5">
+                <h2>Step 5: Review and Submit</h2>
+                <div id="review-section" class="form-group">
+                    <!-- The review section will be populated dynamically -->
+                </div>
+                <button type="button" class="prev-button" onclick="prevStep(4)">Previous</button>
+                <button type="button" class="submit-button" onclick="submitForm()">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    let currentStep = 1;
+
+    function nextStep(step) {
+        document.getElementById(`section-${currentStep}`).style.display = "none";
+        document.getElementById(`section-${step}`).style.display = "block";
+        currentStep = step;
+        updateReviewSection();
+        window.scrollTo(0, 0);
+    }
+
+    function prevStep(step) {
+        document.getElementById(`section-${currentStep}`).style.display = "none";
+        document.getElementById(`section-${step}`).style.display = "block";
+        currentStep = step;
+        updateReviewSection();
+        window.scrollTo(0, 0);
+    }
+
+    function updateReviewSection() {
+        const reviewSection = document.getElementById("review-section");
+        reviewSection.innerHTML = ""; // Clear previous content
+
+        // Section 1: Job Details
+        const jobDetailsSection = document.createElement("div");
+        jobDetailsSection.classList.add("review-section");
+        reviewSection.appendChild(jobDetailsSection);
+
+        const jobName = document.getElementById("job_name").value;
+        const reviewJobName = document.createElement("p");
+        reviewJobName.innerHTML = `<span class="review-title">Job Name:</span> <span class="review-data">${jobName}</span>`;
+        jobDetailsSection.appendChild(reviewJobName);
+
+        const jobCategory = document.getElementById("job-category").value;
+        const reviewJobCategory = document.createElement("p");
+        reviewJobCategory.innerHTML = `<span class="review-title">Job Category:</span> <span class="review-data">${jobCategory}</span>`;
+        jobDetailsSection.appendChild(reviewJobCategory);
+
+        // Section 2: Job Address
+        const jobAddressSection = document.createElement("div");
+        jobAddressSection.classList.add("review-section");
+        reviewSection.appendChild(jobAddressSection);
+
+        const city = document.getElementById("city").value;
+        const reviewCity = document.createElement("p");
+        reviewCity.innerHTML = `<span class="review-title">City:</span> <span class="review-data">${city}</span>`;
+        jobAddressSection.appendChild(reviewCity);
+
+        const suburb = document.getElementById("suburb").value;
+        const reviewSuburb = document.createElement("p");
+        reviewSuburb.innerHTML = `<span class="review-title">Suburb:</span> <span class="review-data">${suburb}</span>`;
+        jobAddressSection.appendChild(reviewSuburb);
+
+        const street = document.getElementById("street").value;
+        const reviewStreet = document.createElement("p");
+        reviewStreet.innerHTML = `<span class="review-title">Street:</span> <span class="review-data">${street}</span>`;
+        jobAddressSection.appendChild(reviewStreet);
+
+        const number = document.getElementById("number").value;
+        const reviewNumber = document.createElement("p");
+        reviewNumber.innerHTML = `<span class="review-title">Number:</span> <span class="review-data">${number}</span>`;
+        jobAddressSection.appendChild(reviewNumber);
+
+        // Section 3: Basic Outline of Tasks
+        const tasksSection = document.createElement("div");
+        tasksSection.classList.add("review-section");
+        reviewSection.appendChild(tasksSection);
+
+        const tasks = document.getElementById("tasks").value;
+        const reviewTasks = document.createElement("p");
+        reviewTasks.innerHTML = `<span class="review-title">Basic Outline of Tasks:</span> <span class="review-data">${tasks}</span>`;
+        tasksSection.appendChild(reviewTasks);
+
+        // Section 4: Additional Details
+        const additionalDetailsSection = document.createElement("div");
+        additionalDetailsSection.classList.add("review-section");
+        reviewSection.appendChild(additionalDetailsSection);
+
+        const additionalDetails = document.getElementById("additional-details").value;
+        const reviewAdditionalDetails = document.createElement("p");
+        reviewAdditionalDetails.innerHTML = `<span class="review-title">Additional Details:</span> <span class="review-data">${additionalDetails}</span>`;
+        additionalDetailsSection.appendChild(reviewAdditionalDetails);
+
+        // Section 5: Photo Upload
+        const photoUploadSection = document.createElement("div");
+        photoUploadSection.classList.add("review-section");
+        reviewSection.appendChild(photoUploadSection);
+
+        const photoTitle = document.createElement("p");
+        photoTitle.innerHTML = `<span class="review-title">Images:</span>`;
+        photoUploadSection.appendChild(photoTitle);
+
+        const photoUpload = document.getElementById("photo-upload");
+        const selectedFile = photoUpload.files[0];
+
+        if (selectedFile) {
+            const imgContainer = document.createElement("div");
+            const img = document.createElement("img");
+            img.style.maxWidth = "50%"; // Set maximum width to ensure the image is not too large
+            imgContainer.appendChild(img);
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(selectedFile);
+
+            photoUploadSection.appendChild(imgContainer);
+        }
+    }
+
+ function submitForm() {
+        // Get the form element
+        const form = document.getElementById("job-form");
+
+        // Use FormData to collect form data
+        const formData = new FormData(form);
+
+        // Make sure to include the selected file
+        const photoUpload = document.getElementById("photo-upload");
+        const selectedFile = photoUpload.files[0];
+        formData.append("images", selectedFile);
+
+        // Make an AJAX request to submit the form data to the server
+        fetch(form.action, {
+            method: form.method,
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // If the server responds with success, you can reset the form
+                form.reset();
+                
+                // Flash a success message (you may need to adjust this based on your setup)
+                alert('Job submitted successfully!');
+
+                // Redirect the user to the dashboard
+                window.location.href = "/business/dashboard";
+            } else {
+                // Handle errors if needed
+                console.error('Form submission failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error during form submission:', error);
+        });
+    }
+
+
+    // Initial call to populate the review section
+    updateReviewSection();
+</script>
+
+
+
+
+    </body>
+    </html>
+    {% endblock %}
+</html>

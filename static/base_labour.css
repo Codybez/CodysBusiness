@@ -1,78 +1,11 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #ccc;
-}
-
-.header {
-    background-color: #ff7148;
-    height: 6vh;
-    display: flex;
-    align-items: center;
-    width: 100%;
-    z-index: 1000;
-    border-bottom-right-radius: 20px;
-    position: fixed; /* Change this to fixed */
-    top: 0;
-}
-
-.logo-button {
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-.logo-icon {
-    font-size: 24px;
-    color: white;
+.openworklogo {
     margin-left: 10px;
-    margin-bottom: 5px;
-}
-
-.content {
-    margin-top: 6vh; /* To ensure content is below the header */
-    padding: 20px; /* Add some padding to separate content from the header */
-}
-/* Your existing CSS styles */
-
-.footer {
-    background-color: white;
-    position: fixed;
-    height: 6vh;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    padding-top: 10px;
     
-    box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.footers-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #ff7148;
-}
-
-.footers-button i {
-    font-size: 16px;
-}
-
-.footers-button p {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
 .logo {
   color: #ff7148;
-  font-size: 29px;
-  margin-bottom: 25px;
-  margin-top: 40px;
-  margin-left: 20px;
+  font-size: 27px;
   font-weight: bold;
 }
 
@@ -89,3 +22,115 @@ h1 {
 
 
 }
+
+        /* Basic styling for the header */
+                header {
+            background-color:#cccccca3;
+            color: #fff;
+            text-align: left;
+            padding: 10px;
+            padding-bottom: 10px;
+            border-top-right-radius: 0px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 6vh;
+        }
+        
+        
+   .fas.fa-home {
+    font-size: 24px;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff;
+}
+
+
+
+        /* Set a high z-index to keep the header above other elements */
+        h1 {
+            font-size: 24px;
+            margin: 0;
+            padding: 0;
+            border-top-right-radius: ;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav li {
+            margin-right: 20px;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 30px;
+            font-size: 16px;
+            margin-top: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        nav a:hover {
+            color: #f0f0f0;
+        }
+
+        /* Footer styling */
+footer {
+            background-color:#fff;
+            color:#ccc;
+            text-align: center;
+            padding: 10px;
+            height: 6vh;
+            position: fixed;
+            border-top: 2px solid #ff7048d5;
+;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        .footers-button {
+            color:#ff7048;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+           
+          
+            
+        }
+
+        .footers-button i {
+            font-size: 16px;
+            margin-bottom: -5px;
+           
+            
+        }
+
+        .footers-button p {
+            font-size: 14px;
+        }
+
+        .footers-button:hover {
+            color: #f0f0f0,
+
+        }
+
+

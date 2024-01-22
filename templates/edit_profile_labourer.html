@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Labourer Profile</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='edit_profile_labourer.css') }}">
+</head>
+<body>
+  
+{% extends 'base_labour.html' %}
+
+{% block title %}Labourer{% endblock %}
+
+{% block content %}
+
+<div class="edit-form-container">
+    <h1>Edit Profile</h1>
+    <form method="POST" enctype="multipart/form-data" action="">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="{{ form.first_name.id }}">First Name</label>
+            {{ form.first_name(class="form-control") }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.last_name.id }}">Last Name</label>
+            {{ form.last_name(class="form-control") }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.date_of_birth.id }}">Date of Birth</label>
+            {{ form.date_of_birth(class="form-control") }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.phone_number.id }}">Phone Number</label>
+            {{ form.phone_number(class="form-control") }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.user_blurb.id }}">Tell us about yourself</label>
+            {{ form.user_blurb(class="form-control") }}
+        </div>
+        
+              
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+  
+</body>
+</html>

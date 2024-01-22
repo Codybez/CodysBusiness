@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Jobs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='business_home.css') }}">
+  <!-- Add any additional styles here -->
+  <style>
+    /* Common styles for both pages */
+    .job-details-container {
+      background-color: #fff;
+      border-bottom: #ccc solid 2px;
+      padding: 15px;
+      margin-bottom: 10px;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+     
+    .applicant-profile {
+      background-color: #fff;
+      border-radius: 15px;
+      margin-bottom: 10px;
+      border: #ccc solid 2px;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      padding: 10px;
+    }
+
+    .applicant-profile h2 {
+      color: #000000;
+      margin-bottom: 18px;
+    }
+
+    .job-details-container p {
+      color: #555;
+      margin-bottom: 15px;
+    }
+    .job-details-container .icon{
+      margin-left: 8px;
+    }
+    .job-listing .icon {
+      margin-right: 15px;
+       /* Reduced margin for better spacing */
+    }
+
+    .applicant-profile {
+      position: relative;
+    }
+
+    .applicant-profile .profile-pic {
+      border-radius: 50%;
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .applicant-profile h3 {
+      color: #000000;
+      margin-bottom: 10px;
+      margin-left: 5px;
+    }
+
+    .applicant-profile p {
+      color: #555;
+      margin-bottom: 15px;
+      margin-left: 5px;
+    }
+
+    /* Specific styles for business_active_jobs.html */
+    .view-job-link,
+    .chat-link {
+      background-color: #ff7148;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      display: inline-block;
+      margin: 5px;
+      text-decoration: none;
+    }
+
+    .job-details-container .icon {
+      margin-right: 8px;
+    }
+
+    /* Style for chat link in the same line */
+    .chat-link.inline {
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    /* Orange bar style */
+
+
+    .close-review-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 5px;
+  text-decoration: none;
+}
+.info-container h1 {
+  color:#555;
+  font-size: small;
+  margin-bottom: -20px;
+}
+  </style>
+
+</head>
+
+<body>
+  {% extends 'base_business.html' %}
+
+  {% block title %}Active Jobs{% endblock %}
+
+  {% block content %}
+
+<div class="info-container">
+  <h1>Active Jobs</h1>
+ </div>
+
+  {% for job in active_jobs|reverse %}
+  <div class="job-details-container">
+    <h2>{{ job.job_name }}</h2>
+    <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
+    <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job.date.strftime('%d-%m-%Y') }}</span>  | {{ job.start_time.strftime('%I:%M %p') }} to {{ job.end_time.strftime('%I:%M %p') }}</p>
+    <p><i class="fas fa-money-bill-alt icon"></i>Price per Hour: ${{ job.price_per_hour }}</p>
+
+    <!-- Display the name of the business owner -->
+    <p><i class="fas fa-user icon"></i>Posted by: {{ job.business_profile.first_name }}</p>
+    <!-- Add more job details as needed -->
+
+    {% set selected_user = get_user_details(job.accepted_user_id) %}
+
+    {% if selected_user and selected_user.labourer_profile %}
+    <div class="applicant-profile">
+     
+      {% if selected_user and selected_user.profile_image %}
+      <!-- Display selected user details -->
+      <h3>{{ selected_user.labourer_profile.first_name }} {{ selected_user.labourer_profile.last_name }}</h3>
+      <p>Phone: {{ selected_user.labourer_profile.phone_number }}</p>
+      <img src="{{ url_for('static', filename='profile_pics/' ~ selected_user.profile_image.filename) }}" alt="User Image" class="profile-pic" id="profile-image">
+      {% else %}
+      <p>No profile image available.</p>
+      {% endif %}
+      <!-- View and Chat buttons -->
+      <a href="{{ url_for('business_display_jobs', job_id=job.id) }}" class="view-job-link"><i class="fas fa-eye"></i> View</a>
+      <a href="{{ url_for('chat', job_id=job.id, user_id=job.accepted_user_id) }}" class="chat-link inline" data-job-id="{{ job.id }}" data-user-id="{{ job.accepted_user_id }}"><i class="fas fa-comments"></i> Chat</a>
+      <a href="#" class="close-review-button inline"><i class="fas fa-star fa-times"></i> Close & Review</a>
+    </div>
+    {% else %}
+    <p>No user information available for this application.</p>
+    {% endif %}
+
+  </div>
+  <!-- Orange bar between job details -->
+  
+  {% endfor %}
+
+  <br>
+  <br>
+  <br>
+
+  {% endblock %}
+</body>
+
+</html>

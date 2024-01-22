@@ -53,7 +53,10 @@
         
     </form>
     <br>
-    <button onclick="window.location.href='{{ url_for('login') }}';">Go to Login</button>
+    
+    <p>Already registered? <a href="{{ url_for('login') }}"> Login</a></p>
+
+
 
 </body>
 {% endblock %}

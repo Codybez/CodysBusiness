@@ -11,11 +11,7 @@
   padding: 40px;
 }
 
-.info-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
+
 
 .profile-link {
   color: #fff;

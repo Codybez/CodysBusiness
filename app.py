@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, current_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 from werkzeug.utils import secure_filename
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,14 +9,26 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed 
-
+from forms import NewBusinessProfileForm
+from forms import UploadProfileImageForm
+from forms import EditLabourerProfileForm
+from sqlalchemy import Column, Date
+from datetime import datetime
+from flask import jsonify
+from sqlalchemy.sql import expression
+from flask import abort
+from flask_socketio import SocketIO, emit, join_room, leave_room
+from sqlalchemy import and_
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key
 app.static_folder = 'static' 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # You can use any database URL here
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_database.db'
+  # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
+
+socketio = SocketIO(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -29,8 +41,6 @@ login_manager.login_view = 'login'  # Set the login view
 def index():
     return render_template('index.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 
 class User(UserMixin, db.Model):
@@ -40,8 +50,11 @@ class User(UserMixin, db.Model):
     location = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
+    jobs_completed = db.Column(db.Integer, default=0)
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     profile_image = db.relationship('UserProfileImage', backref='user', uselist=False)
+    labourer_profile = db.relationship('LabourerProfile', backref='user', uselist=False)
+  
 
 class UserProfileImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -63,28 +76,130 @@ class BusinessProfile(db.Model):
     phone_number = db.Column(db.String(20), nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
+    jobs = db.relationship('Job', backref='business_profile', lazy=True)
 
-class NewBusinessProfileForm(FlaskForm):
-    business_name = StringField('Business Name', validators=[DataRequired()])
-    business_type = StringField('Business Type', validators=[DataRequired()])
-    city = StringField('City', validators=[DataRequired()])
-    suburb = StringField('Suburb', validators=[DataRequired()])
-    street = StringField('Street', validators=[DataRequired()])
-    number = StringField('Number', validators=[DataRequired()])
-    phone_number = StringField('Phone Number', validators=[DataRequired()])
-    first_name = StringField('First Name', validators=[DataRequired()])
-    last_name = StringField('Last Name', validators=[DataRequired()])
-    submit = SubmitField('Save Changes')
+class LabourerProfile(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id = db.Column(db.Integer, 
+    primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    date_of_birth = Column(Date)
+    phone_number = db.Column(db.String(20), nullable=False)
+    user_blurb = db.Column(db.String(250), nullable=False)
 
-class UploadProfileImageForm(FlaskForm):
-    profile_image = FileField('Upload Profile Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
-    submit = SubmitField('Upload')
+
+class Job(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job_name = db.Column(db.String(100), nullable=False)
+    job_category = db.Column(db.String(100), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    suburb = db.Column(db.String(100), nullable=False)
+    street = db.Column(db.String(100), nullable=False)
+    number = db.Column(db.String(10), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    tasks = db.Column(db.String(250), nullable=False)
+    price_per_hour = db.Column(db.Float, nullable=False)
+    additional_details = db.Column(db.String(250))
+    image_paths = db.Column(db.String(255))
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='open')  # 'open', 'applied', 'closed', etc.
+    applicants = db.relationship('JobApplication', backref='job', lazy=True)
+    accepted_user_id = db.Column(db.Integer, nullable=True)
+    business_profile_id = db.Column(db.Integer, db.ForeignKey('business_profile.id'), nullable=False)
+
+class JobApplication(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # 'pending', 'accepted', 'rejected', etc.
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref='user_profile_image', lazy=True)
+
+
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    room = db.Column(db.String(50), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+
+@app.route('/landing_page')
+def landing_page():
+    return render_template('landing_page.html')
+
 
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))  # Load a user by ID
+
+
+from datetime import datetime, time
+
+@app.route('/submit_job', methods=['POST'])
+def submit_job():
+    # Ensure the user is logged in
+    if current_user.is_authenticated:
+        # Use current_user.id to get the ID of the logged-in user
+
+        # Convert the date and time strings to Python date and time objects
+        date_str = request.form['date']
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+
+        start_time_str = request.form['start_time']
+        start_time_obj = datetime.strptime(start_time_str, '%H:%M').time()
+
+        end_time_str = request.form['end_time']
+        end_time_obj = datetime.strptime(end_time_str, '%H:%M').time()
+
+        job = Job(
+            job_name=request.form['job_name'],
+            job_category=request.form['job-category'],
+            city=request.form['city'],
+            suburb=request.form['suburb'],
+            street=request.form['street'],
+            number=request.form['number'],
+            date=date_obj,
+            start_time=start_time_obj,
+            end_time=end_time_obj,
+            tasks=request.form['tasks'],
+            price_per_hour=request.form['price_per_hour'],
+            additional_details=request.form.get('additional-details'),
+            business_profile_id=current_user.business_profile.id
+        )
+
+        db.session.add(job)
+        db.session.commit()
+
+        flash('Job submitted successfully!', 'success')
+
+        return redirect(url_for('business_dashboard'))
+    else:
+        # Handle the case where the user is not authenticated
+        flash('You must be logged in to submit a job.', 'error')
+        return redirect(url_for('login'))
+
+@app.route('/job/<int:job_id>')
+def display_job(job_id):
+    # Retrieve the job from the database with the related business profile
+    job = (
+        Job.query
+        .join(BusinessProfile, Job.business_profile_id == BusinessProfile.id)
+        .filter(Job.id == job_id)
+        .first()
+    )
+
+    if job:
+        return render_template('display_job.html', job=job)
+    else:
+        return "Job not found", 404
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -113,13 +228,25 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
+            print(f"User email: {user.email}, User type: {user.user_type}")  # Add this line for debugging
             login_user(user)
-            if user.user_type == 'labourer':
-                return redirect(url_for('labourer_dashboard'))
-            else:
+            if user.user_type == 'Business':
+                print("Redirecting to business_dashboard")
                 return redirect(url_for('business_dashboard'))
+            else:
+                print("Redirecting to labourer_dashboard")
+                return redirect(url_for('labourer_dashboard'))
+
 
     return render_template('login.html')  # Create a corresponding HTML template
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))  # Redirect to the login page after logout
 
 @app.route('/labourer/dashboard')
 @login_required
@@ -141,30 +268,51 @@ def profile():
             profile_image_path = os.path.join(app.config['profile_pics'], filename)
             file.save(profile_image_path)
 
-            # Update user's profile image in the database
-            if not current_user.profile_image:
-                profile_image = UserProfileImage(filename=filename, user_id=current_user.id)
-                db.session.add(profile_image)
-                current_user.profile_image = profile_image
-            else:
+            # Check if the user has a profile image, if not, create a new one
+            if current_user.profile_image is not None:
                 current_user.profile_image.filename = filename
+            else:
+                new_profile_image = UserProfileImage(user_id=current_user.id, filename=filename)
+                db.session.add(new_profile_image)
+
             db.session.commit()
 
     # Check if the user has a profile image, if not, assign the default image
     if not current_user.profile_image:
-        default_image_filename = 'default_profile_pic.jpg'
-        profile_image = UserProfileImage(filename=default_image_filename, user_id=current_user.id)
-        db.session.add(profile_image)
-        current_user.profile_image = profile_image
+        default_image_filename = 'orange.png'
+        current_user.profile_image = UserProfileImage(user_id=current_user.id, filename=default_image_filename)
+        db.session.add(current_user.profile_image)
         db.session.commit()
 
     return render_template('business_profile.html')
 
+@app.route('/profile/labourer', methods=['GET', 'POST'])
+@login_required
+def labourer_image():
+    if request.method == 'POST':
+        file = request.files['profile_image']
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            profile_image_path = os.path.join(app.config['profile_pics'], filename)
+            file.save(profile_image_path)
 
+            # Update user's profile image in the database
+            if current_user.profile_image is not None:
+                current_user.profile_image.filename = filename
+            else:
+                new_profile_image = UserProfileImage(user_id=current_user.id, filename=filename)
+                db.session.add(new_profile_image)
 
+            db.session.commit()
 
+    # Check if the user has a profile image, if not, assign the default image
+    if current_user.profile_image is None:
+        default_image_filename = 'orange.png'
+        current_user.profile_image = UserProfileImage(user_id=current_user.id, filename=default_image_filename)
+        db.session.add(current_user.profile_image)
+        db.session.commit()
 
-
+    return render_template('labourer_profile.html')
 
 @app.route('/profile/business')
 @login_required
@@ -175,13 +323,21 @@ def business_profile():
     # Assuming you have a user's business profile information
     business_profile = user.business_profile
 
-    return render_template('business_profile.html', user=user, form=UploadProfileImageForm())
+    return render_template('business_profile.html', user=user, business_profile=business_profile, form=UploadProfileImageForm())
 
 
+@app.route('/profile/labourer')
+@login_required
+def labourer_profile():
+    # Fetch the full profile information of the current labourer user from the database
+    user = current_user
 
-from flask import render_template, flash, redirect, url_for
-from werkzeug.utils import secure_filename
-import os
+    # Assuming you have a user's labourer profile information
+    labourer_profile = user.labourer_profile
+
+    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile)
+
+
 
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
@@ -213,3 +369,414 @@ def edit_profile():
     form.process(obj=user.business_profile)
 
     return render_template('edit_profile_business.html', form=form)
+
+
+@app.route('/profile/labourer/edit', methods=['GET', 'POST'])
+@login_required
+def edit_labourer_profile():
+    user = User.query.get(current_user.id)
+    form = EditLabourerProfileForm()
+
+    if form.validate_on_submit():
+        # Manually populate laborer_profile attributes from form data
+        if user.labourer_profile is None:
+            user.labourer_profile = LabourerProfile()  # Create a new LaborerProfile object
+
+        user.labourer_profile.first_name = form.first_name.data
+        user.labourer_profile.last_name = form.last_name.data
+        user.labourer_profile.phone_number = form.phone_number.data
+        user.labourer_profile.user_blurb = form.user_blurb.data
+        current_user.labourer_profile.date_of_birth = form.date_of_birth.data
+
+        db.session.commit()
+        flash('Profile updated successfully', 'success')
+        return redirect(url_for('labourer_profile'))
+
+    # Pre-fill the form with existing laborer profile data
+    if user.labourer_profile:
+        form.process(obj=user.labourer_profile)
+
+    return render_template('edit_profile_labourer.html', form=form)
+
+
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
+from datetime import datetime
+
+
+@app.route('/find_a_job')
+def find_a_job():
+    # Retrieve job data from the database
+    job_data = Job.query.all()
+
+    return render_template('find_a_job.html', job_data=job_data)
+
+@app.route('/create_job', methods=['GET', 'POST'])
+def create_job():
+    print(request.files)
+    if request.method == 'POST':
+        job_name = request.form['job_name']
+
+        # Handle image uploads
+        images = request.files.getlist('photo-upload')  # Update the name to match the form
+        image_paths = []
+
+        for image in images:
+            # Handle the file upload (save to the 'profile_pics' folder)
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(app.config['profile_pics'], filename)
+            image.save(image_path)
+            image_paths.append(image_path)
+
+        # Save job with image paths to the database
+        job = Job(job_name=job_name, image_paths=','.join(image_paths))
+        db.session.add(job)
+        db.session.commit()
+
+        return redirect(url_for('view_jobs'))
+
+    return render_template('create_a_job.html')
+
+from flask import flash
+
+# ... (previous imports) ...
+
+@app.route('/apply_for_job/<int:job_id>')
+@login_required
+def apply_for_job(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    # Check if the user has already applied for this job
+    if JobApplication.query.filter_by(user_id=current_user.id, job_id=job.id).first():
+        flash("You have already applied for this job.", "warning")
+    else:
+        # Create a new job application
+        application = JobApplication(user_id=current_user.id, job_id=job.id)
+        db.session.add(application)
+        db.session.commit()
+        flash("Application submitted successfully!", "success")
+
+    # Redirect to the job details page
+    return redirect(url_for('applied_jobs'))
+
+
+
+
+@app.route('/applied_jobs')
+@login_required
+def applied_jobs():
+    # Assuming you have a relationship between User and JobApplication
+    applied_jobs = (
+        Job.query
+        .join(Job.applicants)
+        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status != 'accepted'))
+        .all()
+    )
+
+    # Pass the current user as 'applicant' to the template
+    return render_template('applied_jobs.html', applied_jobs=applied_jobs, applicant=current_user)
+
+@app.route('/business_created_jobs')
+@login_required
+def business_created_jobs():
+    # Retrieve the business profile of the current user
+    business_profile = current_user.business_profile
+
+    if business_profile:
+        # Retrieve only open status jobs created by the current business user
+        created_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='open').all()
+
+        return render_template('business_open_jobs.html', created_jobs=created_jobs)
+
+    flash("Business profile not found.", "error")
+    return redirect(url_for('business_dashboard'))
+
+
+@app.route('/business_display_jobs/<int:job_id>')
+@login_required
+def business_display_jobs(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    return render_template('business_display_jobs.html', job=job)
+
+@app.route('/display_jobs/<int:job_id>')
+@login_required
+def display_jobs(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    return render_template('display_job.html', job=job)
+
+
+@app.route('/chat/<int:job_id>')
+@login_required
+def chat(job_id):
+    # Fetch the job and check if the user is associated with the job
+    job = Job.query.get_or_404(job_id)
+
+    if current_user.business_profile == job.business_profile or current_user.id in [applicant.user_id for applicant in job.applicants]:
+        return render_template('chat.html', job_id=job_id)
+    else:
+        flash("You do not have permission to access this chat.", "error")
+        return redirect(url_for('index'))
+
+
+
+# Update the handle_join function
+@socketio.on('join')
+def handle_join(data):
+    room = data['room']
+    join_room(room)
+
+    # Send existing messages to the joining user
+    existing_messages = Message.query.filter_by(room=room).all()
+    emit('load_messages', [{'sender_id': msg.sender_id, 'sender_name': get_sender_name(msg.sender_id), 'message': msg.content, 'timestamp': msg.timestamp.strftime('%H:%M:%S')} for msg in existing_messages], room=room, broadcast=False)
+
+ # Update the handle_message function
+@socketio.on('message')
+def handle_message(data):
+    room = data['room']
+    message = data['message']
+    sender_id = data['sender_id']
+
+    # Create a Message object and save it to the database
+    new_message = Message(room=room, content=message, sender_id=sender_id)
+    db.session.add(new_message)
+    db.session.commit()
+
+    # Emit the message to the sender
+    emit('message', {'sender_id': sender_id, 'sender_name': get_sender_name(sender_id), 'message': message, 'timestamp': new_message.timestamp.strftime('%H:%M:%S')}, room=request.sid)
+
+    # Broadcast the message to all clients in the room except the sender
+    emit('message', {'sender_id': sender_id, 'sender_name': get_sender_name(sender_id), 'message': message, 'timestamp': new_message.timestamp.strftime('%H:%M:%S')}, room=room, skip_sid=request.sid)
+
+
+
+def get_sender_name(sender_id):
+    # Implement a function to get the sender's name based on sender_id
+    # Adjust this function based on your application's logic
+    user = User.query.get(sender_id)
+    if user:
+        # Assuming user has a user_type and corresponding profile
+        if user.user_type == 'Business' and user.business_profile:
+            return user.business_profile.business_name
+        elif user.user_type == 'Labourer' and user.labourer_profile:
+            return user.labourer_profile.first_name
+    return "Unknown"
+
+def get_user_details(user_id):
+    user = User.query.get(user_id)
+    labourer_profile = LabourerProfile.query.filter_by(user_id=user_id).first()
+    profile_image = UserProfileImage.query.filter_by(user_id=user_id).first()
+    
+    return {
+        'user': user,
+        'labourer_profile': labourer_profile,
+        'profile_image': profile_image
+    }
+
+
+
+
+
+# Add this route to your Flask application
+@app.route('/viewapplicants/<int:job_id>', methods=['GET'])
+@login_required
+def view_applicants(job_id):
+    # Fetch job applications for the given job_id
+    job_applications = JobApplication.query.filter_by(job_id=job_id).all()
+
+    return render_template('viewapplicants.html', job_applications=job_applications)
+
+@app.route('/process_applications/<int:job_id>/<int:user_id>', methods=['POST'])
+def process_applications(job_id, user_id):
+    # Update the status of all applications for the job
+    job_applications = JobApplication.query.filter_by(job_id=job_id).all()
+
+    # Initialize accepted_user_id to None
+    accepted_user_id = None
+
+    for application in job_applications:
+        if application.user_id == user_id:
+            application.status = 'accepted'
+            accepted_user_id = user_id  # Store the accepted user ID
+        else:
+            application.status = 'rejected'
+
+    # Update the job's accepted_user_id and status
+    job = Job.query.get(job_id)
+    job.accepted_user_id = accepted_user_id
+    job.status = 'booked'
+
+    db.session.commit()
+
+    flash('Applications processed successfully', 'success')
+    return redirect(url_for('business_active_jobs', job_id=job_id, user_id=user_id))
+
+
+
+def get_job_details(job_id):
+    # Assuming that job_id is the ID of the job
+
+    # Fetch the job, business profile, and job applications
+    job = Job.query.get(job_id)
+    business_profile = BusinessProfile.query.filter_by(id=job.business_profile_id).first()
+    job_applications = JobApplication.query.filter_by(job_id=job_id).all()
+
+    return {
+        'job': job,
+        'business_profile': business_profile,
+        'job_applications': job_applications
+    }
+
+@app.route('/confirm_user/<int:job_id>/<int:user_id>', methods=['GET'])
+@login_required
+def confirm_user(job_id, user_id):
+    # Fetch details about the accepted user and job
+    user_details = get_user_details(user_id)
+    job_details = get_job_details(job_id)
+    selected_user = get_user_details
+     
+    return render_template('confirm_user.html', user_details=user_details, job_details=job_details, selected_user=selected_user)
+
+
+@app.route('/chooseuser/<int:job_id>/<int:user_id>', methods=['GET'])
+@login_required
+def choose_user(job_id, user_id):
+    # Fetch the job and user information
+    job = Job.query.get(job_id)
+    user = User.query.get(user_id)
+    
+    return render_template('confirm_user.html', job_details={'job': job}, selected_user=user)
+# Assuming get_user_details is defined in your Flask application
+
+@app.route('/business_active_jobs')
+@login_required
+def business_active_jobs():
+    # Retrieve the business profile of the current user
+    business_profile = current_user.business_profile
+
+    if business_profile:
+        # Retrieve only booked status jobs created by the current business user
+        active_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='booked').all()
+
+        # Ensure that the get_user_details function is available in the template context
+        return render_template('business_active_jobs.html', active_jobs=active_jobs, get_user_details=get_user_details)
+
+    flash("Business profile not found.", "error")
+    return redirect(url_for('business_dashboard'))
+
+@app.route('/edit_job/<int:job_id>', methods=['GET', 'POST'])
+@login_required
+def edit_job(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    # Ensure that the current user is the owner of the job
+    if job.business_profile.user_id != current_user.id:
+        flash("You do not have permission to edit this job.", "error")
+        return redirect(url_for('business_created_jobs'))
+
+    if request.method == 'POST':
+        # Update job details based on the form submission
+        job.job_name = request.form['job_name']
+
+        # Handle image uploads
+        images = request.files.getlist('photo-upload')
+        image_paths = []
+
+        for image in images:
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(app.config['profile_pics'], filename)
+            image.save(image_path)
+            image_paths.append(image_path)
+
+        job.image_paths = ','.join(image_paths)
+
+        # Commit changes to the database
+        db.session.commit()
+
+        flash("Job updated successfully!", "success")
+        return redirect(url_for('business_dashboard'))
+
+    # Pass the image_paths attribute to the template to avoid 'None' has no attribute 'split' error
+    return render_template('edit_job.html', job=job, image_paths=getattr(job, 'image_paths', ''))
+
+def time_ago(date):
+    now = datetime.utcnow()
+    delta = now - date
+    if delta.days == 1:
+        return '1 day ago'
+    elif delta.days > 1:
+        return f'{delta.days} days ago'
+    elif delta.seconds >= 3600:
+        hours = delta.seconds // 3600
+        return f'{hours} hours ago'
+    elif delta.seconds >= 60:
+        minutes = delta.seconds // 60
+        return f'{minutes} minutes ago'
+    else:
+        return 'just now'
+
+app.jinja_env.filters['time_ago'] = time_ago
+
+
+@app.route('/search_jobs')
+def search_jobs():
+    location = request.args.get('location')
+    job_category = request.args.get('job-category')
+    sort_by = request.args.get('sort-by', 'date')  # Default to sorting by date if not specified
+
+    # Modify the database query to order by date_created in descending order
+    query = Job.query.order_by(Job.date_created.desc())
+
+    if location:
+        query = query.filter(Job.location == location)
+
+    if job_category:
+        query = query.filter(Job.job_category == job_category)
+
+    # Add sorting based on the selected option
+    if sort_by == 'date':
+        query = query.order_by(Job.date)
+    elif sort_by == 'job-category':
+        query = query.order_by(Job.job_category)
+    # Add more sorting options as needed
+
+    job_data = query.all()
+
+    return render_template('your_template.html', job_data=job_data)
+
+@app.route('/active_jobs')
+@login_required
+def active_jobs():
+    # Assuming you have a relationship between User and JobApplication
+    active_jobs = (
+        Job.query
+        .join(Job.applicants)
+        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status == 'accepted'))
+        .all()
+    )
+
+    # Pass the current user as 'applicant' to the template
+    return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user)
+
+
+
+@app.route('/remove_application/<int:job_id>')
+@login_required
+def remove_application(job_id):
+    job = Job.query.get(job_id)
+
+    if job:
+        # Find the user's application for the job
+        application = JobApplication.query.filter_by(user_id=current_user.id, job_id=job_id).first()
+
+        if application:
+            # If the application is found, delete it from the database
+            db.session.delete(application)
+            db.session.commit()
+
+    # Redirect back to the applied_jobs page
+    return redirect(url_for('applied_jobs'))
+
+if __name__ == '__main__':
+    db.create_all()
+    socketio.run(app, debug=True)

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Labourer Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_profile.css') }}">
+</head>
+<body>
+  {% extends 'base_labour.html' %}
+  {% block title %}Labourer{% endblock %}
+  {% block content %}
+
+  <div class="info-container">
+    <div class="title">
+      <h1>Labourer Profile</h1>
+    </div>
+    <div>
+      <a href="{{ url_for('edit_labourer_profile') }}" class="profile-link">Edit Profile</a>
+    </div>
+  </div>
+<div class="profile-pic-container">
+    <div class="profile-pic-wrapper">
+    <img src="{{ url_for('static', filename='profile_pics/' + (current_user.profile_image.filename if current_user.profile_image else 'orange.png')) }}"
+         alt=""
+         class="profile-pic"
+         id="profile-image">
+</div>
+
+
+    <div class="profile-pic-overlay">
+        <form id="profile-image-form" action="{{ url_for('labourer_image') }}" method="POST" enctype="multipart/form-data">
+            <label for="profile-image-upload" class="edit-pic-button">Edit Image</label>
+            <input type="file" id="profile-image-upload" name="profile_image" style="display: none;">
+            <button id="apply-button" class="apply-button-hidden" style="background-color: grey;">Apply</button>
+        </form>
+    </div>
+</div>
+  <div class="user-info-container">
+    <div class="user-info">
+      <div class="info-item">
+        <strong>First Name:</strong> {{ current_user.labourer_profile.first_name }}
+      </div>
+
+      <div class="info-item">
+        <strong>Last Name:</strong> {{ current_user.labourer_profile.last_name }}
+      </div>
+
+      <div class="info-item">
+      {% if current_user.labourer_profile.date_of_birth %}
+      <strong>Date of Birth:</strong> {{ current_user.labourer_profile.date_of_birth.strftime('%d-%m-%Y') }}
+      {% else %}
+      <strong>Date of Birth:</strong> N/A
+      {% endif %}
+
+
+      <div class="info-item">
+        <strong>Phone Number:</strong> {{ current_user.labourer_profile.phone_number }}
+      </div>
+
+      <div class="info-item">
+        <strong>About Me:</strong> {{ current_user.labourer_profile.user_blurb }}
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- ... (your existing code) ... -->
+
+</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileImageUpload = document.getElementById('profile-image-upload');
+      const applyButton = document.getElementById('apply-button');
+
+      applyButton.style.display = 'none'; // Hide the Apply button initially
+
+      profileImageUpload.addEventListener('change', function(event) {
+        applyButton.style.backgroundColor = 'green'; // Change the button color to green
+        applyButton.style.display = 'block'; // Show the Apply button
+      });
+
+      applyButton.addEventListener('click', function() {
+        document.getElementById('profile-image-form').submit(); // Submit the form
+      });
+    });
+  </script>
+  </script>
+</body>
+</html>
+
+
+  <!-- ... (your existing code) ... -->
+
+  </div>
+  {% endblock %}
+<script>
+
+  </script>
+</body>
+</html>

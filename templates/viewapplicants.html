@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Applicants</title>
+  <style>
+
+  
+
+    /* Styles for the circular profile picture */
+    .profile-pic {
+      border-radius: 50%;
+      width: 65px; /* Adjust the size of the circle as needed */
+      height: 65px;
+      object-fit: cover; /* Maintain aspect ratio while covering the entire circle */
+    }
+
+    /* Styles for the applicant profile container */
+/* Styles for the applicant profile container */
+.applicant-profile {
+  background-color: #fff;
+  padding-left: 10px;
+  position: relative; /* Enable absolute positioning for the circle */
+  padding-top: 15px ;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #ccc;
+  font-family: Arial, Helvetica, sans-serif;
+
+}
+
+
+/* Center the container for screens above 600px and set a maximum width */
+@media (min-width: 601px) {
+  .applicant-profile {
+    width: 100%;
+    max-width: 600px; /* Adjust the maximum width as needed */
+    margin: 0 auto; /* Center the container */
+  }
+}
+
+
+
+    /* Position the circular profile picture at the top right */
+    .applicant-profile .profile-pic {
+      position: absolute;
+      top: 10px; /* Adjust the distance from the top */
+      right: 10px; /* Adjust the distance from the right */
+    }
+
+    /* Clearfix for floated elements within the applicant profile */
+    .applicant-profile::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+.applicant-profile h3 {
+  color: #000000;
+  margin-top: 8px;
+  margin-bottom: 10px; /* Adjust the margin to create space above the buttons */
+  margin-left: 5px;
+  font-size: 20px;
+}
+
+.applicant-profile p {
+  color: #555;
+  margin-bottom: 10px; /* Adjust the margin to create space above the buttons */
+  margin-left: 5px;
+}
+.chat-link {
+  
+  margin: 5px;
+  padding: 5px 10px;
+  text-decoration: none;
+  background-color: #333;
+  color: #fff;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  
+}
+
+.chat-link:hover {
+  background-color: #555;
+}
+
+.accept-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+  text-decoration: none;
+  
+}
+
+
+.location {
+  margin-left: 5px; /* Adjust the margin as needed */
+}
+    
+  </style>
+</head>
+<body>
+  {% extends 'base_business.html' %}
+
+  {% block title %}Job Applicants{% endblock %}
+
+  {% block content %}
+    <br>
+
+    {% for application in job_applications %}
+      <div class="applicant-profile">
+        {% if application.user and application.user.profile_image %}
+          {% if application.user.user_profile_image %}
+            {% set image_path = 'profile_pics/' ~ application.user.profile_image.filename %}
+          {% else %}
+            {% set image_path = 'profile_pics/orange.jpg' %}
+          {% endif %}
+          <img src="{{ url_for('static', filename=image_path) }}" alt="User Image" class="profile-pic" id="profile-image">
+          
+          <h3>{{ application.user.labourer_profile.first_name }} {{ application.user.labourer_profile.last_name }}</h3>
+          <p><i class="fas fa-map-marker-alt icon"></i> <span class="location">{{ application.user.location }}</span></p>
+          <p><i class="fas fa-check-circle label-icon"></i> Jobs Completed: {{ application.user.jobs_completed }}</p>
+          <p><i class="fas fa-comment icon"></i> About Me: <span>{{ application.user.labourer_profile.user_blurb }}</span></p>
+<br>
+
+          <!-- Add more applicant details as needed -->
+
+          <!-- Add a link to initiate a chat -->
+          <a href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}" class="chat-link" data-job-id="{{ application.job.id }}" data-user-id="{{ application.user.id }}"><i class="fas fa-comments"></i> Chat</a>
+        {% else %}
+          <p>No user information available for this application.</p>
+        {% endif %}
+        <a href="{{ url_for('choose_user', job_id=application.job.id, user_id=application.user.id) }}" class="accept-button" data-job-id="{{ application.job.id }}" data-user-id="{{ application.user.id }}">
+        <i class="fas fa-check"></i> Accept
+  </a>
+ 
+
+
+
+      </div>
+    {% endfor %}
+    <br>
+    <br>
+    <br>
+    
+
+
+  {% endblock %}
+  <!-- ... (your head content) ... -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Get all form elements with the class 'accept-form'
+      var acceptForms = document.querySelectorAll('.accept-form');
+
+      // Attach a submit event listener to each form
+      acceptForms.forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+          // Hide the button in the submitted form
+          form.querySelector('.accept-button').style.display = 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

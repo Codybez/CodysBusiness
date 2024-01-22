@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Openwork.co.nz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #007bff;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #ffffff;
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Openwork.co.nz</h1>
+        <p>Bringing a simple solution for casual labor hire to New Zealand</p>
+    </header>
+
+    <section>
+        <p>We provide a platform for people wanting casual work to easily apply for day jobs with local businesses.
+        We are changing the way people go about casual work, providing a flexible and convenient labour hire agency in the palm of your hands! Sign up today! 
+        </p>
+    </section>
+
+    <section>
+        <h2>Subscribe for Updates</h2>
+        <p>Be the first to know when we launch. Enter your email and location below:</p>
+
+        <form action="/submit" method="post">
+            <label for="email">Email:</label>
+            <input type="email" name="email" required>
+
+        <label for="location">Location:</label>
+        <select id="location" name="location">
+            <option value="Northland">Northland</option>
+            <option value="Auckland">Auckland</option>
+            <option value="Waikato">Waikato</option>
+            <option value="Bay of Plenty">Bay of Plenty</option>
+            <option value="Gisborne">Gisborne</option>
+            <option value="Hawke's Bay">Hawke's Bay</option>
+            <option value="Taranaki">Taranaki</option>
+            <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+            <option value="Wellington">Wellington</option>
+            <option value="Tasman">Tasman</option>
+            <option value="Nelson">Nelson</option>
+            <option value="Marlborough">Marlborough</option>
+            <option value="West Coast">West Coast</option>
+            <option value="Canterbury">Canterbury</option>
+            <option value="Otago">Otago</option>
+            <option value="Southland">Southland</option>
+        </select><br><br>
+
+            <button type="submit">Subscribe</button>
+        </form>
+    </section>
+
+</body>
+</html>

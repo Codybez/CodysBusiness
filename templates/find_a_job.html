@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find a Job</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_home.css') }}">
+ <!-- Add any additional styles here -->
+<style>
+    .job-listing {
+        background-color: #fff;
+        border-bottom: 2px solid #ccc;
+        padding-left: 15px;
+        padding-top: 8px;  
+        padding-bottom: 15px;
+        position: relative;
+    }
+
+    .job-listing h3 {
+        color: #ff7148;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .job-listing p {
+        color: #555;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    .job-listing .profile-image {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border-radius: 50%;
+        overflow: hidden;
+        width: 40px;
+        height: 40px;
+    }
+
+    .job-listing .profile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .icon {
+    margin-right: 15px; /* Adjust the margin as needed */
+}
+.view-job-link {
+  
+  background-color: #ff7148;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 5px;
+  text-decoration: none;
+  font-size: large;
+}
+
+.section-button-container {
+  margin-top: 10px;
+ 
+}
+
+</style>
+
+</head>
+<body>
+ {% extends 'base_labour.html' %}
+
+{% block title %}Find a Job{% endblock %}
+
+{% block content %}
+
+<div class="info-container">
+    <h1>Find a Job</h1>
+</div>
+<!-- Inside the loop for job_data -->
+{% for job in job_data|reverse %}
+    {% if current_user.id not in job.applicants|map(attribute='user_id') and job.status != 'booked' %}
+        <div class="job-listing">
+            <h3><i class=""></i>{{ job.job_name }}</h3>
+            <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
+            <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job.date.strftime('%d-%m-%Y') }}</span>  | {{ job.start_time.strftime('%I:%M %p') }} to {{ job.end_time.strftime('%I:%M %p') }}</p>
+            <!-- Add more job details as needed -->
+            <p><i class="far fa-clock icon"></i> Job posted {{ job.date_created|time_ago }}</p>
+
+            <!-- Link the "View" button to the job details page -->
+            <a href="{{ url_for('display_jobs', job_id=job.id) }}" class="view-job-link"><i class=""></i><b> View</b></a>
+        </div>
+    {% endif %}
+{% endfor %}
+
+
+
+
+
+</div>      
+   
+
+</div>
+
+
+ 
+<!-- Add more job listings as needed -->
+
+
+
+{% endblock %}
+
+</body>
+</html>

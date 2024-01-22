@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Add your head content here -->
+</head>
+<body>
+  {% extends 'base_business.html' %}
+
+  {% block title %}Edit Job{% endblock %}
+
+  {% block content %}
+    <div class="info-container">
+      <h1>Edit Job</h1>
+    </div>
+
+    {% if job %}
+      <div class="job-details-container">
+        <h2>{{ job.job_name }}</h2>
+        
+      </div>
+
+      <form method="post" enctype="multipart/form-data">
+        <!-- Your form fields for editing the job -->
+
+        <label for="job_name">Job Name:</label>
+        <input type="text" id="job_name" name="job_name" value="{{ job.job_name }}" required>
+
+
+
+        <!-- Add other form fields for editing the job as needed -->
+
+        <button type="submit">Update Job</button>
+      </form>
+
+    {% else %}
+      <p>Job not found.</p>
+    {% endif %}
+
+    <br>
+    <br>
+    <br>
+    <br>
+  {% endblock %}
+</body>
+</html>
