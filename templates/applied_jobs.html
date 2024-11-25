@@ -87,7 +87,7 @@
     <div class="job-listing" id="job_{{ job.id }}">
       <h3>{{ job.job_name }}</h3>
       <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
-      <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job.date.strftime('%d-%m-%Y') }}</span>  from {{ job.start_time.strftime('%I:%M %p') }} to {{ job.end_time.strftime('%I:%M %p') }}</p>
+  
 
       <!-- Display the name of the business owner -->
       <p><i class="fas fa-user icon"></i>Posted by: {{ job.business_profile.first_name }}</p>
@@ -111,7 +111,7 @@
       {% endfor %}
 
       <!-- Add a link to view job details -->
-      <a href="{{ url_for('display_job', job_id=job.id) }}" class="view-job-link"><i class="fas fa-eye"></i> View</a>
+      <a href="{{ url_for('display_jobs', job_id=job.id) }}" class="view-job-link"><i class="fas fa-eye"></i> View</a>
       <!-- Add a link to chat with the job poster -->
       <a href="{{ url_for('chat', job_id=job.id) }}" class="chat-link" data-job-id="{{ job.id }}"><i class="fas fa-comments"></i> Chat</a>
       {% if current_user.is_authenticated and current_user.id in job.applicants|map(attribute='user_id') %}
@@ -120,6 +120,8 @@
     
     
     </div>
+<br>
+<br>
 
 
   {% endfor %}

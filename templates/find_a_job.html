@@ -1,114 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find a Job</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_home.css') }}">
- <!-- Add any additional styles here -->
-<style>
-    .job-listing {
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find a Job</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='labourer_home.css') }}"
+    />
+    <style>
+      .job-listing {
         background-color: #fff;
         border-bottom: 2px solid #ccc;
         padding-left: 15px;
-        padding-top: 8px;  
+        padding-top: 8px;
         padding-bottom: 15px;
         position: relative;
-    }
+      }
 
-    .job-listing h3 {
-        color: #ff7148;
+      .job-listing h3 {
+        color: #2c2c2c;
         font-family: Arial, Helvetica, sans-serif;
-    }
+      }
 
-    .job-listing p {
+      .job-listing p {
         color: #555;
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
 
-    .job-listing .profile-image {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        border-radius: 50%;
-        overflow: hidden;
-        width: 40px;
-        height: 40px;
-    }
+      .view-job-link {
+        background-color: #ffffff;
+        color: rgba(0, 0, 0, 0.464);
+        border: #393939 solid 2px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 5px;
+        text-decoration: none;
+        font-size: large;
+      }
 
-    .job-listing .profile-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .icon {
-    margin-right: 15px; /* Adjust the margin as needed */
-}
-.view-job-link {
-  
-  background-color: #ff7148;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  display: inline-block;
-  margin: 5px;
-  text-decoration: none;
-  font-size: large;
-}
+      .sort-options {
+        margin: 15px 0;
+        display: flex;
+        gap: 10px;
+      }
 
-.section-button-container {
-  margin-top: 10px;
- 
-}
+      .sort-dropdown {
+        padding: 5px;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Find a Job{% endblock %}
+    {% block content %}
+    <div class="info-container">
+      <h1>Find a Job</h1>
+    </div>
 
-</style>
+    <!-- Sorting Options -->
+    <div class="sort-options">
+      <!-- Sort by Category -->
+      <select id="sort-category" class="sort-dropdown">
+        <option value="all" selected>All Categories</option>
+        <option value="General Labouring">General Labouring</option>
+        <option value="Construction">Construction</option>
+        <option value="Landscaping">Landscaping</option>
+        <option value="Cleaning">Cleaning</option>
+        <option value="Painting">Painting</option>
+        <option value="Plumbing">Plumbing</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Carpentry">Carpentry</option>
+        <option value="Roofing">Roofing</option>
+        <option value="HVAC">HVAC</option>
+        <option value="Moving">Moving</option>
+        <option value="Gardening">Gardening</option>
+        <option value="Handyman">Handyman</option>
+        <option value="Other">Other</option>
+      </select>
 
-</head>
-<body>
- {% extends 'base_labour.html' %}
+      <!-- Sort by Location -->
+      <select id="sort-location" class="sort-dropdown">
+        <option value="all" selected>All Locations</option>
+        <option value="Northland">Northland</option>
+        <option value="Auckland">Auckland</option>
+        <option value="Waikato">Waikato</option>
+        <option value="Bay of Plenty">Bay of Plenty</option>
+        <option value="Gisborne">Gisborne</option>
+        <option value="Hawke's Bay">Hawke's Bay</option>
+        <option value="Taranaki">Taranaki</option>
+        <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+        <option value="Wellington">Wellington</option>
+        <option value="Tasman">Tasman</option>
+        <option value="Nelson">Nelson</option>
+        <option value="Marlborough">Marlborough</option>
+        <option value="West Coast">West Coast</option>
+        <option value="Canterbury">Canterbury</option>
+        <option value="Otago">Otago</option>
+        <option value="Southland">Southland</option>
+      </select>
+    </div>
 
-{% block title %}Find a Job{% endblock %}
+    <!-- Job Listings -->
+    <div id="job-listings">
+      {% for job in job_data|reverse %} {% if current_user.id not in
+      job.applicants|map(attribute='user_id') and job.status != 'booked' %}
+      <div
+        class="job-listing"
+        data-category="{{ job.job_category }}"
+        data-location="{{ job.city }}"
+      >
+        <h3>{{ job.job_name }}</h3>
+        <p>
+          <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
+          job.city }}, {{ job.suburb }}
+        </p>
+        <p>
+          <i class="far fa-clock icon"></i> Job posted {{
+          job.date_created|time_ago }}
+        </p>
+        <p>
+          <i class="fas fa-users icon"></i>{{ job.applicants|length }}
+          Applicants
+        </p>
+        <a
+          href="{{ url_for('display_jobs', job_id=job.id) }}"
+          class="view-job-link"
+          ><b>View</b></a
+        >
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+    {% endblock %}
 
-{% block content %}
+    <script>
+      document
+        .getElementById("sort-category")
+        .addEventListener("change", function () {
+          filterJobs();
+        });
 
-<div class="info-container">
-    <h1>Find a Job</h1>
-</div>
-<!-- Inside the loop for job_data -->
-{% for job in job_data|reverse %}
-    {% if current_user.id not in job.applicants|map(attribute='user_id') and job.status != 'booked' %}
-        <div class="job-listing">
-            <h3><i class=""></i>{{ job.job_name }}</h3>
-            <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
-            <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job.date.strftime('%d-%m-%Y') }}</span>  | {{ job.start_time.strftime('%I:%M %p') }} to {{ job.end_time.strftime('%I:%M %p') }}</p>
-            <!-- Add more job details as needed -->
-            <p><i class="far fa-clock icon"></i> Job posted {{ job.date_created|time_ago }}</p>
+      document
+        .getElementById("sort-location")
+        .addEventListener("change", function () {
+          filterJobs();
+        });
 
-            <!-- Link the "View" button to the job details page -->
-            <a href="{{ url_for('display_jobs', job_id=job.id) }}" class="view-job-link"><i class=""></i><b> View</b></a>
-        </div>
-    {% endif %}
-{% endfor %}
+      function filterJobs() {
+        const selectedCategory = document.getElementById("sort-category").value;
+        const selectedLocation = document.getElementById("sort-location").value;
+        const jobListings = document.querySelectorAll(".job-listing");
 
+        jobListings.forEach((job) => {
+          const jobCategory = job.getAttribute("data-category");
+          const jobLocation = job.getAttribute("data-location");
 
+          const categoryMatch =
+            selectedCategory === "all" || jobCategory === selectedCategory;
+          const locationMatch =
+            selectedLocation === "all" || jobLocation === selectedLocation;
 
+          job.style.display = categoryMatch && locationMatch ? "block" : "none";
+        });
+      }
 
-
-</div>      
-   
-
-</div>
-
-
- 
-<!-- Add more job listings as needed -->
-
-
-
-{% endblock %}
-
-</body>
+      // Initialize with all jobs visible
+      window.addEventListener("DOMContentLoaded", filterJobs);
+    </script>
+  </body>
 </html>

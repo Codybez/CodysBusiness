@@ -7,9 +7,6 @@
     <title>Create a Job</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles_create_a_job.css') }}">
     <style>
-
-    
-   
           .form-section {
         display: none;
     }
@@ -41,8 +38,6 @@
     }
 
     /* Add these styles to your existing stylesheet */
-
-    
     .info-container h1 {
   color:#555;
   font-size: small;
@@ -51,11 +46,6 @@
 
 }
 
-.static-text {
-    font-weight: bold;
-    color: #333;
-    margin-top: 5px;
-}
 
 </style>
 </head>
@@ -99,7 +89,18 @@
                     <option value="Other">Other</option>
                 </select>
             </div>
-            
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required />
+            </div>
+            <div class="form-group">
+                <label for="start_time">Start Time:</label>
+                <input type="time" id="start_time" name="start_time" required />
+            </div>
+            <div class="form-group">
+                <label for="end_time">End Time:</label>
+                <input type="time" id="end_time" name="end_time" required />
+            </div>
             <button type="button" class="next-button" onclick="nextStep(2)">
                 Next
             </button>
@@ -107,18 +108,21 @@
 
         <div class="form-section" id="section-2">
             <h2>Step 2: Job Address</h2>
-                <div class="form-group">
-        <label for="user-location">Location:</label>
-        <p id="user-location" class="static-text">{{ user.location }}</p>
-    </div>
-            <div 
-            class="form-group">
+            <div class="form-group">
                 <label for="city">City:</label>
                 <input type="text" id="city" name="city" required />
             </div>
             <div class="form-group">
                 <label for="suburb">Suburb:</label>
                 <input type="text" id="suburb" name="suburb" required />
+            </div>
+            <div class="form-group">
+                <label for="street">Street:</label>
+                <input type="text" id="street" name="street" required />
+            </div>
+            <div class="form-group">
+                <label for="number">Number:</label>
+                <input type="text" id="number" name="number" required />
             </div>
             <button type="button" class="prev-button" onclick="prevStep(1)">
                 Previous
@@ -135,7 +139,7 @@
                 <textarea id="tasks" name="tasks" rows="10" required></textarea>
             </div>
             <div class="form-group">
-                <label for="price_per_hour">Price Estimate:</label>
+                <label for="price_per_hour">Price per Hour:</label>
                 <div class="price-input">
                     <span>$</span>
                     <input type="number" id="price_per_hour" name="price_per_hour" min="0" step="1" value="" />
@@ -156,11 +160,11 @@
                 <textarea id="additional-details" name="additional-details" rows="10"></textarea>
             </div>
             <div class="form-group">
-                <label for="photo-upload">Upload Photos (optional):</label>
-                <label for="photo-upload" class="custom-file-input">Choose Files</label>
-                <input type="file" id="photo-upload" name="photo-upload" accept="image/*" multiple onchange="updateFileLabel(this)"/>
-            <div id="selected-files"></div>
+               <label for="photo-upload">Upload Photos (optional):</label>
+               <label for="photo-upload" class="custom-file-input">Choose File</label>
+               <input type="file" id="photo-upload" name="photo-upload" accept="image/*" />
             </div>
+
 
             <button type="button" class="prev-button" onclick="prevStep(3)">
                 Previous
@@ -234,7 +238,15 @@
         reviewSuburb.innerHTML = `<span class="review-title">Suburb:</span> <span class="review-data">${suburb}</span>`;
         jobAddressSection.appendChild(reviewSuburb);
 
+        const street = document.getElementById("street").value;
+        const reviewStreet = document.createElement("p");
+        reviewStreet.innerHTML = `<span class="review-title">Street:</span> <span class="review-data">${street}</span>`;
+        jobAddressSection.appendChild(reviewStreet);
 
+        const number = document.getElementById("number").value;
+        const reviewNumber = document.createElement("p");
+        reviewNumber.innerHTML = `<span class="review-title">Number:</span> <span class="review-data">${number}</span>`;
+        jobAddressSection.appendChild(reviewNumber);
 
         // Section 3: Basic Outline of Tasks
         const tasksSection = document.createElement("div");
@@ -246,15 +258,6 @@
         reviewTasks.innerHTML = `<span class="review-title">Basic Outline of Tasks:</span> <span class="review-data">${tasks}</span>`;
         tasksSection.appendChild(reviewTasks);
 
-        const pricePerHourSection = document.createElement("div");
-        pricePerHourSection.classList.add("review-section");
-        reviewSection.appendChild(pricePerHourSection);
-
-        const pricePerHour = document.getElementById("price_per_hour").value;
-        const reviewPricePerHour = document.createElement("p");
-        reviewPricePerHour.innerHTML = `<span class="review-title">Price Estimate:</span> <span class="review-data">$${pricePerHour}</span>`;
-        pricePerHourSection.appendChild(reviewPricePerHour);   
-
         // Section 4: Additional Details
         const additionalDetailsSection = document.createElement("div");
         additionalDetailsSection.classList.add("review-section");
@@ -265,48 +268,34 @@
         reviewAdditionalDetails.innerHTML = `<span class="review-title">Additional Details:</span> <span class="review-data">${additionalDetails}</span>`;
         additionalDetailsSection.appendChild(reviewAdditionalDetails);
 
-            // Section 5: Photo Upload
-    const photoUploadSection = document.createElement("div");
-    photoUploadSection.classList.add("review-section");
-    reviewSection.appendChild(photoUploadSection);
+        // Section 5: Photo Upload
+        const photoUploadSection = document.createElement("div");
+        photoUploadSection.classList.add("review-section");
+        reviewSection.appendChild(photoUploadSection);
 
-    const photoTitle = document.createElement("p");
-    photoTitle.innerHTML = `<span class="review-title">Images:</span>`;
-    photoUploadSection.appendChild(photoTitle);
+        const photoTitle = document.createElement("p");
+        photoTitle.innerHTML = `<span class="review-title">Images:</span>`;
+        photoUploadSection.appendChild(photoTitle);
 
-    const photoUpload = document.getElementById("photo-upload");
-    const selectedFiles = photoUpload.files;
+        const photoUpload = document.getElementById("photo-upload");
+        const selectedFile = photoUpload.files[0];
 
-    if (selectedFiles.length > 0) {
-        const imgContainer = document.createElement("div");
-
-        for (const file of selectedFiles) {
+        if (selectedFile) {
+            const imgContainer = document.createElement("div");
             const img = document.createElement("img");
             img.style.maxWidth = "50%"; // Set maximum width to ensure the image is not too large
-            img.src = URL.createObjectURL(file); // Use createObjectURL to display multiple images
             imgContainer.appendChild(img);
-        }
 
-        photoUploadSection.appendChild(imgContainer);
-    }
-}
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
 
+            reader.readAsDataURL(selectedFile);
 
- function updateFileLabel(input) {
-        var selectedFilesDiv = document.getElementById('selected-files');
-
-        // Check if files are selected
-        if (input.files.length > 0) {
-            // Display the names of all selected files
-            for (var i = 0; i < input.files.length; i++) {
-                var fileName = input.files[i].name;
-                var fileItem = document.createElement('div');
-                fileItem.textContent = fileName;
-                selectedFilesDiv.appendChild(fileItem);
-            }
+            photoUploadSection.appendChild(imgContainer);
         }
     }
-
 
  function submitForm() {
         // Get the form element

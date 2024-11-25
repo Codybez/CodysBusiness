@@ -100,7 +100,17 @@
 .location {
   margin-left: 5px; /* Adjust the margin as needed */
 }
-    
+     .back-button {
+      font-size: 24px;
+      color: #ff7148;
+      margin-left: 10px;
+      margin-top: 10px;
+      text-decoration: none;
+      border: none;
+      background-color: #fff;
+      cursor: pointer;
+    }
+     
   </style>
 </head>
 <body>
@@ -110,7 +120,22 @@
 
   {% block content %}
     <br>
-
+    
+<script>
+    // JavaScript function to go back in the browser's history
+    function goBack() {
+      if (document.referrer) {
+        // If there's a referrer (previous page), go back to it
+        window.location.href = document.referrer;
+      } else {
+        // If there's no referrer, go back in history
+        window.history.back();
+      }
+    }
+</script>
+<button class="back-button" onclick="goBack()">
+    <i class="fas fa-arrow-left"></i>
+</button>
     {% for application in job_applications %}
       <div class="applicant-profile">
         {% if application.user and application.user.profile_image %}

@@ -3,123 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Openwork.co.nz</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
+    <title>Landing Page</title>
+    <link rel="stylesheet" href="style.css">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-        header {
-            background-color: #007bff;
-            padding: 20px;
-            text-align: center;
-            color: #fff;
-        }
+		<style>
+			/* style.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
 
-        section {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
+section {
+    padding: 20px;
+    text-align: center;
+}
 
-        h1 {
-            color: #ffffff;
-        }
+/* Hero Section */
+#hero {
+    background: #ff7148;
+    color: white;
+    padding: 40px 20px;
+    height: 50vh; /* This will set the height to 50% of the viewport height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
 
-        h2 {
-            color: #007bff;
-        }
 
-        p {
-            font-size: 18px;
-            line-height: 1.6;
-            color: #555;
-        }
+#hero h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
 
-        form {
-            margin-top: 20px;
-        }
+/* Information Section */
+#info {
+    background: #f2f2f2;
+		font-family: 'Roboto', sans-serif;
+		font-size: x-large;
+}
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-        }
+/* Form Section */
+#contact {
+    background: #ff7148;
+    color: white;
+}
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+#contact-form {
+    max-width: 400px;
+    margin: auto;
+}
 
-        button {
-            background-color: #007bff;
-            color: #fff;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+#contact-form input, #contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+}
 
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+#contact-form button {
+    background: #ffffff;
+    color: #ff7148;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+		border-radius: 5px;
+		margin-top: 15px;
+}
+
+#contact-form button:hover {
+    background: #ff7148;
+}
+.header {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.openworklogo {
+    margin-left: 10px;
+}
+
+.logo {
+    color: #ff7148;
+    font-size: 27px;
+    font-weight: bold;
+		font-style: normal;
+		margin-left: 30px;
+}
+
+.letter-o {
+    color: #6f6e6e;
+    font-size: 32px;
+    font-family: "Arial", sans-serif;
+		font-style: italic;
+}
+
+.hamburger-menu {
+    font-size: 24px;
+    margin-right: 10px;
+    cursor: pointer;
+		color: #333;
+}
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 20px;
+}
+
+.process-step {
+    border: 2px solid grey;
+    padding: 20px;
+    text-align: center;
+}
+
+.process-step .icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to one column for mobile */
+    gap: 20px;
+    padding: 20px;
+}
+
+@media (min-width: 600px) { /* Adjust breakpoint as needed */
+    .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Multiple columns for wider screens */
+    }
+}
+
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    text-align: center;
+    
+}
+
+.feature-card .icon {
+    font-size: 40px;
+    color: #ff7148;
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    margin-top: 0;
+    color: #333;
+    font-weight: bold;
+}
+
+.feature-card p {
+    color: #666;
+    font-size: 0.9em;
+}
+
+#sign-up-button {
+    background-color: #ffffff; /* Button background color */
+    color: #ff7148; /* Button text color */
+    border: 2px solid #ff7148; /* Button border */
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#sign-up-button:hover {
+    background-color: #ff7148; /* Button hover background color */
+    color: #ffffff; /* Button hover text color */
+}
+#about-app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 10%;
+}
+
+#about-app .inner {
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#about-app .content {
+    
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#about-app .image img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 8px; /* Optional for rounded corners */
+}
+
+
+
+@media screen and (max-width: 768px) {
+    #about-app .inner {
+        flex-direction: row;
+    }
+    
+    #about-app .image img {
+        max-width: 80%;
+        margin-bottom: 30px;
+    }
+    
+
+}
+    .feature-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 20px;
+			margin-right: -20px;
+			
+    }
+
+    .feature {
+      min-width: 300px; /* Adjust as necessary */
+      text-align: center;
+			position: relative;
+    }
+
+    .feature-image {
+      width: 70%; /* Adjust as necessary */
+      height: auto; /* Adjust if necessary to maintain aspect ratio */
+      border-radius: 8px;
+    }
+
+    .feature-text {
+      margin-top: 10px;
+    }
+
+    /* Hide scrollbar for Webkit browsers */
+    .feature-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge, and Firefox */
+    .feature-container {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
+		/* Adding right-pointing arrows */
+.feature::after {
+  content: '→'; /* Right-pointing arrow */
+  position: absolute;
+  right: -20px; /* Adjust position as needed */
+  top: 40%;
+  transform: translateY(-50%);
+  color: #333; /* Adjust color as needed */
+  font-size: 40px; /* Adjust size as needed */
+  z-index: 1;
+}
+
+/* Hide arrow on the last item */
+.feature:last-child::after {
+  content: none;
+}
+		</style>
 </head>
 <body>
+	<header>
+    <div class="header">
+        <div class="openworklogo">
+            <h1 class="logo">Open<span class="letter-o">work</span></h1>
+        </div>
+        <div class="hamburger-menu">
+            <i class="fas fa-bars"></i> <!-- FontAwesome icon for hamburger -->
+        </div>
+    </div>
+</header>
 
-    <header>
-        <h1>Openwork.co.nz</h1>
-        <p>Bringing a simple solution for casual labor hire to New Zealand</p>
-    </header>
-
-    <section>
-        <p>We provide a platform for people wanting casual work to easily apply for day jobs with local businesses.
-        We are changing the way people go about casual work, providing a flexible and convenient labour hire agency in the palm of your hands! Sign up today! 
-        </p>
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-container">
+            <h1>Choose Your Work, Own Your Time: Flexible Jobs Incoming!</h1>
+            <p>Sign Up Today And Get On Our Waitlist!</p>
+						<button id="sign-up-button">Sign Up</button> <!-- Sign Up Button -->
+        </div>
+    </section>
+		    <section id="features" class="wrapper">
+        <div class="inner">
+            <div class="feature-container">
+                <!-- Feature 1 -->
+                <div class="feature">
+                    <img src="/static/profile_pics/mobile_profile.png" alt="Feature Image" class="feature-image">
+                    <div class="feature-text">
+                        <h3>
+													Create Your Free Account</h3>
+                     
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="feature">
+                    <img src="/static/profile_pics/number2.png" alt="Feature Image" class="feature-image">
+                    <div class="feature-text">
+                        <h3>Browse For Jobs</h3>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="feature">
+                    <img src="/static/profile_pics/three.png" alt="Feature Image" class="feature-image">
+                    <div class="feature-text">
+                        <h3>Win A Job</h3>
+                       
+                    </div>
+                </div>
+                <!-- Feature 4 -->
+                <div class="feature">
+                    <img src="/static/profile_pics/mobile_profile.png" alt="Feature Image" class="feature-image">
+                    <div class="feature-text">
+                        <h3>Review And Get Paid</h3>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <section>
-        <h2>Subscribe for Updates</h2>
-        <p>Be the first to know when we launch. Enter your email and location below:</p>
+		    <!-- Information Section -->
 
-        <form action="/submit" method="post">
-            <label for="email">Email:</label>
-            <input type="email" name="email" required>
-
-        <label for="location">Location:</label>
-        <select id="location" name="location">
-            <option value="Northland">Northland</option>
-            <option value="Auckland">Auckland</option>
-            <option value="Waikato">Waikato</option>
-            <option value="Bay of Plenty">Bay of Plenty</option>
-            <option value="Gisborne">Gisborne</option>
-            <option value="Hawke's Bay">Hawke's Bay</option>
-            <option value="Taranaki">Taranaki</option>
-            <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
-            <option value="Wellington">Wellington</option>
-            <option value="Tasman">Tasman</option>
-            <option value="Nelson">Nelson</option>
-            <option value="Marlborough">Marlborough</option>
-            <option value="West Coast">West Coast</option>
-            <option value="Canterbury">Canterbury</option>
-            <option value="Otago">Otago</option>
-            <option value="Southland">Southland</option>
-        </select><br><br>
-
-            <button type="submit">Subscribe</button>
-        </form>
+		<section id="features" class="wrapper">
+    <div class="inner">
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="icon fa fa-user-clock"></i> <!-- Example icon -->
+                <h3>Freedom to Select</h3>
+                <p>Choose jobs that match your skills and interests.
+								You are free to only accept work you want to do.
+								</p>
+            </div>
+            <div class="feature-card">
+                <i class="icon fa fa-dollar-sign"></i> <!-- Example icon -->
+                <h3>Earn on Your Terms</h3>
+                <p>We provide the ability to earn money with a flexible schedule, ideal for balancing work with other commitments.</p>
+            </div>
+            <div class="feature-card">
+                <i class="icon fa fa-briefcase"></i> <!-- Example icon -->
+                <h3>Diverse Opportunities</h3>
+                <p>Choose from a variety of job options, from construction work to home cleaning services, catering to all different skills.
+								
+								</p>
+            </div>
+        </div>
+    </div>
+</section>
+    <!-- Form Section -->
+    <section id="contact">
+        <div class="form-container">
+            <h2>Sign Up Now</h2>
+            <form id="contact-form">
+                <input type="text" id="name" name="name" placeholder="Your Name" required>
+                <input type="email" id="email" name="email" placeholder="Your Email" required>
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
     </section>
 
+		
+		
+    <section id="info">
+        <div class="info-container">
+            <h2></h2>
+            <p>
+ Our mission is simple to make finding flexible, on-demand job opportunities as effortless as possible. Whether you're balancing studies, managing personal commitments, or just seeking extra income, Openwork is your gateway to a world of exciting, flexible job prospects tailored to your lifestyle."</p>
+            <!-- Add more content here as needed -->
+        </div>
+    </section>
+
+
+
+
+
+
+    <script src="script.js"></script>
 </body>
 </html>

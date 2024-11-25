@@ -22,8 +22,7 @@ from sqlalchemy import and_
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key
-app.static_folder = 'static' 
+app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_database.db'
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
@@ -54,7 +53,7 @@ class User(UserMixin, db.Model):
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     profile_image = db.relationship('UserProfileImage', backref='user', uselist=False)
     labourer_profile = db.relationship('LabourerProfile', backref='user', uselist=False)
-  
+    company_details = db.relationship('CompanyDetails', uselist=False)
 
 class UserProfileImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -93,22 +92,19 @@ class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     job_name = db.Column(db.String(100), nullable=False)
     job_category = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(100), nullable=True)  # Add location column here
     city = db.Column(db.String(100), nullable=False)
     suburb = db.Column(db.String(100), nullable=False)
-    street = db.Column(db.String(100), nullable=False)
-    number = db.Column(db.String(10), nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.Time, nullable=False)
-    end_time = db.Column(db.Time, nullable=False)
     tasks = db.Column(db.String(250), nullable=False)
     price_per_hour = db.Column(db.Float, nullable=False)
-    additional_details = db.Column(db.String(250))
     image_paths = db.Column(db.String(255))
+    additional_details = db.Column(db.String(250))
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='open')  # 'open', 'applied', 'closed', etc.
     applicants = db.relationship('JobApplication', backref='job', lazy=True)
     accepted_user_id = db.Column(db.Integer, nullable=True)
     business_profile_id = db.Column(db.Integer, db.ForeignKey('business_profile.id'), nullable=False)
+    payment_required = db.Column(db.Boolean, default=False)
 
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -127,11 +123,23 @@ class Message(db.Model):
     room = db.Column(db.String(50), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+class CompanyDetails(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    business_type = db.Column(db.String(100), nullable=False)
+    nzbn = db.Column(db.String(100))
+    director_first_name = db.Column(db.String(50), nullable=False)
+    director_last_name = db.Column(db.String(50), nullable=False)
+    physical_address = db.Column(db.String(100), nullable=False)
+    unit_no = db.Column(db.String(10))
+    trading_name = db.Column(db.String(100), nullable=False)
+
+
+
 
 @app.route('/landing_page')
 def landing_page():
     return render_template('landing_page.html')
-
 
 
 
@@ -140,40 +148,43 @@ def load_user(user_id):
     return User.query.get(int(user_id))  # Load a user by ID
 
 
-from datetime import datetime, time
 
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
     # Ensure the user is logged in
     if current_user.is_authenticated:
-        # Use current_user.id to get the ID of the logged-in user
+        # Get the ID of the logged-in user
+        business_profile_id = current_user.business_profile.id
 
         # Convert the date and time strings to Python date and time objects
-        date_str = request.form['date']
-        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        # Note: If you have date and time fields in your form, handle them accordingly
 
-        start_time_str = request.form['start_time']
-        start_time_obj = datetime.strptime(start_time_str, '%H:%M').time()
+        # Handle file upload
+        image_paths = []
+        if 'photo-upload' in request.files:
+            photo_uploads = request.files.getlist('photo-upload')
+            for photo_upload in photo_uploads:
+                if photo_upload.filename != '':
+                    # Save the file to the 'static/job_images' folder
+                    filename = secure_filename(photo_upload.filename)
+                    file_path = f'static/profile_pics/{filename}'
+                    photo_upload.save(file_path)
+                    image_paths.append(filename)
 
-        end_time_str = request.form['end_time']
-        end_time_obj = datetime.strptime(end_time_str, '%H:%M').time()
-
+        # Create a new job instance
         job = Job(
             job_name=request.form['job_name'],
             job_category=request.form['job-category'],
             city=request.form['city'],
             suburb=request.form['suburb'],
-            street=request.form['street'],
-            number=request.form['number'],
-            date=date_obj,
-            start_time=start_time_obj,
-            end_time=end_time_obj,
             tasks=request.form['tasks'],
             price_per_hour=request.form['price_per_hour'],
             additional_details=request.form.get('additional-details'),
-            business_profile_id=current_user.business_profile.id
+            business_profile_id=business_profile_id,
+            image_paths=','.join(image_paths) if image_paths else None
         )
 
+        # Save the job to the database
         db.session.add(job)
         db.session.commit()
 
@@ -185,7 +196,7 @@ def submit_job():
         flash('You must be logged in to submit a job.', 'error')
         return redirect(url_for('login'))
 
-@app.route('/job/<int:job_id>')
+
 def display_job(job_id):
     # Retrieve the job from the database with the related business profile
     job = (
@@ -326,17 +337,28 @@ def business_profile():
     return render_template('business_profile.html', user=user, business_profile=business_profile, form=UploadProfileImageForm())
 
 
+
+
+# ...
+from sqlalchemy.orm import joinedload
 @app.route('/profile/labourer')
 @login_required
 def labourer_profile():
     # Fetch the full profile information of the current labourer user from the database
-    user = current_user
+    user = (
+        User.query
+        .options(joinedload(User.company_details))  # Eagerly load company_details
+        .filter_by(id=current_user.id)
+        .first()
+    )
 
     # Assuming you have a user's labourer profile information
     labourer_profile = user.labourer_profile
+    
+    # Fetch company details if available
+    company_details = user.company_details
 
-    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile)
-
+    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details)
 
 
 
@@ -410,22 +432,22 @@ def find_a_job():
 
     return render_template('find_a_job.html', job_data=job_data)
 
+
 @app.route('/create_job', methods=['GET', 'POST'])
 def create_job():
-    print(request.files)
     if request.method == 'POST':
         job_name = request.form['job_name']
 
         # Handle image uploads
-        images = request.files.getlist('photo-upload')  # Update the name to match the form
+        images = request.files.getlist('photo-upload')
         image_paths = []
 
         for image in images:
-            # Handle the file upload (save to the 'profile_pics' folder)
+            # Handle the file upload (save to the 'job_images' folder)
             filename = secure_filename(image.filename)
-            image_path = os.path.join(app.config['profile_pics'], filename)
-            image.save(image_path)
-            image_paths.append(image_path)
+            file_path = os.path.join('job_images', filename)
+            image.save(file_path)
+            image_paths.append(file_path)
 
         # Save job with image paths to the database
         job = Job(job_name=job_name, image_paths=','.join(image_paths))
@@ -434,7 +456,8 @@ def create_job():
 
         return redirect(url_for('view_jobs'))
 
-    return render_template('create_a_job.html')
+    return render_template('create_a_job.html', user=current_user)
+
 
 from flask import flash
 
@@ -776,6 +799,97 @@ def remove_application(job_id):
 
     # Redirect back to the applied_jobs page
     return redirect(url_for('applied_jobs'))
+
+
+
+
+@app.route('/delete_job/<int:job_id>', methods=['GET', 'POST'])
+@login_required
+def delete_job(job_id):
+    job = Job.query.get(job_id)
+
+    if job:
+        # Check if the current user is the owner of the job
+        if current_user.id == job.business_profile.user_id:
+            # Delete job applications related to the job
+            JobApplication.query.filter_by(job_id=job.id).delete()
+
+            # Delete the job and commit changes
+            db.session.delete(job)
+            db.session.commit()
+
+            flash('Job and associated applications deleted successfully', 'success')
+        else:
+            flash('You are not authorized to delete this job', 'error')
+
+    # Redirect to the page where the job was listed (e.g., business_dashboard)
+    return redirect(url_for('business_dashboard'))
+
+
+
+@app.route('/edit_tradesman_profile', methods=['GET', 'POST'])
+def edit_tradesman_profile():
+    if request.method == 'POST':
+        # Similar to the previous route, handle the form submission
+        business_type = request.form.get('businessType')
+        nzbn = request.form.get('nzbn')
+        director_first_name = request.form.get('directorFirstName')
+        director_last_name = request.form.get('directorLastName')
+        physical_address = request.form.get('physicalAddress')
+        unit_no = request.form.get('unitNo')
+        trading_name = request.form.get('tradingName')
+
+        user = current_user
+
+        # Check if the user has associated company_details
+        if user.company_details is None:
+            # Create a new CompanyDetails instance
+            company_details = CompanyDetails(
+                business_type=business_type,
+                nzbn=nzbn,
+                director_first_name=director_first_name,
+                director_last_name=director_last_name,
+                physical_address=physical_address,
+                unit_no=unit_no,
+                trading_name=trading_name
+            )
+            user.company_details = company_details
+        else:
+            # Update the existing CompanyDetails instance
+            user.company_details.business_type = business_type
+            user.company_details.nzbn = nzbn
+            user.company_details.director_first_name = director_first_name
+            user.company_details.director_last_name = director_last_name
+            user.company_details.physical_address = physical_address
+            user.company_details.unit_no = unit_no
+            user.company_details.trading_name = trading_name
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        return redirect(url_for('labourer_profile'))
+
+    # Render the tradesman profile page for editing
+    return render_template('tradesman_profile.html')
+
+
+@app.route('/review/<int:job_id>', methods=['GET', 'POST'])
+def tradesman_review(job_id):
+    if request.method == 'POST':
+        # Process the submitted review form data
+        professionalism = int(request.form['professionalism'])
+        quality = int(request.form['quality'])
+        cost = int(request.form['cost'])
+        communication = int(request.form['communication'])
+        comments = request.form['comments']
+
+        # Save the review data to your database or perform any other necessary actions
+
+        # Redirect to a page confirming the review submission
+        return redirect(url_for(''))
+
+    # Render the review form template
+    return render_template('labourer_review.html', job_id=job_id)
 
 if __name__ == '__main__':
     db.create_all()

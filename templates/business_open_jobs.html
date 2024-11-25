@@ -1,106 +1,122 @@
 <!-- business_created_jobs.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Created Jobs</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='business_home.css') }}">
-  <!-- Add any additional styles here -->
-  <style>
-    /* Copy the styles from the laborer's applied jobs page */
-    .job-listing {
-      background-color: #fff;
-      border-bottom: 2px solid #ccc;
-      padding-left: 15px;
-      padding-top: 5px;
-      padding-bottom: 10px;
-      
-     
-    
- 
-      
-    }
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Created Jobs</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <!-- Add any additional styles here -->
+    <style>
+      /* Copy the styles from the laborer's applied jobs page */
+      .job-listing {
+        background-color: #fff;
+        border-bottom: 2px solid #ccc;
+        padding-left: 15px;
+        padding-top: 5px;
+        padding-bottom: 10px;
+      }
 
-    .job-listing h3 {
-      color: #000000bb;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 20px ;
-    }
+      .job-listing h3 {
+        color: #000000bb;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+      }
 
-    .job-listing p {
-      color: #555;
-      font-family: Arial, Helvetica, sans-serif
-    }
+      .job-listing p {
+        color: #555;
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-    .job-listing .icon {
-      margin-right: 15px; /* Adjust the margin as needed */
-    }
+      .job-listing .icon {
+        margin-right: 15px; /* Adjust the margin as needed */
+      }
 
-    .view-job-link {
-      background-color: #ff7148;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-block;
-      margin: 5px;
-      text-decoration: none;
-      font-size: large;
-    }
+      .view-job-link {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 5px;
+        text-decoration: none;
+        font-size: large;
+      }
 
-    .chat-link {
-      background-color: #8b8b8b;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-block;
-      margin: 5px;
-      text-decoration: none;
-      font-size: large;
-    }
+      .chat-link {
+        background-color: #8b8b8b;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 5px;
+        text-decoration: none;
+        font-size: large;
+      }
 
-    .info-container h1 {
-  color:#555;
-  font-size: small;
-  margin-bottom: -20px;
-}
-  </style>
-</head>
-<body>
-  {% extends 'base_business.html' %}
-
-  {% block title %}Created Jobs{% endblock %}
-
-  {% block content %}
-      <div class="info-container">
-       <h1>Open Jobs</h1>
-      </div>
+      .info-container h1 {
+        color: #555;
+        font-size: small;
+        margin-bottom: -20px;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block title %}Created Jobs{% endblock
+    %} {% block content %}
+    <div class="info-container">
+      <h1>Open Jobs</h1>
+    </div>
     {% for job in created_jobs %}
-      <div class="job-listing">
-        <h3>{{ job.job_name }}</h3>
-        <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
-        <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job.date.strftime('%d-%m-%Y') }}</span>  | {{ job.start_time.strftime('%I:%M %p') }} to {{ job.end_time.strftime('%I:%M %p') }}</p>
-        <!-- Add more job details as needed -->
+    <div class="job-listing">
+      <h3>{{ job.job_name }}</h3>
+      <p>
+        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
+        job.city }}, {{ job.suburb }}
+      </p>
 
-        <!-- Display the name of the business owner -->
-        <p><i class="fas fa-user icon"></i>Posted by: {{ job.business_profile.first_name }}</p>
+      <!-- Add more job details as needed -->
 
-        <!-- Add a link to view job details -->
-       <!-- Add a link to view job details -->
-        <a href="{{ url_for('business_display_jobs', job_id=job.id) }}" class="view-job-link"><i class="fas fa-eye"></i> View Job</a>
+      <!-- Display the name of the business owner -->
+      <p>
+        <i class="fas fa-user icon"></i>Posted by: {{
+        job.business_profile.first_name }}
+      </p>
 
-        <!-- Add a link to initiate a chat -->
-        <a href="{{ url_for('view_applicants', job_id=job.id) }}" class="chat-link"><i class="fas fa-users"></i> View Applicants</a>
-      </div>
+      <p>
+        <i class="fas fa-users icon"></i>{{ job.applicants|length }} Applicants
+      </p>
+
+      <!-- Add a link to view job details -->
+      <!-- Add a link to view job details -->
+      <a
+        href="{{ url_for('business_display_jobs', job_id=job.id) }}"
+        class="view-job-link"
+        ><i class="fas fa-eye"></i> View Job</a
+      >
+
+      <!-- Add a link to initiate a chat -->
+      <a
+        href="{{ url_for('view_applicants', job_id=job.id) }}"
+        class="chat-link"
+        ><i class="fas fa-users"></i> View Applicants</a
+      >
+    </div>
     {% endfor %}
-    <br>
-    <br>
+    <br />
+    <br />
 
-  {% endblock %}
-</body>
+    {% endblock %}
+  </body>
 </html>

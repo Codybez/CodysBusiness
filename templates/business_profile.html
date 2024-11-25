@@ -1,88 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Business Profile</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='business_profile.css') }}">
-</head>
-<body>
-  {% extends 'base_business.html' %}
-  {% block title %}Business{% endblock %}
-  {% block content %}
-<br>
-<br>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Profile</title>
+    <style>
+      body {
+        font-family: "Lato", sans-serif;
+        background-color: #ffffff;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
 
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+      }
 
-  <div class="info-container">
-    <div class="title">
-      
+      .title {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        height: 150%;
+        padding: 10px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      button {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #555;
+      }
+
+      .profile-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+      }
+
+      .info-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 20px;
+      }
+
+      .profile-link {
+        color: #fff;
+        background-color: #ff7148;
+        border-radius: 5px;
+        padding: 8px 15px;
+        text-decoration: none;
+      }
+
+      .profile-pic-container {
+        position: relative;
+        display: block;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .profile-pic {
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
+        transition: transform 0.3s;
+        object-fit: cover;
+      }
+
+      .profile-pic-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(255, 255, 255, 0.8);
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding: 5px;
+      }
+
+      .edit-pic-button {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+      }
+
+      .apply-button-hidden {
+        display: none;
+      }
+
+      .apply-button-visible {
+        display: block;
+        background-color: green;
+      }
+
+      .user-info {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        text-align: left;
+      }
+
+      .user-info p {
+        margin-bottom: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .user-location {
+        text-align: center;
+        font-family: "Lato", sans-serif;
+        font-size: 30px;
+        color: #3f3f3fc6;
+      }
+
+      .user-location .fa-map-marker-alt {
+        font-size: 18px;
+        vertical-align: 25%;
+        color: #3f3f3f82;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block title %}Business{% endblock %}
+    {% block content %}
+    <div class="container">
+      <div class="title">
+        <h1></h1>
+      </div>
+
+      <div class="profile-pic-container">
+        <div class="profile-pic-wrapper">
+          <img
+            src="{{ url_for('static', filename='profile_pics/' + (current_user.profile_image.filename if current_user.profile_image else 'orange.png')) }}"
+            alt="Profile Image"
+            class="profile-pic"
+            id="profile-image"
+          />
+        </div>
+        <div class="profile-pic-overlay">
+          <form
+            id="profile-image-form"
+            action="{{ url_for('profile') }}"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            <label for="profile-image-upload" class="edit-pic-button"
+              >Edit Image</label
+            >
+            <input
+              type="file"
+              id="profile-image-upload"
+              name="profile_image"
+              style="display: none"
+            />
+            <button
+              id="apply-button"
+              class="apply-button-hidden"
+              style="background-color: grey"
+            >
+              Apply
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="user-location">
+        <p><i class="fas fa-map-marker-alt"></i> {{ current_user.location }}</p>
+      </div>
+
+      <div class="user-info">
+        <div class="form-group">
+          <label for="first-name">First Name:</label>
+          <input
+            type="text"
+            id="first-name"
+            name="first_name"
+            value="{{ current_user.business_profile.first_name }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="last-name">Last Name:</label>
+          <input
+            type="text"
+            id="last-name"
+            name="last_name"
+            value="{{ current_user.business_profile.last_name }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone-number">Phone Number:</label>
+          <input
+            type="text"
+            id="phone-number"
+            name="phone_number"
+            value="{{ current_user.business_profile.phone_number }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="business-name">Business Name:</label>
+          <input
+            type="text"
+            id="business-name"
+            name="business_name"
+            value="{{ current_user.business_profile.business_name }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="business-type">Business Type:</label>
+          <input
+            type="text"
+            id="business-type"
+            name="business_type"
+            value="{{ current_user.business_profile.business_type }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="city">City:</label>
+          <input
+            type="text"
+            id="city"
+            name="city"
+            value="{{ current_user.business_profile.city }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="suburb">Suburb:</label>
+          <input
+            type="text"
+            id="suburb"
+            name="suburb"
+            value="{{ current_user.business_profile.suburb }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="street">Street:</label>
+          <input
+            type="text"
+            id="street"
+            name="street"
+            value="{{ current_user.business_profile.street }}"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="number">Number:</label>
+          <input
+            type="text"
+            id="number"
+            name="number"
+            value="{{ current_user.business_profile.number }}"
+            readonly
+          />
+        </div>
+        <div>
+          <a href="{{ url_for('edit_profile') }}" class="profile-link"
+            >Edit Profile</a
+          >
+        </div>
+      </div>
+
+      <!-- Your existing code -->
+      <!-- ... -->
     </div>
-    <div>
-      <a href="{{ url_for('edit_profile') }}" class="profile-link">Edit Profile</a>
-    </div>
-  </div>
 
-  <div class="profile-pic-container">
-    <div class="profile-pic-wrapper">
-      <img src="{{ url_for('static', filename='profile_pics/' + (current_user.profile_image.filename if current_user.profile_image else 'orange.png')) }}"
-     alt="Profile Image"
-     class="profile-pic"
-     id="profile-image">
-
-    </div>
-    <div class="profile-pic-overlay">
-      <form id="profile-image-form" action="{{ url_for('profile') }}" method="POST" enctype="multipart/form-data">
-        <label for="profile-image-upload" class="edit-pic-button">Edit Image</label>
-        <input type="file" id="profile-image-upload" name="profile_image" style="display: none;">
-        <button id="apply-button" class="apply-button-hidden" style="background-color: grey;">Apply</button>
-      </form>
-    </div>
-  </div>
-  <div class="user-info">
-  <p><strong>Name:</strong> {{ current_user.business_profile.first_name }} {{ current_user.business_profile.last_name }}</p>
-  <p><strong>Phone Number:</strong> {{ current_user.business_profile.phone_number }}</p>
-  <p><strong>Business Name:</strong> {{ current_user.business_profile.business_name }}</p>
-  <p><strong>Business Type:</strong> {{ current_user.business_profile.business_type }}</p>
-  <p><strong>City:</strong> {{ current_user.business_profile.city }}</p>
-  <p><strong>Suburb:</strong> {{ current_user.business_profile.suburb }}</p>
-  <p><strong>Street:</strong> {{ current_user.business_profile.street }}</p>
-  <p><strong>Number:</strong> {{ current_user.business_profile.number }}</p>
-  <!-- Add more user information here -->
-</div>
-
-  <!-- ... (your existing code) ... -->
-
-  </div>
-
+    <br />
+    <br />
+    <br />
+    <br />
+  </body>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const profileImageUpload = document.getElementById('profile-image-upload');
-      const applyButton = document.getElementById('apply-button');
+    document.addEventListener("DOMContentLoaded", function () {
+      const profileImageUpload = document.getElementById(
+        "profile-image-upload"
+      );
 
-      applyButton.style.display = 'none'; // Hide the Apply button initially
+      if (profileImageUpload) {
+        document
+          .querySelector(".edit-pic-button")
+          .addEventListener("click", function () {
+            profileImageUpload.click(); // Trigger the file input
+          });
 
-      profileImageUpload.addEventListener('change', function(event) {
-        applyButton.style.backgroundColor = 'green'; // Change the button color to green
-        applyButton.style.display = 'block'; // Show the Apply button
-      });
-
-      applyButton.addEventListener('click', function() {
-        document.getElementById('profile-image-form').submit(); // Submit the form
-      });
+        profileImageUpload.addEventListener("change", function (event) {
+          // Check if a file is selected before submitting the form
+          if (profileImageUpload.files.length > 0) {
+            document.getElementById("profile-image-form").submit(); // Submit the form
+          }
+        });
+      } else {
+        console.error("profileImageUpload element not found.");
+      }
     });
   </script>
-  </script>
-</body>
-</html>
 
-
-  <!-- ... (your existing code) ... -->
-
-  </div>
   {% endblock %}
-<script>
-
-  </script>
-</body>
 </html>

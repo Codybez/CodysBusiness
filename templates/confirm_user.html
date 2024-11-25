@@ -112,6 +112,9 @@
   {% block title %}Confirm Booking{% endblock %}
 
   {% block content %}
+  <br>
+  <br>
+  
   <div class="info-container">
     <h1>Confirm Booking</h1>
   </div>
@@ -120,7 +123,7 @@
   <div class="job-details-container">
     <h2>{{ job_details.job.job_name }}</h2>
     <p><i class="fas fa-map-marker-alt icon"></i>{{ job_details.job.job_category }} in {{ job_details.job.city }}, {{ job_details.job.suburb }}</p>
-    <p><i class="fas fa-clock icon"></i><span style="color: #ff7148; font-weight: bold;">{{ job_details.job.date.strftime('%d-%m-%Y') }}</span> from {{ job_details.job.start_time.strftime('%I:%M %p') }} to {{ job_details.job.end_time.strftime('%I:%M %p') }}</p>
+
     <p><i class="fas fa-tasks icon"></i>Tasks: {{ job_details.job.tasks }}</p>
     <p><i class="fas fa-money-bill-alt icon"></i>Price per Hour: ${{ job_details.job.price_per_hour }}</p>
     <p><i class="fas fa-info-circle icon"></i>Additional Details: {{ job_details.job.additional_details }}</p>

@@ -4,101 +4,350 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Labourer Profile</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_profile.css') }}">
+  <style>
+    body {
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      background-color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Container for the whole profile page */
+    .profile-container {
+      max-width: 800px;
+      margin: 10px auto;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+    }
+
+    /* Container for the title and edit links */
+    .info-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 20px;
+    }
+
+    /* Style for edit links */
+    .profile-link {
+      color: #fff;
+      background-color: #ff7148;
+      border-radius: 15px;
+      padding: 8px 15px;
+      text-decoration: none;
+    }
+
+    /* Profile box containing picture and overlay */
+    .profile-box {
+      text-align: center;
+      position: relative;
+      background-color: #ff7148;
+      height: 300px;
+      width: 100%;
+      border-radius: 20px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      padding: 20px;
+    }
+
+    /* Profile picture container */
+    
+    .profile-pic-container {
+      position: relative;
+      display: block;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .profile-pic {
+      height: 150px;
+      width: 150px;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      object-fit: cover;
+      border: #3f3f3f82 3px solid;
+    }
+
+    .profile-pic-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      padding: 5px;
+    }
+
+    .edit-pic-button {
+      background-color: #ff7148;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    .apply-button-hidden {
+      display: none;
+    }
+
+    .apply-button-visible {
+      display: block;
+      background-color: green;
+    }
+ 
+    /* Container for user information */
+    .user-info-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-top: 12x solid #ddd;
+      text-align: left;
+    }
+
+    /* Style for user information */
+    .user-info {
+      padding: 20px;
+    }
+
+    /* Style for form elements within user information */
+    .user-info .form-group {
+      margin-bottom: 20px;
+    }
+
+    /* Style for labels within info-item */
+    .user-info-container .info-item {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+
+    }
+
+    .user-info-container .info-item strong {
+      color: #3f3f3f;
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      
+    }
+
+    /* Style for content to be centered vertically */
+    .user-info-container .info-item span {
+     
+      font-size: 16px;
+      vertical-align: middle;
+    }
+
+    /* Additional styles for company information container */
+    .company-info-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border: 13x solid #ddd;
+      text-align: left;
+    }
+
+    /* Additional styles for company information */
+    .company-info {
+      padding: 20px;
+    }
+
+    .edit-company-details-button {
+      margin-left: 30px;
+      
+    }
+
+    .company-info-container .info-item {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .company-info-container .info-item strong {
+      color: #3f3f3f;
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .company-info-container .info-item span {
+     
+      font-size: 16px;
+      vertical-align: middle;
+    }
+
+.edit-button {
+  margin-left: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+}
+
+.user-location {
+  text-align: center;
+  font-family: 'Lato', sans-serif;
+  font-size: 30px;
+  color: #3f3f3fc6;
+}
+
+.user-location .fa-map-marker-alt {
+  font-size: 18px;
+  vertical-align: 25%;
+  color: #3f3f3f82;
+
+}
+
+</style>
+</head>
 </head>
 <body>
   {% extends 'base_labour.html' %}
   {% block title %}Labourer{% endblock %}
   {% block content %}
 
-  <div class="info-container">
-    <div class="title">
-      <h1>Labourer Profile</h1>
-    </div>
-    <div>
-      <a href="{{ url_for('edit_labourer_profile') }}" class="profile-link">Edit Profile</a>
-    </div>
+
+
   </div>
 <div class="profile-pic-container">
-    <div class="profile-pic-wrapper">
-    <img src="{{ url_for('static', filename='profile_pics/' + (current_user.profile_image.filename if current_user.profile_image else 'orange.png')) }}"
-         alt=""
-         class="profile-pic"
-         id="profile-image">
+  <div class="profile-pic-wrapper">
+    <img 
+      src="{{ url_for('static', filename='profile_pics/' + (current_user.profile_image.filename if current_user.profile_image else 'orange.png')) }}" 
+      alt="Profile Image" 
+      class="profile-pic" 
+      id="profile-image">
+  </div>
+
+  <div class="profile-pic-overlay">
+    <form id="profile-image-form" action="{{ url_for('labourer_image') }}" method="POST" enctype="multipart/form-data">
+      <label for="profile-image-upload" class="edit-pic-button">Edit Image</label>
+      <input 
+        type="file" 
+        id="profile-image-upload" 
+        name="profile_image" 
+        style="display: none;" 
+        onchange="document.getElementById('profile-image-form').submit();">
+    </form>
+  </div>
 </div>
 
-
-    <div class="profile-pic-overlay">
-        <form id="profile-image-form" action="{{ url_for('labourer_image') }}" method="POST" enctype="multipart/form-data">
-            <label for="profile-image-upload" class="edit-pic-button">Edit Image</label>
-            <input type="file" id="profile-image-upload" name="profile_image" style="display: none;">
-            <button id="apply-button" class="apply-button-hidden" style="background-color: grey;">Apply</button>
-        </form>
-    </div>
-</div>
+  </div>
+  <div class="user-location">
+    <p><i class="fas fa-map-marker-alt"></i> {{ current_user.location }}</p>
+  </div>
   <div class="user-info-container">
-    <div class="user-info">
-      <div class="info-item">
-        <strong>First Name:</strong> {{ current_user.labourer_profile.first_name }}
+       <div class="info-item">
+        <strong>First Name:</strong>
+        <span>{{ current_user.labourer_profile.first_name }}</span>
       </div>
-
       <div class="info-item">
-        <strong>Last Name:</strong> {{ current_user.labourer_profile.last_name }}
+        <strong>Last Name:</strong>
+        <span>{{ current_user.labourer_profile.last_name }}</span>
       </div>
-
       <div class="info-item">
-      {% if current_user.labourer_profile.date_of_birth %}
-      <strong>Date of Birth:</strong> {{ current_user.labourer_profile.date_of_birth.strftime('%d-%m-%Y') }}
-      {% else %}
-      <strong>Date of Birth:</strong> N/A
-      {% endif %}
-
-
-      <div class="info-item">
-        <strong>Phone Number:</strong> {{ current_user.labourer_profile.phone_number }}
+        {% if current_user.labourer_profile.date_of_birth %}
+        <strong>Date of Birth:</strong>
+        <span>{{ current_user.labourer_profile.date_of_birth.strftime('%d-%m-%Y') }}</span>
+        {% else %}
+        <strong>Date of Birth:</strong>
+        <span>N/A</span>
+        {% endif %}
       </div>
-
       <div class="info-item">
-        <strong>About Me:</strong> {{ current_user.labourer_profile.user_blurb }}
+        <strong>Phone Number:</strong>
+        <span>{{ current_user.labourer_profile.phone_number }}</span>
       </div>
+      <div class="info-item">
+        <strong>About Me:</strong>
+        <span>{{ current_user.labourer_profile.user_blurb }}</span>
+      </div>
+      <div class="edit-button">
+      <a href="{{ url_for('edit_labourer_profile') }}" class="profile-link">Edit Your Details</a>
     </div>
   </div>
 
-
-
-
-  <!-- ... (your existing code) ... -->
-
-</div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const profileImageUpload = document.getElementById('profile-image-upload');
-      const applyButton = document.getElementById('apply-button');
-
-      applyButton.style.display = 'none'; // Hide the Apply button initially
-
-      profileImageUpload.addEventListener('change', function(event) {
-        applyButton.style.backgroundColor = 'green'; // Change the button color to green
-        applyButton.style.display = 'block'; // Show the Apply button
-      });
-
-      applyButton.addEventListener('click', function() {
-        document.getElementById('profile-image-form').submit(); // Submit the form
-      });
-    });
-  </script>
-  </script>
-</body>
-</html>
-
-
-  <!-- ... (your existing code) ... -->
-
+  <div class="company-info-container">
+    <div class="company-info">
+      <div class="info-item">
+        <strong>Business Type:</strong>
+        <span>{{ current_user.company_details.business_type }}</span>
+      </div>
+      <div class="info-item">
+        <strong>NZBN:</strong>
+        <span>{{ current_user.company_details.nzbn }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Director First Name:</strong>
+        <span>{{ current_user.company_details.director_first_name }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Director Last Name:</strong>
+        <span>{{ current_user.company_details.director_last_name }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Physical Address:</strong>
+        <span>{{ current_user.company_details.physical_address }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Unit/Flat No.:</strong>
+        <span>{{ current_user.company_details.unit_no }}</span>
+      </div>
+      <div class="info-item">
+        <strong>Trading Name:</strong>
+        <span>{{ current_user.company_details.trading_name }}</span>
+      </div>
+    </div>
+    <div class="edit-company-details-button">
+      <a href="{{ url_for('edit_tradesman_profile') }}" class="profile-link">Edit Business Details</a>
+    </div>
   </div>
-  {% endblock %}
-<script>
 
-  </script>
+  <br>
+  <br>
+  <br>
+  {% endblock %}
+  <!-- ... (display other company details fields) ... -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const profileImageUpload = document.getElementById('profile-image-upload');
+  const applyButton = document.getElementById('apply-button');
+
+  // Trigger file input on "Edit Image" button click
+  document.querySelector('.edit-pic-button').addEventListener('click', function () {
+    profileImageUpload.click();
+  });
+
+  // Show the "Apply" button when a file is selected
+  profileImageUpload.addEventListener('change', function () {
+    if (profileImageUpload.files && profileImageUpload.files.length > 0) {
+      applyButton.classList.remove('apply-button-hidden');
+      applyButton.classList.add('apply-button-visible');
+    }
+  });
+
+  // Submit the form when the "Apply" button is clicked
+  applyButton.addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent default button behavior
+    document.getElementById('profile-image-form').submit(); // Submit the form
+  });
+});
+
+</script>
+
+
+
+
 </body>
 </html>
+```
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Tradesman Profile</title>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            margin-top: -15px;
+
+            }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #postalAddressFields {
+            display: none;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+    </style>
+</head>
+<body>
+  {% extends 'base_labour.html' %}
+  {% block title %}Labourer{% endblock %}
+  {% block content %}
+
+    <div class="container">
+        <form method="post" action="{{ url_for('edit_tradesman_profile') }}">
+            <h2>Business details</h2>
+            <p>These details will be checked by our staff and confirmed within 24hrs.</p>
+            <p>Details are not publicly viewable.</p>
+            
+            <label for="businessType">Business Type</label>
+            <select id="businessType" name="businessType">
+                <option value="Sole Trader">Sole Trader</option>
+                <option value="Company">Company</option>
+            </select>
+            
+            <label for="nzbn">NZBN</label>
+            <input type="text" id="nzbn" name="nzbn" placeholder="Your NZ Business Number">
+
+            <label for="directorFirstName">Director first name*</label>
+            <input type="text" id="directorFirstName" name="directorFirstName" placeholder="Your first name">
+
+            <label for="directorLastName">Director last name*</label>
+            <input type="text" id="directorLastName" name="directorLastName" placeholder="Your last name">
+
+            <label for="physicalAddress">Physical Street Address*</label>
+            <input type="text" id="physicalAddress" name="physicalAddress" placeholder="e.g. 37 Grey St, Shannon, New Zealand">
+
+            <label for="unitNo">Unit/Flat No.</label>
+            <input type="text" id="unitNo" name="unitNo" placeholder="e.g. Unit 2">
+
+            <label for="tradingName">Trading name*</label>
+            <input type="text" id="tradingName" name="tradingName" placeholder="Mint Home Solutions">
+  
+            <button type="submit">Save Profile</button>
+        </form>
+    </div>
+</body>
+<br>
+<br>
+<br>
+{% endblock %}
+</html>
