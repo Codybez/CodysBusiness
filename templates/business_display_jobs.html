@@ -1,165 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Details</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='business_home.css') }}">
-  <!-- Add any additional styles here -->
-  <style>
-    .job-details-container {
-      background-color: #fff;
-      padding-top: 15px;
-      padding-bottom: 10px;
-      padding-left: 10px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #ccc;
-     
-    }
-
-    .job-details-container h2 {
-      color: #000000d3;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .job-details-container p {
-      color: #555;
-      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
-
-    .job-details-container .icon {
-      margin-right: 15px; /* Adjust the margin as needed */
-    }
-
-    #editbutton {
-      background-color: #ff7148;
-      color: white;
-      border: none;
-      padding: 10px 20px; /* Adjust the padding as needed */
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-block;
-      margin: 10px 0; /* Adjust the margin as needed */
-      text-decoration: none;
-      transition: background-color 0.3s ease; /* Add a smooth transition effect */
-    }
-
-    #editbutton:hover {
-      background-color: #e25d41;
-    }
-
- .image-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-
-  .image-gallery img {
-    width: 100px; /* Adjust the width as needed */
-    height: 100px; /* Adjust the height as needed */
-    margin: 5px; /* Adjust the margin between images */
-  }
-    .back-button {
-      font-size: 24px;
-      color: #ff7148;
-      margin-left: 10px;
-      margin-top: 10px;
-      text-decoration: none;
-      border: none;
-      background-color: #fff;
-      cursor: pointer;
-    }
-  
-  </style>
-</head>
-<body>
-  {% extends 'base_business.html' %}
-
-  {% block title %}Job Details{% endblock %}
-
-  {% block content %}
-<br>
-<br>
-<script>
-    // JavaScript function to go back in the browser's history
-    function goBack() {
-      if (document.referrer) {
-        // If there's a referrer (previous page), go back to it
-        window.location.href = document.referrer;
-      } else {
-        // If there's no referrer, go back in history
-        window.history.back();
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Details</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <!-- Add any additional styles here -->
+    <style>
+      .job-details-container {
+        background-color: #fff;
+        padding-top: 15px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ccc;
       }
-    }
-</script>
-<button class="back-button" onclick="goBack()">
-    <i class="fas fa-arrow-left"></i>
-</button>
+
+      .job-details-container h2 {
+        color: #000000d3;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .job-details-container p {
+        color: #555;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+
+      .job-details-container .icon {
+        margin-right: 15px; /* Adjust the margin as needed */
+      }
+
+      #editbutton {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 10px 20px; /* Adjust the padding as needed */
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 10px 0; /* Adjust the margin as needed */
+        text-decoration: none;
+        transition: background-color 0.3s ease; /* Add a smooth transition effect */
+      }
+
+      #editbutton:hover {
+        background-color: #e25d41;
+      }
+
+      .image-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      .image-gallery img {
+        width: 100px; /* Adjust the width as needed */
+        height: 100px; /* Adjust the height as needed */
+        margin: 5px; /* Adjust the margin between images */
+      }
+      .back-button {
+        font-size: 24px;
+        color: #ff7148;
+        margin-left: 10px;
+        margin-top: 10px;
+        text-decoration: none;
+        border: none;
+        background-color: #fff;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block title %}Job Details{% endblock
+    %} {% block content %}
+    <br />
+    <br />
+    <script>
+      // JavaScript function to go back in the browser's history
+      function goBack() {
+        if (document.referrer) {
+          // If there's a referrer (previous page), go back to it
+          window.location.href = document.referrer;
+        } else {
+          // If there's no referrer, go back in history
+          window.history.back();
+        }
+      }
+    </script>
+    <button class="back-button" onclick="goBack()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
 
     <div class="job-details-container">
       <h2>{{ job.job_name }}</h2>
-      <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
+      <p>
+        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
+        job.city }}, {{ job.suburb }}
+      </p>
       <p><i class="fas fa-tasks icon"></i>Tasks: {{ job.tasks }}</p>
-      <p><i class="fas fa-money-bill-alt icon"></i>Price per Hour: ${{ job.price_per_hour }}</p>
-      <p><i class="fas fa-info-circle icon"></i>Additional Details: {{ job.additional_details }}</p>
+      <p>
+        <i class="fas fa-money-bill-alt icon"></i>Price per Hour: ${{
+        job.price_per_hour }}
+      </p>
+      <p>
+        <i class="fas fa-info-circle icon"></i>Additional Details: {{
+        job.additional_details }}
+      </p>
 
       <!-- Display the name of the business owner -->
-      <p><i class="fas fa-user icon"></i>Posted by: {{ job.business_profile.first_name }}</p>
+      <p>
+        <i class="fas fa-user icon"></i>Posted by: {{ job.user.first_name }}
+      </p>
+
       <!-- Add more job details as needed -->
       {% if job.image_paths %}
-  <h2>Images</h2>
-  <div class="image-gallery">
-    {% for image_filename in job.image_paths.split(',') %}
-      {% set image_path = url_for('static', filename='profile_pics/' + image_filename) %}
+      <h2>Images</h2>
+      <div class="image-gallery">
+        {% for image_filename in job.image_paths.split(',') %} {% set image_path
+        = url_for('static', filename='profile_pics/' + image_filename) %}
 
-      <img src="{{ image_path }}" alt="Job Image">
+        <img src="{{ image_path }}" alt="Job Image" />
 
-    {% endfor %}
-  </div>
-{% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
 
     <!-- Add an edit link to modify job details -->
     {% if current_user.id == job.business_profile.user_id %}
-            <a href="{{ url_for('delete_job', job_id=job.id) }}" id="editbutton"><i class=""></i><b> Delete Job</b></a>
- 
-      {% endif %}
-      
-   
+    <a href="{{ url_for('delete_job', job_id=job.id) }}" id="editbutton"
+      ><i class=""></i><b> Delete Job</b></a
+    >
+
+    {% endif %}
+
     <div class="job-listing">
-        <!-- ... (other job details) ... -->
-
+      <!-- ... (other job details) ... -->
     </div>
-   
 
-    <br>
-    <br>
-    <br>
-    <br>
+    <br />
+    <br />
+    <br />
+    <br />
 
-  {% endblock %}
-   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Get the current time and job posting time
-      var currentTime = new Date();
-      var jobPostedTime = new Date("{{ job.date_created.strftime('%Y-%m-%dT%H:%M:%S') }}");
+    {% endblock %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the current time and job posting time
+        var currentTime = new Date();
+        var jobPostedTime = new Date(
+          "{{ job.date_created.strftime('%Y-%m-%dT%H:%M:%S') }}"
+        );
 
-      // Calculate the time difference
-      var timeDifference = currentTime - jobPostedTime;
+        // Calculate the time difference
+        var timeDifference = currentTime - jobPostedTime;
 
-      // Convert the time difference to hours
-      var hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+        // Convert the time difference to hours
+        var hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
 
-      // Display the time posted
-      var timePostedElement = document.getElementById("timePosted");
-      if (hoursDifference < 24) {
-        timePostedElement.innerHTML = hoursDifference + "h ago";
-      } else {
-        var daysDifference = Math.floor(hoursDifference / 24);
-        timePostedElement.innerHTML = daysDifference + " day" + (daysDifference > 1 ? "s" : "") + " ago";
-      }
-    });
-  </script>
-</body>
+        // Display the time posted
+        var timePostedElement = document.getElementById("timePosted");
+        if (hoursDifference < 24) {
+          timePostedElement.innerHTML = hoursDifference + "h ago";
+        } else {
+          var daysDifference = Math.floor(hoursDifference / 24);
+          timePostedElement.innerHTML =
+            daysDifference + " day" + (daysDifference > 1 ? "s" : "") + " ago";
+        }
+      });
+    </script>
+  </body>
 </html>

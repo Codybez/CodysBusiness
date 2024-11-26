@@ -49,6 +49,8 @@ class User(UserMixin, db.Model):
     location = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False) 
     password = db.Column(db.String(100), nullable=False)
+    first_name = db.Column(db.String(50), nullable=True)  # Initially nullable
+    last_name = db.Column(db.String(50), nullable=True)   # Initially nullable
     jobs_completed = db.Column(db.Integer, default=0)
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     profile_image = db.relationship('UserProfileImage', backref='user', uselist=False)
@@ -66,15 +68,6 @@ class BusinessProfile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     id = db.Column(db.Integer, 
     primary_key=True)
-    business_name = db.Column(db.String(100), nullable=False)
-    business_type = db.Column(db.String(100), nullable=False)
-    city = db.Column(db.String(100), nullable=False)
-    suburb = db.Column(db.String(100), nullable=False)
-    street = db.Column(db.String(100), nullable=False)
-    number = db.Column(db.String(10), nullable=False)
-    phone_number = db.Column(db.String(20), nullable=False)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
     jobs = db.relationship('Job', backref='business_profile', lazy=True)
 
 class LabourerProfile(db.Model):
@@ -105,6 +98,8 @@ class Job(db.Model):
     accepted_user_id = db.Column(db.Integer, nullable=True)
     business_profile_id = db.Column(db.Integer, db.ForeignKey('business_profile.id'), nullable=False)
     payment_required = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Foreign key to User
+    user = db.relationship('User', backref=db.backref('jobs', lazy=True))  # Relationship to User
 
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -147,54 +142,50 @@ def landing_page():
 def load_user(user_id):
     return User.query.get(int(user_id))  # Load a user by ID
 
-
-
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
-    # Ensure the user is logged in
     if current_user.is_authenticated:
-        # Get the ID of the logged-in user
-        business_profile_id = current_user.business_profile.id
+        if current_user.user_type == 'Business' and current_user.business_profile:
+            business_profile_id = current_user.business_profile.id
 
-        # Convert the date and time strings to Python date and time objects
-        # Note: If you have date and time fields in your form, handle them accordingly
+            # Handle file upload
+            image_paths = []
+            if 'photo-upload' in request.files:
+                photo_uploads = request.files.getlist('photo-upload')
+                for photo_upload in photo_uploads:
+                    if photo_upload.filename != '':
+                        filename = secure_filename(photo_upload.filename)
+                        file_path = f'static/profile_pics/{filename}'
+                        photo_upload.save(file_path)
+                        image_paths.append(filename)
 
-        # Handle file upload
-        image_paths = []
-        if 'photo-upload' in request.files:
-            photo_uploads = request.files.getlist('photo-upload')
-            for photo_upload in photo_uploads:
-                if photo_upload.filename != '':
-                    # Save the file to the 'static/job_images' folder
-                    filename = secure_filename(photo_upload.filename)
-                    file_path = f'static/profile_pics/{filename}'
-                    photo_upload.save(file_path)
-                    image_paths.append(filename)
+            # Create a new job instance
+            job = Job(
+                job_name=request.form['job_name'],
+                job_category=request.form['job-category'],
+                city=request.form['city'],
+                suburb=request.form['suburb'],
+                tasks=request.form['tasks'],
+                price_per_hour=request.form['price_per_hour'],
+                additional_details=request.form.get('additional-details'),
+                business_profile_id=business_profile_id,
+                user_id=current_user.id,  # Assign the user ID here
+                image_paths=','.join(image_paths) if image_paths else None
+            )
 
-        # Create a new job instance
-        job = Job(
-            job_name=request.form['job_name'],
-            job_category=request.form['job-category'],
-            city=request.form['city'],
-            suburb=request.form['suburb'],
-            tasks=request.form['tasks'],
-            price_per_hour=request.form['price_per_hour'],
-            additional_details=request.form.get('additional-details'),
-            business_profile_id=business_profile_id,
-            image_paths=','.join(image_paths) if image_paths else None
-        )
+            # Save the job to the database
+            db.session.add(job)
+            db.session.commit()
 
-        # Save the job to the database
-        db.session.add(job)
-        db.session.commit()
-
-        flash('Job submitted successfully!', 'success')
-
-        return redirect(url_for('business_dashboard'))
+            flash('Job submitted successfully!', 'success')
+            return redirect(url_for('business_dashboard'))
+        else:
+            flash('You must have a business profile to submit a job.', 'error')
+            return redirect(url_for('create_business_profile'))
     else:
-        # Handle the case where the user is not authenticated
         flash('You must be logged in to submit a job.', 'error')
         return redirect(url_for('login'))
+
 
 
 def display_job(job_id):
@@ -220,15 +211,35 @@ def register():
         location = request.form.get('location')
         email = request.form.get('email')
         password = request.form.get('password')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+
         hashed_password = generate_password_hash(password, method='sha256')
-        
-        new_user = User(user_type=user_type, location=location, email=email, password=hashed_password)
+
+        # Create the user
+        new_user = User(
+            email=email,
+            password=hashed_password,
+            location=location,
+            user_type=user_type,
+            first_name=first_name,
+            last_name=last_name
+        )
         db.session.add(new_user)
         db.session.commit()
-        
+
+        # If the user is a business, create a BusinessProfile with the user_id automatically
+        if user_type == 'Business':
+            business_profile = BusinessProfile(
+                user_id=new_user.id  # Link the new business profile to the user
+            )
+            db.session.add(business_profile)
+            db.session.commit()
+
+        flash('Registration successful!', 'success')
         return redirect(url_for('login'))
-        
-    return render_template('register.html') 
+
+    return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
