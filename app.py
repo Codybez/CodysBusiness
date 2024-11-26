@@ -141,7 +141,6 @@ def landing_page():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))  # Load a user by ID
-
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
     if current_user.is_authenticated:
@@ -159,15 +158,36 @@ def submit_job():
                         photo_upload.save(file_path)
                         image_paths.append(filename)
 
+            # Extract form fields
+            job_name = request.form['job_name']
+            job_category = request.form['job-category']
+            location = request.form.get('location')  # Get the location field
+            city = request.form['city']
+            suburb = request.form['suburb']
+            tasks = request.form['tasks']
+            price_per_hour = float(request.form['price_per_hour'])
+            additional_details = request.form.get('additional-details')
+
+            # Validate location
+            valid_locations = [
+                "Northland", "Auckland", "Waikato", "Bay of Plenty", "Gisborne", "Hawke's Bay", 
+                "Taranaki", "Manawatū-Whanganui", "Wellington", "Tasman", "Nelson", "Marlborough", 
+                "West Coast", "Canterbury", "Otago", "Southland"
+            ]
+            if location not in valid_locations:
+                flash('Invalid location selected.', 'error')
+                return redirect(url_for('create_job'))
+
             # Create a new job instance
             job = Job(
-                job_name=request.form['job_name'],
-                job_category=request.form['job-category'],
-                city=request.form['city'],
-                suburb=request.form['suburb'],
-                tasks=request.form['tasks'],
-                price_per_hour=request.form['price_per_hour'],
-                additional_details=request.form.get('additional-details'),
+                job_name=job_name,
+                job_category=job_category,
+                location=location,
+                city=city,
+                suburb=suburb,
+                tasks=tasks,
+                price_per_hour=price_per_hour,
+                additional_details=additional_details,
                 business_profile_id=business_profile_id,
                 user_id=current_user.id,  # Assign the user ID here
                 image_paths=','.join(image_paths) if image_paths else None
