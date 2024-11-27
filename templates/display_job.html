@@ -18,20 +18,41 @@
         padding: 15px;
         margin-bottom: 20px;
       }
+      .job-details-container h1 {
+        color: #555;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 24px;
+      }
 
       .job-details-container h2 {
-        color: #ff7148;
+        color: #555;
         font-family: Arial, Helvetica, sans-serif;
       }
 
       .job-details-container p {
+        display: flex; /* Use flexbox for horizontal layout */
+        align-items: flex-start; /* Align items at the top */
+        gap: 15px; /* Space between icon and text */
         color: #555;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 10px 0; /* Space between rows */
+        font-size: 17px;
       }
 
-      .job-details-container .icon {
-        margin-right: 15px; /* Adjust the margin as needed */
+      .job-details-container i {
+        font-size: 17px; /* Icon size */
+        line-height: 1; /* Prevent extra space around icon */
+        width: 24px; /* Ensure all icons occupy the same width */
+        height: 24px; /* Ensure all icons occupy the same height */
+        flex-shrink: 0; /* Prevent icons from shrinking */
+        display: flex; /* Use flexbox to align icon */
+        align-items: flex-start; /* Align the icon to the top of the container */
+        justify-content: center; /* Center horizontally if needed */
+      }
+
+      .job-details-container span {
+        line-height: 1.5; /* Improve readability for multi-line text */
+        flex: 1; /* Allow text to wrap naturally */
       }
 
       .back-button {
@@ -49,13 +70,15 @@
         background-color: #ff7148;
         color: white;
         border: none;
+        margin-bottom: 50px;
+        margin-left: 20px;
         padding: 10px 20px; /* Adjust the padding as needed */
         cursor: pointer;
         border-radius: 5px;
         display: inline-block;
-        margin: 10px 0; /* Adjust the margin as needed */
         text-decoration: none;
         transition: background-color 0.3s ease; /* Add a smooth transition effect */
+        font-family: Arial, Helvetica, sans-serif;
       }
 
       #applybutton:hover {
@@ -110,6 +133,12 @@
         color: #fff;
         cursor: pointer;
       }
+
+      .job-details-container .job-location {
+        color: orange;
+        margin-bottom: 25px;
+        font-size: 21px;
+      }
     </style>
   </head>
   <body>
@@ -119,12 +148,14 @@
     <div class="info-container">
       <h1>Job Details</h1>
     </div>
-    <button class="back-button" onclick="goBack()">
-      <i class="fas fa-arrow-left"></i>
-    </button>
 
     <div class="job-details-container">
-      <h2>{{ job.job_name }}</h2>
+      <h1>{{ job.job_name }}</h1>
+
+      <p class="job-location">
+        <strong>{{ job.location }}</strong>
+      </p>
+
       <p>
         <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
         job.city }}, {{ job.suburb }}
@@ -179,7 +210,7 @@
     {% if current_user.is_authenticated and current_user.id not in
     job.applicants|map(attribute='user_id') %}
     <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}"
-      ><b>Chase Job</b></a
+      ><b>Contact</b></a
     >
     {% endif %}
 
