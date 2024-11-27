@@ -154,7 +154,7 @@ def submit_job():
                 for photo_upload in photo_uploads:
                     if photo_upload.filename != '':
                         filename = secure_filename(photo_upload.filename)
-                        file_path = f'static/profile_pics/{filename}'
+                        file_path = f'static/job_images/{filename}'
                         photo_upload.save(file_path)
                         image_paths.append(filename)
 
@@ -192,6 +192,8 @@ def submit_job():
                 user_id=current_user.id,  # Assign the user ID here
                 image_paths=','.join(image_paths) if image_paths else None
             )
+            print(f"Collected Image Paths: {image_paths}")  # Add this line to debug
+
 
             # Save the job to the database
             db.session.add(job)
@@ -206,7 +208,6 @@ def submit_job():
     else:
         flash('You must be logged in to submit a job.', 'error')
         return redirect(url_for('login'))
-
 
 
 def display_job(job_id):
@@ -464,33 +465,11 @@ def find_a_job():
 
     return render_template('find_a_job.html', job_data=job_data)
 
-
-@app.route('/create_job', methods=['GET', 'POST'])
+@app.route('/create_job', methods=['GET'])
 def create_job():
-    if request.method == 'POST':
-        job_name = request.form['job_name']
-
-        # Handle image uploads
-        images = request.files.getlist('photo-upload')
-        image_paths = []
-
-        for image in images:
-            # Handle the file upload (save to the 'job_images' folder)
-            filename = secure_filename(image.filename)
-            file_path = os.path.join('job_images', filename)
-            image.save(file_path)
-            image_paths.append(file_path)
-
-        # Save job with image paths to the database
-        job = Job(job_name=job_name, image_paths=','.join(image_paths))
-        db.session.add(job)
-        db.session.commit()
-
-        flash('Job has been successfully submitted!', 'success')
-
-        return redirect(url_for('view_jobs'))
-
+    # This will render the create job form
     return render_template('create_a_job.html', user=current_user)
+
 
 
 from flask import flash

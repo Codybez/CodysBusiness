@@ -20,32 +20,42 @@
         margin-left: 15px;
       }
 
+      /* Style for the file preview container */
       .file-preview {
-        display: block;
-        margin-bottom: 15px;
+        display: inline-block;
+        position: relative;
+        margin-right: 10px;
+        margin-bottom: 10px;
       }
 
       .preview-image {
-        display: block;
-        margin-bottom: 10px;
         width: 100px;
         height: 100px;
         border: 2px solid #ddd;
         border-radius: 4px;
+        object-fit: cover; /* Make sure images fit nicely */
       }
 
+      /* Style for the remove button */
       .remove-btn {
-        display: block;
-        background-color: #ff7148;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(0, 0, 0, 0.5);
         color: white;
-        padding: 5px 10px;
         border: none;
-        cursor: pointer;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
         text-align: center;
+        cursor: pointer;
+        padding: 2px;
+        line-height: 16px; /* Vertically center the X */
       }
 
       .remove-btn:hover {
-        background-color: darkorange;
+        background-color: rgba(0, 0, 0, 0.7);
       }
 
       .alert {
@@ -167,7 +177,8 @@
 
         <div class="form-group">
           <label for="photo-upload"
-            >Upload Photo (More Photos Can Be Added Later):</label
+            >Upload Photos (Multiple images must be added together not
+            seperately):</label
           >
           <label for="photo-upload" class="custom-file-input"
             >Choose File</label
@@ -195,29 +206,37 @@
       function updateFileLabel(input) {
         const selectedFilesContainer =
           document.getElementById("selected-files");
-        selectedFilesContainer.innerHTML = ""; // Clear previous file selections
 
+        // Loop through selected files and create previews
         const files = input.files; // Get all selected files
         if (files) {
           Array.from(files).forEach((file) => {
-            const fileDiv = document.createElement("div");
-            fileDiv.classList.add("file-preview");
+            // Check if the file has already been added to the preview (to prevent duplicates)
+            const existingFile = Array.from(
+              selectedFilesContainer.children
+            ).find((fileDiv) => fileDiv.dataset.filename === file.name);
 
-            const img = document.createElement("img");
-            img.classList.add("preview-image");
-            img.src = URL.createObjectURL(file);
-            img.alt = file.name;
+            if (!existingFile) {
+              const fileDiv = document.createElement("div");
+              fileDiv.classList.add("file-preview");
+              fileDiv.dataset.filename = file.name; // Use this data attribute to check for duplicates
 
-            const removeBtn = document.createElement("button");
-            removeBtn.innerText = "Remove";
-            removeBtn.classList.add("remove-btn");
-            removeBtn.onclick = function () {
-              removeFile(file, fileDiv);
-            };
+              const img = document.createElement("img");
+              img.classList.add("preview-image");
+              img.src = URL.createObjectURL(file);
+              img.alt = file.name;
 
-            fileDiv.appendChild(img);
-            fileDiv.appendChild(removeBtn);
-            selectedFilesContainer.appendChild(fileDiv);
+              const removeBtn = document.createElement("button");
+              removeBtn.innerText = "X";
+              removeBtn.classList.add("remove-btn");
+              removeBtn.onclick = function () {
+                removeFile(file, fileDiv);
+              };
+
+              fileDiv.appendChild(img);
+              fileDiv.appendChild(removeBtn);
+              selectedFilesContainer.appendChild(fileDiv);
+            }
           });
         }
       }
