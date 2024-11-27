@@ -69,6 +69,13 @@
         color: #155724;
         border: 1px solid #c3e6cb;
       }
+
+      /* Style for error message */
+      .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -88,12 +95,12 @@
         enctype="multipart/form-data"
       >
         <div class="form-group">
-          <label for="job_name">Job Name:</label>
+          <label for="job_name">Job Name: *</label>
           <input type="text" id="job_name" name="job_name" required />
         </div>
 
         <div class="form-group">
-          <label for="job_category">Job Category:</label>
+          <label for="job_category">Job Category: *</label>
           <select id="job-category" name="job-category" required>
             <option value="" disabled selected>Select a category</option>
             <option value="General Labouring">General Labouring</option>
@@ -114,7 +121,7 @@
         </div>
 
         <div class="form-group">
-          <label for="location">Region:</label>
+          <label for="location">Region: *</label>
           <select id="location" name="location" required>
             <option value="" disabled selected>Select a region</option>
             <option value="Northland">Northland</option>
@@ -137,33 +144,28 @@
         </div>
 
         <div class="form-group">
-          <label for="city">City:</label>
+          <label for="city">City: *</label>
           <input type="text" id="city" name="city" required />
         </div>
 
         <div class="form-group">
-          <label for="suburb">Suburb:</label>
+          <label for="suburb">Suburb: *</label>
           <input type="text" id="suburb" name="suburb" required />
         </div>
 
         <div class="form-group">
-          <label for="tasks">Basic Outline of Tasks:</label>
-          <textarea id="tasks" name="tasks" rows="10" required></textarea>
+          <label for="contact_number">Contact Number: *</label>
+          <input
+            type="text"
+            id="contact_number"
+            name="contact_number"
+            required
+          />
         </div>
 
         <div class="form-group">
-          <label for="price_per_hour">Price Estimate:</label>
-          <div class="price-input">
-            <span>$</span>
-            <input
-              type="number"
-              id="price_per_hour"
-              name="price_per_hour"
-              min="0"
-              step="1"
-              value=""
-            />
-          </div>
+          <label for="tasks">Basic Outline of Tasks: *</label>
+          <textarea id="tasks" name="tasks" rows="10" required></textarea>
         </div>
 
         <div class="form-group">
@@ -200,6 +202,11 @@
           </button>
         </div>
       </form>
+
+      <!-- Error message div -->
+      <div id="error-message" class="error-message" style="display: none">
+        Please fill in all required fields marked with *.
+      </div>
     </div>
 
     <script>
@@ -207,11 +214,9 @@
         const selectedFilesContainer =
           document.getElementById("selected-files");
 
-        // Loop through selected files and create previews
-        const files = input.files; // Get all selected files
+        const files = input.files;
         if (files) {
           Array.from(files).forEach((file) => {
-            // Check if the file has already been added to the preview (to prevent duplicates)
             const existingFile = Array.from(
               selectedFilesContainer.children
             ).find((fileDiv) => fileDiv.dataset.filename === file.name);
@@ -219,7 +224,7 @@
             if (!existingFile) {
               const fileDiv = document.createElement("div");
               fileDiv.classList.add("file-preview");
-              fileDiv.dataset.filename = file.name; // Use this data attribute to check for duplicates
+              fileDiv.dataset.filename = file.name;
 
               const img = document.createElement("img");
               img.classList.add("preview-image");
@@ -243,18 +248,42 @@
 
       function removeFile(file, fileDiv) {
         const input = document.getElementById("photo-upload");
-        const dataTransfer = new DataTransfer(); // Create new DataTransfer object
+        const dataTransfer = new DataTransfer();
         Array.from(input.files).forEach((existingFile) => {
           if (existingFile !== file) {
             dataTransfer.items.add(existingFile);
           }
         });
-        input.files = dataTransfer.files; // Update the input's files list
-        fileDiv.remove(); // Remove the file preview from the display
+        input.files = dataTransfer.files;
+        fileDiv.remove();
       }
 
       function submitForm() {
-        document.getElementById("job-form").submit();
+        // Clear previous error messages
+        document.getElementById("error-message").style.display = "none";
+
+        const requiredFields = document.querySelectorAll(
+          ".form-group input[required], .form-group select[required], .form-group textarea[required]"
+        );
+        let allFieldsValid = true;
+
+        // Check if all required fields are filled
+        requiredFields.forEach(function (field) {
+          if (!field.value) {
+            field.classList.add("invalid");
+            allFieldsValid = false;
+          } else {
+            field.classList.remove("invalid");
+          }
+        });
+
+        // If any field is invalid, prevent form submission and show error
+        if (!allFieldsValid) {
+          document.getElementById("error-message").style.display = "block";
+        } else {
+          // Submit the form if valid
+          document.getElementById("job-form").submit();
+        }
       }
     </script>
   </body>

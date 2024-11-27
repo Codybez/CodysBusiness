@@ -89,7 +89,6 @@ class Job(db.Model):
     city = db.Column(db.String(100), nullable=False)
     suburb = db.Column(db.String(100), nullable=False)
     tasks = db.Column(db.String(250), nullable=False)
-    price_per_hour = db.Column(db.Float, nullable=False)
     image_paths = db.Column(db.String(255))
     additional_details = db.Column(db.String(250))
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
@@ -165,7 +164,6 @@ def submit_job():
             city = request.form['city']
             suburb = request.form['suburb']
             tasks = request.form['tasks']
-            price_per_hour = float(request.form['price_per_hour'])
             additional_details = request.form.get('additional-details')
 
             # Validate location
@@ -186,7 +184,6 @@ def submit_job():
                 city=city,
                 suburb=suburb,
                 tasks=tasks,
-                price_per_hour=price_per_hour,
                 additional_details=additional_details,
                 business_profile_id=business_profile_id,
                 user_id=current_user.id,  # Assign the user ID here
