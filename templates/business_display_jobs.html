@@ -102,6 +102,9 @@
     <div class="job-details-container">
       <h2>{{ job.job_name }}</h2>
       <p>
+        <p class="job-location">
+        <strong style="color: orange;">{{ job.location }}</strong>
+        </p>
         <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
         job.city }}, {{ job.suburb }}
       </p>

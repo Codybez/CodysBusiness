@@ -115,9 +115,12 @@
       <div
         class="job-listing"
         data-category="{{ job.job_category }}"
-        data-location="{{ job.city }}"
+        data-location="{{ job.location }}"
       >
         <h3>{{ job.job_name }}</h3>
+        <p class="job-location">
+          <strong style="color: orange">{{ job.location }}</strong>
+        </p>
         <p>
           <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
           job.city }}, {{ job.suburb }}

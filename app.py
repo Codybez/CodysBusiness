@@ -198,7 +198,8 @@ def submit_job():
             db.session.commit()
 
             flash('Job submitted successfully!', 'success')
-            return redirect(url_for('business_dashboard'))
+            return redirect(url_for('business_created_jobs'))
+        
         else:
             flash('You must have a business profile to submit a job.', 'error')
             return redirect(url_for('create_business_profile'))
@@ -484,6 +485,8 @@ def create_job():
         job = Job(job_name=job_name, image_paths=','.join(image_paths))
         db.session.add(job)
         db.session.commit()
+
+        flash('Job has been successfully submitted!', 'success')
 
         return redirect(url_for('view_jobs'))
 
