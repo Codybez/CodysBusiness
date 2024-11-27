@@ -85,11 +85,11 @@ class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     job_name = db.Column(db.String(100), nullable=False)
     job_category = db.Column(db.String(100), nullable=False)
+    contact_number = db.Column(db.String(20), nullable=False)
     location = db.Column(db.String(100), nullable=True)  # Add location column here
     city = db.Column(db.String(100), nullable=False)
     suburb = db.Column(db.String(100), nullable=False)
     tasks = db.Column(db.String(250), nullable=False)
-    price_per_hour = db.Column(db.Float, nullable=False)
     image_paths = db.Column(db.String(255))
     additional_details = db.Column(db.String(250))
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
@@ -165,8 +165,8 @@ def submit_job():
             city = request.form['city']
             suburb = request.form['suburb']
             tasks = request.form['tasks']
-            price_per_hour = float(request.form['price_per_hour'])
             additional_details = request.form.get('additional-details')
+            contact_number = request.form.get('contact_number')  # Get the contact number
 
             # Validate location
             valid_locations = [
@@ -186,14 +186,12 @@ def submit_job():
                 city=city,
                 suburb=suburb,
                 tasks=tasks,
-                price_per_hour=price_per_hour,
                 additional_details=additional_details,
                 business_profile_id=business_profile_id,
                 user_id=current_user.id,  # Assign the user ID here
+                contact_number=contact_number,  # Add the contact_number here
                 image_paths=','.join(image_paths) if image_paths else None
             )
-            print(f"Collected Image Paths: {image_paths}")  # Add this line to debug
-
 
             # Save the job to the database
             db.session.add(job)
@@ -208,7 +206,6 @@ def submit_job():
     else:
         flash('You must be logged in to submit a job.', 'error')
         return redirect(url_for('login'))
-
 
 def display_job(job_id):
     # Retrieve the job from the database with the related business profile
