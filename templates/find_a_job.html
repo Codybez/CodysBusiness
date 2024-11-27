@@ -8,62 +8,103 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Find a Job</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='labourer_home.css') }}"
-    />
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+
+      .info-container {
+        text-align: center;
+        margin: 20px;
+      }
+
+      .sort-options {
+        margin: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .sort-dropdown {
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      /* Mobile-Friendly Adjustments */
+      @media (max-width: 600px) {
+        .sort-options {
+          flex-direction: row; /* Keep them side by side */
+          justify-content: space-between; /* Ensure they have space between them */
+          gap: 10px;
+          padding: 10px; /* Add padding around the sort options container */
+        }
+
+        .sort-dropdown {
+          width: 48%; /* Set the dropdowns to take up 48% of the container */
+          max-width: 48%; /* Prevent it from expanding too much */
+          box-sizing: border-box; /* Include padding in width calculation */
+          padding: 8px; /* Add padding inside the dropdown for better touch interaction */
+        }
+      }
+
       .job-listing {
         background-color: #fff;
-        border-bottom: 2px solid #ccc;
-        padding-left: 15px;
-        padding-top: 8px;
-        padding-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 10px auto;
+        max-width: 600px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         position: relative;
+        transition: all 0.3s ease;
+        text-decoration: none; /* Remove underline from the link */
+        color: inherit; /* Inherit text color from parent */
+      }
+
+      .job-listing:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
       }
 
       .job-listing h3 {
         color: #2c2c2c;
-        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        font-size: 1.5rem;
       }
 
       .job-listing p {
         color: #555;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        margin: 10px 0;
       }
 
-      .view-job-link {
-        background-color: #ffffff;
-        color: rgba(0, 0, 0, 0.464);
-        border: #393939 solid 2px;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 5px;
-        display: inline-block;
-        margin: 5px;
+      .job-listing p i {
+        margin-right: 5px;
+      }
+
+      .job-listing p span {
+        color: #ff8c00;
+      }
+
+      /* Make sure the <a> tag covers the entire card */
+      .job-listing a {
+        display: block;
+        width: 100%;
+        height: 100%;
         text-decoration: none;
-        font-size: large;
       }
-
-      .sort-options {
-        margin: 15px 0;
-        display: flex;
-        gap: 10px;
-      }
-
-      .sort-dropdown {
-        padding: 5px;
-        font-size: 1rem;
+      .job-listing:last-child {
+        margin-bottom: 70px; /* Adjust the value as needed */
       }
     </style>
   </head>
   <body>
-    {% extends 'base_labour.html' %} {% block title %}Find a Job{% endblock %}
-    {% block content %}
-    <div class="info-container">
-      <h1>Find a Job</h1>
-    </div>
+    {% extends 'base_labour.html' %} {% block title %}Labourer{% endblock %} {%
+    block content %}
 
     <!-- Sorting Options -->
     <div class="sort-options">
@@ -112,49 +153,36 @@
     <div id="job-listings">
       {% for job in job_data|reverse %} {% if current_user.id not in
       job.applicants|map(attribute='user_id') and job.status != 'booked' %}
-      <div
+      <a
+        href="{{ url_for('display_jobs', job_id=job.id) }}"
         class="job-listing"
         data-category="{{ job.job_category }}"
         data-location="{{ job.location }}"
       >
         <h3>{{ job.job_name }}</h3>
-        <p class="job-location">
-          <strong style="color: orange">{{ job.location }}</strong>
-        </p>
+        <p><strong style="color: orange">{{ job.location }}</strong></p>
         <p>
-          <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
+          <i class="fas fa-map-marker-alt"></i> {{ job.job_category }} in {{
           job.city }}, {{ job.suburb }}
         </p>
         <p>
-          <i class="far fa-clock icon"></i> Job posted {{
-          job.date_created|time_ago }}
+          <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago
+          }}
         </p>
         <p>
-          <i class="fas fa-users icon"></i>{{ job.applicants|length }}
-          Applicants
+          <i class="fas fa-users"></i> {{ job.applicants|length }} Applicants
         </p>
-        <a
-          href="{{ url_for('display_jobs', job_id=job.id) }}"
-          class="view-job-link"
-          ><b>View</b></a
-        >
-      </div>
+      </a>
       {% endif %} {% endfor %}
     </div>
-    {% endblock %}
 
     <script>
       document
         .getElementById("sort-category")
-        .addEventListener("change", function () {
-          filterJobs();
-        });
-
+        .addEventListener("change", filterJobs);
       document
         .getElementById("sort-location")
-        .addEventListener("change", function () {
-          filterJobs();
-        });
+        .addEventListener("change", filterJobs);
 
       function filterJobs() {
         const selectedCategory = document.getElementById("sort-category").value;
@@ -178,4 +206,5 @@
       window.addEventListener("DOMContentLoaded", filterJobs);
     </script>
   </body>
+  {% endblock %}
 </html>
