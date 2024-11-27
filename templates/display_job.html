@@ -12,7 +12,6 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='labourer_home.css') }}"
     />
-    <!-- Add any additional styles here -->
     <style>
       .job-details-container {
         padding: 15px;
@@ -31,7 +30,7 @@
 
       .job-details-container p {
         display: flex; /* Use flexbox for horizontal layout */
-        align-items: flex-start; /* Align items at the top */
+        align-items: flex-start;
         gap: 15px; /* Space between icon and text */
         color: #555;
         font-family: Arial, Helvetica, sans-serif;
@@ -40,19 +39,16 @@
       }
 
       .job-details-container i {
-        font-size: 17px; /* Icon size */
-        line-height: 1; /* Prevent extra space around icon */
-        width: 24px; /* Ensure all icons occupy the same width */
-        height: 24px; /* Ensure all icons occupy the same height */
-        flex-shrink: 0; /* Prevent icons from shrinking */
-        display: flex; /* Use flexbox to align icon */
-        align-items: flex-start; /* Align the icon to the top of the container */
-        justify-content: center; /* Center horizontally if needed */
+        font-size: 17px;
+        line-height: 1;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
       }
 
       .job-details-container span {
-        line-height: 1.5; /* Improve readability for multi-line text */
-        flex: 1; /* Allow text to wrap naturally */
+        line-height: 1.5;
+        flex: 1;
       }
 
       .back-button {
@@ -70,28 +66,19 @@
         background-color: #ff7148;
         color: white;
         border: none;
-        margin-bottom: 50px;
+        margin-bottom: 100px;
         margin-left: 20px;
-        padding: 10px 20px; /* Adjust the padding as needed */
+        padding: 10px 20px;
         cursor: pointer;
         border-radius: 5px;
         display: inline-block;
         text-decoration: none;
-        transition: background-color 0.3s ease; /* Add a smooth transition effect */
+        transition: background-color 0.3s ease;
         font-family: Arial, Helvetica, sans-serif;
       }
 
       #applybutton:hover {
         background-color: #e25d41;
-      }
-
-      #noThanksButton {
-        display: block;
-        margin-top: 15px;
-        text-align: center;
-        color: #ff7148;
-        text-decoration: none;
-        font-size: 18px;
       }
 
       .image-gallery {
@@ -101,11 +88,18 @@
       }
 
       .image-gallery img {
-        width: 100px; /* Adjust the width as needed */
-        height: 100px; /* Adjust the height as needed */
-        margin: 5px; /* Adjust the margin between images */
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
       }
 
+      .image-gallery img:hover {
+        transform: scale(1.1);
+      }
+
+      /* Modal Styles */
       #imageModal {
         display: none;
         position: fixed;
@@ -115,6 +109,8 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.8);
         z-index: 999;
+        justify-content: center;
+        align-items: center;
       }
 
       #modalImage {
@@ -122,7 +118,6 @@
         max-height: 80%;
         margin: auto;
         display: block;
-        cursor: pointer;
       }
 
       .close-btn {
@@ -157,24 +152,23 @@
       </p>
 
       <p>
-        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
-        job.city }}, {{ job.suburb }}
+        <i class="fas fa-map-marker-alt"></i>
+        <strong>{{ job.job_category }}</strong> in {{ job.city }}, {{ job.suburb
+        }}
       </p>
 
       <p><i class="fas fa-tasks icon"></i>Tasks: {{ job.tasks }}</p>
       <p>
-        <i class="fas fa-money-bill-alt icon"></i>Price Estimate: ${{
-        job.price_per_hour }}
+        <i class="fas fa-money-bill-alt icon"></i>Price Estimate:
+        <strong>${{ job.price_per_hour }}</strong>
       </p>
       <p>
         <i class="fas fa-info-circle icon"></i>Additional Details: {{
         job.additional_details }}
       </p>
+
       <p>
-        <i class="fas fa-user icon"></i>Posted by: {{ job.user.first_name }}
-      </p>
-      <p>
-        <i class="fas fa-users icon"></i>{{ job.applicants|length }} Applicants
+        <i class="fas fa-users icon"></i>{{ job.applicants|length }} Contacts
       </p>
 
       {% if job.image_paths %}
@@ -182,30 +176,21 @@
       <div class="image-gallery">
         {% for image_filename in job.image_paths.split(',') %} {% set image_path
         = url_for('static', filename='profile_pics/' + image_filename) %}
-
-        <img src="{{ image_path }}" alt="Job Image" />
-
+        <img
+          src="{{ image_path }}"
+          alt="Job Image"
+          onclick="openImageModal('{{ image_path }}')"
+        />
         {% endfor %}
       </div>
       {% endif %}
-
-      <!-- Display the name of the business owner -->
-
-      <!-- Add more job details as needed -->
     </div>
-    <script>
-      // JavaScript function to go back in the browser's history
-      function goBack() {
-        if (document.referrer) {
-          // If there's a referrer (previous page), go back to it
-          window.location.href = document.referrer;
-        } else {
-          // If there's no referrer, go back in history
-          window.history.back();
-        }
-      }
-    </script>
 
+    <!-- Modal for Image Display -->
+    <div id="imageModal">
+      <span class="close-btn" onclick="closeImageModal()">&times;</span>
+      <img id="modalImage" src="" alt="Enlarged Image" />
+    </div>
     <!-- Add a link to apply for the job -->
     {% if current_user.is_authenticated and current_user.id not in
     job.applicants|map(attribute='user_id') %}
@@ -214,44 +199,20 @@
     >
     {% endif %}
 
-    <br />
-    <br />
-    <br />
-    <br />
-
-    {% endblock %}
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Get the current time and job posting time
-        var currentTime = new Date();
-        var jobPostedTime = new Date(
-          "{{ job.date_created.strftime('%Y-%m-%dT%H:%M:%S') }}"
-        );
-
-        // Calculate the time difference
-        var timeDifference = currentTime - jobPostedTime;
-
-        // Convert the time difference to hours
-        var hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
-
-        // Display the time posted
-        var timePostedElement = document.getElementById("timePosted");
-        if (hoursDifference < 24) {
-          timePostedElement.innerHTML = hoursDifference + "h ago";
-        } else {
-          var daysDifference = Math.floor(hoursDifference / 24);
-          timePostedElement.innerHTML =
-            daysDifference + " day" + (daysDifference > 1 ? "s" : "") + " ago";
-        }
-      });
+      // Function to open the modal with the clicked image
       function openImageModal(imagePath) {
         var modal = document.getElementById("imageModal");
         var modalImage = document.getElementById("modalImage");
 
+        // Set the modal image source to the clicked image
         modalImage.src = imagePath;
-        modal.style.display = "block";
+
+        // Display the modal
+        modal.style.display = "flex";
       }
 
+      // Function to close the modal
       function closeImageModal() {
         var modal = document.getElementById("imageModal");
         modal.style.display = "none";
@@ -265,5 +226,7 @@
         }
       };
     </script>
+
+    {% endblock %}
   </body>
 </html>
