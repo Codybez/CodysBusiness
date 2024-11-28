@@ -29,12 +29,12 @@
       }
 
       .job-details-container p {
-        display: flex; /* Use flexbox for horizontal layout */
+        display: flex;
         align-items: flex-start;
-        gap: 15px; /* Space between icon and text */
+        gap: 15px;
         color: #555;
         font-family: Arial, Helvetica, sans-serif;
-        margin: 10px 0; /* Space between rows */
+        margin: 10px 0;
         font-size: 17px;
       }
 
@@ -46,45 +46,32 @@
         flex-shrink: 0;
       }
 
-      .job-details-container span {
-        line-height: 1.5;
-        flex: 1;
-      }
-
-      .back-button {
-        font-size: 24px;
-        color: #ff7148;
-        margin-left: 10px;
-        margin-top: 10px;
-        text-decoration: none;
-        border: none;
-        background-color: #fff;
-        cursor: pointer;
-      }
-
       #applybutton {
-        background-color: #ff7148;
+        background-color: #333;
         color: white;
         border: none;
-        margin-bottom: 100px;
-        margin-left: 20px;
-        padding: 10px 20px;
+        padding: 12px;
         cursor: pointer;
         border-radius: 5px;
-        display: inline-block;
+        display: inline-flex;
+        justify-content: space-between;
+        width: 85%;
+        margin-bottom: 90px;
+        margin-left: 15px;
         text-decoration: none;
-        transition: background-color 0.3s ease;
+        text-align: center;
         font-family: Arial, Helvetica, sans-serif;
       }
 
-      #applybutton:hover {
-        background-color: #e25d41;
+      #applybutton i {
+        margin-left: 10px;
       }
 
       .image-gallery {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-start;
+        margin-left: -5px;
       }
 
       .image-gallery img {
@@ -99,7 +86,6 @@
         transform: scale(1.1);
       }
 
-      /* Modal Styles */
       #imageModal {
         display: none;
         position: fixed;
@@ -139,7 +125,6 @@
   <body>
     {% extends 'base_labour.html' %} {% block title %}Job Details{% endblock %}
     {% block content %}
-
     <div class="info-container">
       <h1>Job Details</h1>
     </div>
@@ -168,14 +153,15 @@
       </p>
 
       <p>
-        <i class="fas fa-users icon"></i>{{ job.applicants|length }} Contacts
+        <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
       </p>
 
+      <!-- Image Gallery -->
       {% if job.image_paths %}
       <h2>Images</h2>
       <div class="image-gallery">
         {% for image_filename in job.image_paths.split(',') %} {% set image_path
-        = url_for('static', filename='profile_pics/' + image_filename) %}
+        = url_for('static', filename='job_images/' + image_filename) %}
         <img
           src="{{ image_path }}"
           alt="Job Image"
@@ -191,42 +177,40 @@
       <span class="close-btn" onclick="closeImageModal()">&times;</span>
       <img id="modalImage" src="" alt="Enlarged Image" />
     </div>
-    <!-- Add a link to apply for the job -->
-    {% if current_user.is_authenticated and current_user.id not in
-    job.applicants|map(attribute='user_id') %}
-    <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}"
-      ><b>Contact</b></a
-    >
-    {% endif %}
+
+    <!-- Contact Button -->
+    <div>
+      {% if current_user.is_authenticated and current_user.id not in
+      job.applicants|map(attribute='user_id') %}
+      <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}">
+        <b>Contact</b>
+      </a>
+      {% endif %}
+    </div>
 
     <script>
-      // Function to open the modal with the clicked image
+      // Open the modal with the clicked image
       function openImageModal(imagePath) {
-        var modal = document.getElementById("imageModal");
-        var modalImage = document.getElementById("modalImage");
+        const modal = document.getElementById("imageModal");
+        const modalImage = document.getElementById("modalImage");
 
-        // Set the modal image source to the clicked image
         modalImage.src = imagePath;
-
-        // Display the modal
         modal.style.display = "flex";
       }
 
-      // Function to close the modal
+      // Close the modal
       function closeImageModal() {
-        var modal = document.getElementById("imageModal");
-        modal.style.display = "none";
+        document.getElementById("imageModal").style.display = "none";
       }
 
       // Close the modal if the user clicks outside of it
       window.onclick = function (event) {
-        var modal = document.getElementById("imageModal");
-        if (event.target == modal) {
+        const modal = document.getElementById("imageModal");
+        if (event.target === modal) {
           modal.style.display = "none";
         }
       };
     </script>
-
     {% endblock %}
   </body>
 </html>

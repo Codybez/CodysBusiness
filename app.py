@@ -88,6 +88,7 @@ class Job(db.Model):
     location = db.Column(db.String(100), nullable=True)  # Add location column here
     city = db.Column(db.String(100), nullable=False)
     suburb = db.Column(db.String(100), nullable=False)
+    contact_number = db.Column(db.String(20), nullable = False)
     tasks = db.Column(db.String(250), nullable=False)
     image_paths = db.Column(db.String(255))
     additional_details = db.Column(db.String(250))
@@ -163,6 +164,7 @@ def submit_job():
             location = request.form.get('location')  # Get the location field
             city = request.form['city']
             suburb = request.form['suburb']
+            contact_number = request.form['contact_number']
             tasks = request.form['tasks']
             additional_details = request.form.get('additional-details')
 
@@ -183,6 +185,7 @@ def submit_job():
                 location=location,
                 city=city,
                 suburb=suburb,
+                contact_number=contact_number,
                 tasks=tasks,
                 additional_details=additional_details,
                 business_profile_id=business_profile_id,
@@ -479,19 +482,22 @@ def apply_for_job(job_id):
     job = Job.query.get_or_404(job_id)
 
     # Check if the user has already applied for this job
-    if JobApplication.query.filter_by(user_id=current_user.id, job_id=job.id).first():
-        flash("You have already applied for this job.", "warning")
+    application = JobApplication.query.filter_by(user_id=current_user.id, job_id=job.id).first()
+
+    if application:
+        # If application exists, update its status to 'paid'
+        application.status = 'paid'
+        db.session.commit()
+        flash("Your application has been marked as paid!", "success")
     else:
-        # Create a new job application
-        application = JobApplication(user_id=current_user.id, job_id=job.id)
+        # Create a new job application with status 'paid'
+        application = JobApplication(user_id=current_user.id, job_id=job.id, status='paid')
         db.session.add(application)
         db.session.commit()
-        flash("Application submitted successfully!", "success")
+        flash("Application submitted and marked as paid!", "success")
 
-    # Redirect to the job details page
+    # Redirect to the applied jobs page
     return redirect(url_for('applied_jobs'))
-
-
 
 
 @app.route('/applied_jobs')
