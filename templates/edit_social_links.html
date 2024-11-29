@@ -1,0 +1,36 @@
+{% extends 'base_labour.html' %} {% block title %}Labourer{% endblock %} {%
+block content %}
+<form method="POST">
+  <div class="form-group">
+    <label for="facebook">Facebook URL:</label>
+    <input
+      type="text"
+      id="facebook"
+      name="facebook"
+      value="{{ current_user.social_links.facebook if current_user.social_links else '' }}"
+      class="form-control"
+    />
+  </div>
+  <div class="form-group">
+    <label for="instagram">Instagram URL:</label>
+    <input
+      type="text"
+      id="instagram"
+      name="instagram"
+      value="{{ current_user.social_links.instagram if current_user.social_links else '' }}"
+      class="form-control"
+    />
+  </div>
+  <div class="form-group">
+    <label for="website">Website URL:</label>
+    <input
+      type="text"
+      id="website"
+      name="website"
+      value="{{ current_user.social_links.website if current_user.social_links else '' }}"
+      class="form-control"
+    />
+  </div>
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+{% endblock %}

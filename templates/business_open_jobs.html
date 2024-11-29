@@ -107,7 +107,7 @@
       <h1>Open Jobs</h1>
     </div>
 
-    {% for job in created_jobs %}
+    {% for job in created_jobs| reverse %}
 
     <div class="job-listing">
       <h3>{{ job.job_name }}</h3>

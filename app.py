@@ -41,13 +41,11 @@ def index():
     return render_template('index.html')
 
 
-
 class User(UserMixin, db.Model):
-    
     id = db.Column(db.Integer, primary_key=True)
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
     location = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False) 
+    email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     first_name = db.Column(db.String(50), nullable=True)  # Initially nullable
     last_name = db.Column(db.String(50), nullable=True)   # Initially nullable
@@ -56,6 +54,8 @@ class User(UserMixin, db.Model):
     profile_image = db.relationship('UserProfileImage', backref='user', uselist=False)
     labourer_profile = db.relationship('LabourerProfile', backref='user', uselist=False)
     company_details = db.relationship('CompanyDetails', uselist=False)
+    social_links = db.relationship('SocialLinks', backref='user', uselist=False, lazy=True)
+    jobs = db.relationship('Job', backref='user', lazy=True)  # Keep this
 
 class UserProfileImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,16 +80,14 @@ class LabourerProfile(db.Model):
     phone_number = db.Column(db.String(20), nullable=False)
     user_blurb = db.Column(db.String(250), nullable=False)
 
-
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     job_name = db.Column(db.String(100), nullable=False)
     job_category = db.Column(db.String(100), nullable=False)
     contact_number = db.Column(db.String(20), nullable=False)
-    location = db.Column(db.String(100), nullable=True)  # Add location column here
+    location = db.Column(db.String(100), nullable=True)
     city = db.Column(db.String(100), nullable=False)
     suburb = db.Column(db.String(100), nullable=False)
-    contact_number = db.Column(db.String(20), nullable = False)
     tasks = db.Column(db.String(250), nullable=False)
     image_paths = db.Column(db.String(255))
     additional_details = db.Column(db.String(250))
@@ -100,7 +98,7 @@ class Job(db.Model):
     business_profile_id = db.Column(db.Integer, db.ForeignKey('business_profile.id'), nullable=False)
     payment_required = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Foreign key to User
-    user = db.relationship('User', backref=db.backref('jobs', lazy=True))  # Relationship to User
+    # Remove the duplicate `user` relationship from the Job model
 
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,7 +128,12 @@ class CompanyDetails(db.Model):
     unit_no = db.Column(db.String(10))
     trading_name = db.Column(db.String(100), nullable=False)
 
-
+class SocialLinks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    facebook = db.Column(db.String(255))
+    instagram = db.Column(db.String(255))
+    website = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
 @app.route('/landing_page')
@@ -165,7 +168,7 @@ def submit_job():
             location = request.form.get('location')  # Get the location field
             city = request.form['city']
             suburb = request.form['suburb']
-            contact_number = request.form['contact_number']
+
             tasks = request.form['tasks']
             additional_details = request.form.get('additional-details')
             contact_number = request.form.get('contact_number')  # Get the contact number
@@ -191,8 +194,7 @@ def submit_job():
                 tasks=tasks,
                 additional_details=additional_details,
                 business_profile_id=business_profile_id,
-                user_id=current_user.id,  # Assign the user ID here
-                contact_number=contact_number,  # Add the contact_number here
+                user_id=current_user.id,
                 image_paths=','.join(image_paths) if image_paths else None
             )
 
@@ -906,6 +908,37 @@ def tradesman_review(job_id):
 
     # Render the review form template
     return render_template('labourer_review.html', job_id=job_id)
+
+@app.route('/edit_social_links', methods=['GET', 'POST'])
+def edit_social_links():
+    if request.method == 'POST':
+        facebook = request.form.get('facebook')
+        instagram = request.form.get('instagram')
+        website = request.form.get('website')
+
+        user = current_user
+
+        # Check if the user has associated social_links
+        if user.social_links is None:
+            # Create a new SocialLinks instance
+            social_links = SocialLinks(
+                facebook=facebook,
+                instagram=instagram,
+                website=website
+            )
+            user.social_links = social_links  # Associate the new SocialLinks with the user
+        else:
+            # Update the existing SocialLinks instance
+            user.social_links.facebook = facebook
+            user.social_links.instagram = instagram
+            user.social_links.website = website
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        return redirect(url_for('labourer_profile'))  # Redirect to profile page to view changes
+
+    return render_template('edit_social_links.html')
 
 if __name__ == '__main__':
     db.create_all()

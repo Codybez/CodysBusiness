@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 4a8bf3ebf547
+Revision ID: aa90b5c88fef
 Revises: 
-Create Date: 2024-11-27 03:38:03.038690
+Create Date: 2024-11-28 21:32:15.312745
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4a8bf3ebf547'
+revision = 'aa90b5c88fef'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -70,6 +70,15 @@ def upgrade():
     sa.ForeignKeyConstraint(['sender_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('social_links',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('facebook', sa.String(length=255), nullable=True),
+    sa.Column('instagram', sa.String(length=255), nullable=True),
+    sa.Column('website', sa.String(length=255), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('user_profile_image',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -86,7 +95,6 @@ def upgrade():
     sa.Column('city', sa.String(length=100), nullable=False),
     sa.Column('suburb', sa.String(length=100), nullable=False),
     sa.Column('tasks', sa.String(length=250), nullable=False),
-    sa.Column('price_per_hour', sa.Float(), nullable=False),
     sa.Column('image_paths', sa.String(length=255), nullable=True),
     sa.Column('additional_details', sa.String(length=250), nullable=True),
     sa.Column('date_created', sa.DateTime(), nullable=True),
@@ -117,6 +125,7 @@ def downgrade():
     op.drop_table('job_application')
     op.drop_table('job')
     op.drop_table('user_profile_image')
+    op.drop_table('social_links')
     op.drop_table('message')
     op.drop_table('labourer_profile')
     op.drop_table('company_details')
