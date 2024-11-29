@@ -57,8 +57,13 @@
         align-items: center; /* Ensure vertical alignment of text and icon */
         justify-content: space-between;
         width: 85%;
+<<<<<<< HEAD
         margin-top: 10px;
         margin-bottom: 100px;
+=======
+        margin-top: 20px;
+        margin-bottom: 90px;
+>>>>>>> 4acdbdd6db575a4cad51f96406befc0e10e5a3f6
         margin-left: 15px;
         text-decoration: none;
         text-align: center;
@@ -133,6 +138,13 @@
       <p class="job-location">
         <strong>{{ job.location }}</strong>
       </p>
+      <p>
+        <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
+      </p>
+
+      <p>
+        <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
+      </p>
 
       <p>
         <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
@@ -144,6 +156,7 @@
         }}
       </p>
 
+<<<<<<< HEAD
       <p>
         <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
       </p>
@@ -152,6 +165,15 @@
 
       <p>{{ job.additional_details }}</p>
 
+=======
+      <p><i class="fas fa-tasks icon"></i>Tasks: {{ job.tasks }}</p>
+
+      <p>
+        <i class="fas fa-info-circle icon"></i>Additional Details: {{
+        job.additional_details }}
+      </p>
+
+>>>>>>> 4acdbdd6db575a4cad51f96406befc0e10e5a3f6
       <!-- Image Gallery -->
       {% if job.image_paths %}
       <h2>Images</h2>
@@ -193,12 +215,28 @@
       {% endif %}
     </div>
 
-    <!-- Contact Button -->
     <div>
+      <p
+        style="
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 16px;
+          color: #333;
+          margin-bottom: 10px;
+        "
+      >
+        Unlock contact details for this job for just
+        <strong style="color: orange">$4.99</strong>. A small investment for
+        your next opportunity!
+      </p>
       {% if current_user.is_authenticated and current_user.id not in
       job.applicants|map(attribute='user_id') %}
       <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}">
+<<<<<<< HEAD
         <b>Continue</b>
+=======
+        <b>Continue To Payment</b>
+>>>>>>> 4acdbdd6db575a4cad51f96406befc0e10e5a3f6
         <i class="fas fa-arrow-right"></i>
       </a>
 
