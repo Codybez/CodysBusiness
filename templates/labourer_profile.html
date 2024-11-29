@@ -262,29 +262,6 @@
         <h2>Social Links</h2>
         <div class="info-item">
           <strong>Facebook:</strong>
-<<<<<<< HEAD
-          <span
-            >{{ current_user.social_links.facebook if current_user.social_links
-            else 'N/A' }}</span
-          >
-        </div>
-        <div class="info-item">
-          <strong>Instagram:</strong>
-          <span
-            >{{ current_user.social_links.instagram if current_user.social_links
-            else 'N/A' }}</span
-          >
-        </div>
-        <div class="info-item">
-          <strong>Website:</strong>
-          <span
-            >{{ current_user.social_links.website if current_user.social_links
-            else 'N/A' }}</span
-          >
-        </div>
-        <div class="edit-button">
-          <a href="{{ url_for('edit_social_links') }}">Edit Social Links</a>
-=======
           <span>{{ current_user.social_links.facebook }}</span>
         </div>
         <div class="info-item">
@@ -297,7 +274,6 @@
         </div>
         <div class="edit-button">
           <a href="{{ url_for('edit_social_links') }}">Add/Edit Social Links</a>
->>>>>>> 4acdbdd6db575a4cad51f96406befc0e10e5a3f6
         </div>
       </div>
     </div>
