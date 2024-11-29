@@ -1,36 +1,107 @@
-{% extends 'base_labour.html' %} {% block title %}Labourer{% endblock %} {%
-block content %}
-<form method="POST">
-  <div class="form-group">
-    <label for="facebook">Facebook URL:</label>
-    <input
-      type="text"
-      id="facebook"
-      name="facebook"
-      value="{{ current_user.social_links.facebook if current_user.social_links else '' }}"
-      class="form-control"
-    />
-  </div>
-  <div class="form-group">
-    <label for="instagram">Instagram URL:</label>
-    <input
-      type="text"
-      id="instagram"
-      name="instagram"
-      value="{{ current_user.social_links.instagram if current_user.social_links else '' }}"
-      class="form-control"
-    />
-  </div>
-  <div class="form-group">
-    <label for="website">Website URL:</label>
-    <input
-      type="text"
-      id="website"
-      name="website"
-      value="{{ current_user.social_links.website if current_user.social_links else '' }}"
-      class="form-control"
-    />
-  </div>
-  <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Social Links</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f0f0f0;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+
+      .edit-form-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+      }
+
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Edit Social Links{%
+    endblock %} {% block content %}
+
+    <div class="edit-form-container">
+      <h2>Edit Social Links</h2>
+      <form method="POST">
+        <div class="form-group">
+          <label for="facebook">Facebook URL:</label>
+          <input
+            type="text"
+            id="facebook"
+            name="facebook"
+            value="{{ current_user.social_links.facebook if current_user.social_links else '' }}"
+            class="form-control"
+          />
+        </div>
+        <div class="form-group">
+          <label for="instagram">Instagram URL:</label>
+          <input
+            type="text"
+            id="instagram"
+            name="instagram"
+            value="{{ current_user.social_links.instagram if current_user.social_links else '' }}"
+            class="form-control"
+          />
+        </div>
+        <div class="form-group">
+          <label for="website">Website URL:</label>
+          <input
+            type="text"
+            id="website"
+            name="website"
+            value="{{ current_user.social_links.website if current_user.social_links else '' }}"
+            class="form-control"
+          />
+        </div>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+
+    {% endblock %}
+  </body>
+</html>
