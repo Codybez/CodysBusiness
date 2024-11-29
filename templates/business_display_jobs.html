@@ -15,7 +15,8 @@
     <style>
       .job-details-container {
         padding: 15px;
-        margin-bottom: 20px;
+        margin-bottom: 70px;
+        margin-top: 20px;
       }
       .job-details-container h1 {
         color: #555;
@@ -81,10 +82,6 @@
         transition: transform 0.3s ease;
       }
 
-      .image-gallery img:hover {
-        transform: scale(1.1);
-      }
-
       #imageModal {
         display: none;
         position: fixed;
@@ -133,24 +130,22 @@
       </p>
 
       <p>
+        <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
+      </p>
+
+      <p>
         <i class="fas fa-map-marker-alt"></i>
         <strong>{{ job.job_category }}</strong> in {{ job.city }}, {{ job.suburb
         }}
       </p>
 
-      <p><i class="fas fa-tasks icon"></i>Tasks: {{ job.tasks }}</p>
-      <p>
-        <i class="fas fa-money-bill-alt icon"></i>Price Estimate:
-        <strong>${{ job.price_per_hour }}</strong>
-      </p>
-      <p>
-        <i class="fas fa-info-circle icon"></i>Additional Details: {{
-        job.additional_details }}
-      </p>
-
       <p>
         <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
       </p>
+
+      <p>{{ job.tasks }}</p>
+
+      <p>{{ job.additional_details }}</p>
 
       <!-- Image Gallery -->
       {% if job.image_paths %}

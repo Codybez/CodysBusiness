@@ -1,200 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Applicants</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
     <style>
-      /* Styles for the circular profile picture */
-      .profile-pic {
-        border-radius: 50%;
-        width: 65px; /* Adjust the size of the circle as needed */
-        height: 65px;
-        object-fit: cover; /* Maintain aspect ratio while covering the entire circle */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
       }
 
-      /* Styles for the applicant profile container */
-      /* Styles for the applicant profile container */
+      /* Container for Applicant Profiles */
+      .applicant-container {
+        margin-top: 50px; /* Make space for the back button */
+        padding-bottom: 30px; /* Optional: Add some space at the bottom */
+      }
+
       .applicant-profile {
         background-color: #fff;
-        padding-left: 10px;
-        position: relative; /* Enable absolute positioning for the circle */
-        padding-top: 15px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #ccc;
-        font-family: Arial, Helvetica, sans-serif;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 10px auto;
+        max-width: 600px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
       }
 
-      /* Center the container for screens above 600px and set a maximum width */
-      @media (min-width: 601px) {
-        .applicant-profile {
-          width: 100%;
-          max-width: 600px; /* Adjust the maximum width as needed */
-          margin: 0 auto; /* Center the container */
-        }
-      }
-
-      /* Position the circular profile picture at the top right */
-      .applicant-profile .profile-pic {
+      .profile-pic {
+        border-radius: 50%;
+        width: 65px;
+        height: 65px;
+        object-fit: cover;
         position: absolute;
-        top: 10px; /* Adjust the distance from the top */
-        right: 10px; /* Adjust the distance from the right */
-      }
-
-      /* Clearfix for floated elements within the applicant profile */
-      .applicant-profile::after {
-        content: "";
-        display: table;
-        clear: both;
+        top: 20px;
+        right: 20px;
       }
 
       .applicant-profile h3 {
-        color: #000000;
-        margin-top: 8px;
-        margin-bottom: 10px; /* Adjust the margin to create space above the buttons */
+        color: #333;
+        font-size: 23px;
+        margin-top: 15px;
+        margin-bottom: 10px;
         margin-left: 5px;
-        font-size: 20px;
       }
 
       .applicant-profile p {
         color: #555;
-        margin-bottom: 10px; /* Adjust the margin to create space above the buttons */
+        margin-bottom: 8px;
         margin-left: 5px;
       }
-      .chat-link {
-        margin: 5px;
-        padding: 5px 10px;
-        text-decoration: none;
+
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .button-container a {
         background-color: #333;
-        color: #fff;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-      }
-
-      .chat-link:hover {
-        background-color: #555;
-      }
-
-      .accept-button {
-        background-color: #4caf50;
         color: white;
         border: none;
-        padding: 5px 10px;
-        border-radius: 5px;
+        padding: 12px;
         cursor: pointer;
-        margin: 5px;
+        border-radius: 5px;
+        width: 48%; /* Equal width for buttons */
         text-decoration: none;
+        text-align: center;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
 
-      .location {
-        margin-left: 5px; /* Adjust the margin as needed */
-      }
-      .back-button {
-        font-size: 24px;
-        color: #ff7148;
+      .button-container a i {
         margin-left: 10px;
-        margin-top: 10px;
-        text-decoration: none;
-        border: none;
-        background-color: #fff;
-        cursor: pointer;
+      }
+
+      @media (max-width: 600px) {
+        .applicant-profile {
+          max-width: 100%;
+        }
+
+        .button-container a {
+          font-size: 14px;
+        }
       }
     </style>
   </head>
   <body>
     {% extends 'base_business.html' %} {% block title %}Job Applicants{%
     endblock %} {% block content %}
-    <br />
 
-    <script>
-      // JavaScript function to go back in the browser's history
-      function goBack() {
-        if (document.referrer) {
-          // If there's a referrer (previous page), go back to it
-          window.location.href = document.referrer;
-        } else {
-          // If there's no referrer, go back in history
-          window.history.back();
-        }
-      }
-    </script>
-    <button class="back-button" onclick="goBack()">
-      <i class="fas fa-arrow-left"></i>
-    </button>
-    {% for application in job_applications %}
-    <div class="applicant-profile">
-      {% if application.user and application.user.profile_image %} {% if
-      application.user.user_profile_image %} {% set image_path = 'profile_pics/'
-      ~ application.user.profile_image.filename %} {% else %} {% set image_path
-      = 'profile_pics/orange.jpg' %} {% endif %}
-      <img
-        src="{{ url_for('static', filename=image_path) }}"
-        alt="User Image"
-        class="profile-pic"
-        id="profile-image"
-      />
-      <h3>{{ application.user.company_details.trading_name }}</h3>
+    <!-- Applicant Profiles Container -->
+    <div class="applicant-container">
+      {% for application in job_applications %}
+      <div class="applicant-profile">
+        {% if application.user and application.user.profile_image %} {% if
+        application.user.user_profile_image %} {% set image_path =
+        'profile_pics/' ~ application.user.profile_image.filename %} {% else %}
+        {% set image_path = 'profile_pics/orange.jpg' %} {% endif %}
+        <img
+          src="{{ url_for('static', filename=image_path) }}"
+          alt="User Image"
+          class="profile-pic"
+        />
+        <h3>{{ application.user.company_details.trading_name }}</h3>
 
-      <h3>
-        {{ application.user.first_name }} {{ application.user.last_name }}
-      </h3>
-      <p>
-        <i class="fas fa-map-marker-alt icon"></i>
-        <span class="location">{{ application.user.location }}</span>
-      </p>
-      <p>
-        <i class="fas fa-check-circle label-icon"></i> Jobs Completed: {{
-        application.user.jobs_completed }}
-      </p>
-      <p>
-        <i class="fas fa-comment icon"></i> About Me:
-        <span>{{ application.user.labourer_profile.user_blurb }}</span>
-      </p>
-      <br />
+        <p>
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ application.user.location }}</span>
+        </p>
+        <p>
+          <i class="fas fa-check-circle"></i> Jobs Completed: {{
+          application.user.jobs_completed }}
+        </p>
+        <p>
+          <i class="fas fa-check-circle"></i> Contact Number: {{
+          application.user.labourer_profile.phone_number }}
+        </p>
 
-      <!-- Add more applicant details as needed -->
-
-      <!-- Add a link to initiate a chat -->
-      <a
-        href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}"
-        class="chat-link"
-        data-job-id="{{ application.job.id }}"
-        data-user-id="{{ application.user.id }}"
-        ><i class="fas fa-comments"></i> Chat</a
-      >
-      {% else %}
-      <p>No user information available for this application.</p>
-      {% endif %}
-      <a
-        href="{{ url_for('choose_user', job_id=application.job.id, user_id=application.user.id) }}"
-        class="accept-button"
-        data-job-id="{{ application.job.id }}"
-        data-user-id="{{ application.user.id }}"
-      >
-        <i class="fas fa-check"></i> Accept
-      </a>
+        <!-- Buttons -->
+        <div class="button-container">
+          <a
+            href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}"
+          >
+            <span>View Full Profile</span>
+            <i class="fas fa-arrow-right"></i>
+          </a>
+          <a
+            href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}"
+          >
+            <span>Chat</span>
+            <i class="fas fa-comments"></i>
+          </a>
+        </div>
+        {% else %}
+        <p>No user information available for this application.</p>
+        {% endif %}
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-    <br />
-    <br />
-    <br />
 
     {% endblock %}
-    <!-- ... (your head content) ... -->
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Get all form elements with the class 'accept-form'
-        var acceptForms = document.querySelectorAll(".accept-form");
-
-        // Attach a submit event listener to each form
-        acceptForms.forEach(function (form) {
-          form.addEventListener("submit", function (event) {
-            // Hide the button in the submitted form
-            form.querySelector(".accept-button").style.display = "none";
-          });
+      // JavaScript function to go back in the browser's history or to a fallback page
+      document
+        .getElementById("backButton")
+        .addEventListener("click", function () {
+          if (window.history.length > 1) {
+            window.history.back(); // Go back if history exists
+          } else {
+            window.location.href = "{{ url_for('business_open_jobs') }}"; // Fallback URL if no history
+          }
         });
-      });
     </script>
   </body>
 </html>

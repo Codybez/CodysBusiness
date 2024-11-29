@@ -54,9 +54,11 @@
         cursor: pointer;
         border-radius: 5px;
         display: inline-flex;
+        align-items: center; /* Ensure vertical alignment of text and icon */
         justify-content: space-between;
         width: 85%;
-        margin-bottom: 90px;
+        margin-top: 10px;
+        margin-bottom: 100px;
         margin-left: 15px;
         text-decoration: none;
         text-align: center;
@@ -64,9 +66,9 @@
       }
 
       #applybutton i {
-        margin-left: 10px;
+        margin-left: 10px; /* Space between text and icon */
+        font-size: 16px; /* Adjust size of the arrow icon */
       }
-
       .image-gallery {
         display: flex;
         flex-wrap: wrap;
@@ -80,10 +82,6 @@
         margin: 5px;
         cursor: pointer;
         transition: transform 0.3s ease;
-      }
-
-      .image-gallery img:hover {
-        transform: scale(1.1);
       }
 
       #imageModal {
@@ -137,21 +135,22 @@
       </p>
 
       <p>
+        <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
+      </p>
+
+      <p>
         <i class="fas fa-map-marker-alt"></i>
         <strong>{{ job.job_category }}</strong> in {{ job.city }}, {{ job.suburb
         }}
       </p>
 
-      <p><i class="fas fa-tasks icon"></i>Tasks: {{ job.tasks }}</p>
-
-      <p>
-        <i class="fas fa-info-circle icon"></i>Additional Details: {{
-        job.additional_details }}
-      </p>
-
       <p>
         <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
       </p>
+
+      <p>{{ job.tasks }}</p>
+
+      <p>{{ job.additional_details }}</p>
 
       <!-- Image Gallery -->
       {% if job.image_paths %}
@@ -174,14 +173,35 @@
       <span class="close-btn" onclick="closeImageModal()">&times;</span>
       <img id="modalImage" src="" alt="Enlarged Image" />
     </div>
+    <!-- Contact Text -->
+    <div>
+      {% if current_user.is_authenticated and current_user.id not in
+      job.applicants|map(attribute='user_id') %}
+      <p
+        style="
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 16px;
+          color: #333;
+          margin-bottom: 10px;
+        "
+      >
+        Unlock contact details for this job for just
+        <strong style="color: orange">$4.99</strong>. A small investment for
+        your next opportunity!
+      </p>
+      {% endif %}
+    </div>
 
     <!-- Contact Button -->
     <div>
       {% if current_user.is_authenticated and current_user.id not in
       job.applicants|map(attribute='user_id') %}
       <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}">
-        <b>Contact</b>
+        <b>Continue</b>
+        <i class="fas fa-arrow-right"></i>
       </a>
+
       {% endif %}
     </div>
 
