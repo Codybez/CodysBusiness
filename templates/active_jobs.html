@@ -1,145 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Active Jobs</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_home.css') }}">
-  <!-- Add any additional styles here -->
-  <style>
-    .active-job-listing {
-      background-color: #fff;
-      padding-left: 15px;
-      padding-top: 8px;
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #ccc;
-    }
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Active Jobs</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='labourer_home.css') }}"
+    />
+    <!-- Add any additional styles here -->
+    <style>
+      .active-job-listing {
+        background-color: #fff;
+        padding-left: 15px;
+        padding-top: 8px;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ccc;
+      }
 
-    .active-job-listing h3 {
-      color: #555;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+      .active-job-listing h3 {
+        color: #555;
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-    .active-job-listing p {
-      color: #555;
-      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
+      .active-job-listing p {
+        color: #555;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
 
-    .active-job-listing .icon {
-      margin-right: 15px; /* Adjust the margin as needed */
-    }
+      .active-job-listing .icon {
+        margin-right: 15px; /* Adjust the margin as needed */
+      }
 
-    .view-job-link, .chat-link {
-      background-color: #ff7148;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-block;
-      margin: 5px;
-      text-decoration: none;
-    }
+      .view-job-link,
+      .chat-link {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 5px;
+        text-decoration: none;
+      }
 
-    .business-profile {
-      background-color: #fff;
-      border-radius: 15px;
-      margin-bottom: 10px;
-      border: #ccc solid 2px;
-      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-      padding: 10px;
-      position: relative; /* Added position relative for absolute positioning */
-    }
+      .business-profile {
+        background-color: #fff;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        border: #ccc solid 2px;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        padding: 10px;
+        position: relative; /* Added position relative for absolute positioning */
+      }
 
-    .business-profile h2 {
-      color: #ff7148;
-      margin-bottom: 18px;
-    }
+      .business-profile h2 {
+        color: #ff7148;
+        margin-bottom: 18px;
+      }
 
-    .business-profile .icon {
-      margin-right: 8px;
-    }
+      .business-profile .icon {
+        margin-right: 8px;
+      }
 
-    .business-profile p {
-      color: #555;
-      margin-bottom: 15px;
-      margin-left: 5px;
-    }
+      .business-profile p {
+        color: #555;
+        margin-bottom: 15px;
+        margin-left: 5px;
+      }
 
-    .business-profile .business-image {
-      border-radius: 50%;
-      width: 65px;
-      height: 65px;
-      object-fit: cover;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
+      .business-profile .business-image {
+        border-radius: 50%;
+        width: 65px;
+        height: 65px;
+        object-fit: cover;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
 
-    .job-details-container .icon {
-      margin-right: 8px;
-    }
+      .job-details-container .icon {
+        margin-right: 8px;
+      }
 
-    .chat-link {
-      background-color: #919d91dd;
-      color: rgb(255, 255, 255);
-    }
-    
-    .close-job-link {
-      background-color: #4CAF50;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      display: inline-block;
-      margin: 5px;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-  {% extends 'base_labour.html' %}
+      .chat-link {
+        background-color: #919d91dd;
+        color: rgb(255, 255, 255);
+      }
 
-{% block title %}Applied Jobs{% endblock %}
+      .close-job-link {
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 5px;
+        text-decoration: none;
+      }
 
-{% block content %}
+      .h6 {
+        color: #777777;
+        font-size: 12px;
+        margin-left: 10px;
+        margin-top: 100px;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Applied Jobs{% endblock %}
+    {% block content %}
 
-<div class="info-container">
-  <h1>Active Jobs</h1>
-</div>
+    <div class="info-container">
+      <h6>Active Jobs</h6>
+    </div>
 
-{% for job in active_jobs|reverse %}
-  <div class="active-job-listing">
-    <h3>{{ job.job_name }}</h3>
-    <p></p>
-    <p><i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
+    {% for job in active_jobs|reverse %}
+    <div class="active-job-listing">
+      <h3>{{ job.job_name }}</h3>
+      <p></p>
+      <p>
+        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
+        job.city }}, {{ job.suburb }}
+      </p>
 
-    <!-- Display the name of the business owner -->
-   
-<div class="business-profile">
-  <h2> {{ job.business_profile.first_name }} {{ job.business_profile.last_name }}</h2>
-  <!-- Display business user image -->
-  
-  <!-- Add more job poster details as needed -->
-  <p><i class="fas fa-info-circle icon"></i> Business Type: {{ job.business_profile.business_type }}</p>
-  <p><i class="fas fa-user icon"></i>Contact: {{ job.business_profile.phone_number }}</p>
-</div>
-    <!-- View and Chat buttons -->
-    <a href="{{ url_for('display_jobs', job_id=job.id) }}" class="view-job-link"><i class="fas fa-eye"></i> View</a>
-    <a href="{{ url_for('chat', job_id=job.id, ) }}" class="chat-link" data-job-id="{{ job.id }}"><i class="fas fa-comments"></i> Chat</a>
-    <a href="" class="close-job-link"><i class="fas fa-star fa-times"></i> Close And Review</a>
+      <!-- Display the name of the business owner -->
 
+      <div class="business-profile">
+        <h2>
+          {{ job.business_profile.first_name }} {{
+          job.business_profile.last_name }}
+        </h2>
+        <!-- Display business user image -->
 
-  </div>
+        <!-- Add more job poster details as needed -->
+        <p>
+          <i class="fas fa-info-circle icon"></i> Business Type: {{
+          job.business_profile.business_type }}
+        </p>
+        <p>
+          <i class="fas fa-user icon"></i>Contact: {{
+          job.business_profile.phone_number }}
+        </p>
+      </div>
+      <!-- View and Chat buttons -->
+      <a
+        href="{{ url_for('display_jobs', job_id=job.id) }}"
+        class="view-job-link"
+        ><i class="fas fa-eye"></i> View</a
+      >
+      <a
+        href="{{ url_for('chat', job_id=job.id, ) }}"
+        class="chat-link"
+        data-job-id="{{ job.id }}"
+        ><i class="fas fa-comments"></i> Chat</a
+      >
+      <a href="" class="close-job-link"
+        ><i class="fas fa-star fa-times"></i> Close And Review</a
+      >
+    </div>
 
-{% endfor %}
-<br>
-<br>
-<br>
+    {% endfor %}
+    <br />
+    <br />
+    <br />
 
-{% endblock %}
-</body>
+    {% endblock %}
+  </body>
 </html>

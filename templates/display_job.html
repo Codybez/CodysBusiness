@@ -8,11 +8,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Details</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='labourer_home.css') }}"
-    />
     <style>
+      .logo {
+        color: #ff7148;
+        font-family: "Arial", sans-serif !important;
+        font-size: 27px !important;
+        font-weight: bold !important;
+      }
+
       .job-details-container {
         padding: 15px;
         margin-bottom: 20px;
@@ -118,13 +121,21 @@
         margin-bottom: 25px;
         font-size: 21px;
       }
+
+      h6 {
+        color: #777777;
+        font-size: 12px;
+        margin-left: 10px;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
     </style>
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Job Details{% endblock %}
     {% block content %}
     <div class="info-container">
-      <h1>Job Details</h1>
+      <h6>Job Details</h6>
     </div>
 
     <div class="job-details-container">
@@ -133,23 +144,13 @@
       <p class="job-location">
         <strong>{{ job.location }}</strong>
       </p>
-      <p>
-        <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
-      </p>
-
-      <p>
-        <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
-      </p>
-
-      <p>
-        <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
-      </p>
 
       <p>
         <i class="fas fa-map-marker-alt"></i>
         <strong>{{ job.job_category }}</strong> in {{ job.city }}, {{ job.suburb
         }}
       </p>
+      <p><i class="far fa-clock"></i> Posted {{ job.date_created|time_ago }}</p>
 
       <p>
         <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
@@ -201,27 +202,10 @@
     </div>
 
     <div>
-      <p
-        style="
-          text-align: center;
-          font-family: Arial, Helvetica, sans-serif;
-          font-size: 16px;
-          color: #333;
-          margin-bottom: 10px;
-        "
-      >
-        Unlock contact details for this job for just
-        <strong style="color: orange">$4.99</strong>. A small investment for
-        your next opportunity!
-      </p>
       {% if current_user.is_authenticated and current_user.id not in
       job.applicants|map(attribute='user_id') %}
       <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}">
-        <<<<<<< HEAD
-        <b>Continue</b>
-        =======
         <b>Continue To Payment</b>
-        >>>>>>> 4acdbdd6db575a4cad51f96406befc0e10e5a3f6
         <i class="fas fa-arrow-right"></i>
       </a>
 

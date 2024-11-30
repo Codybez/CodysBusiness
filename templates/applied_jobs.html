@@ -92,9 +92,14 @@
         margin-left: 10px; /* Add space between the text and icon */
       }
 
-      .info-container {
-        margin-top: 10px;
+      h6 {
+        color: #777777;
+        font-size: 12px;
+        margin-left: 10px;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
       }
+
       /* For mobile devices, adjust button size and layout */
       @media (max-width: 600px) {
         .view-job-link,
@@ -108,7 +113,7 @@
     {% extends 'base_labour.html' %} {% block title %}Business{% endblock %} {%
     block content %}
     <div class="info-container">
-      <h1>Job Contacts</h1>
+      <h6>Job Contacts</h6>
     </div>
 
     {% for job in applied_jobs | reverse %}

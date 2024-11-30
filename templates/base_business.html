@@ -1,54 +1,181 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <title>{% block title %}Business{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base_business.css') }}">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='base_business.css') }}"
+    />
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
-</head>
-<header>
+    <style>
+      .openworklogo {
+        margin-left: 10px;
+      }
+
+      .logo {
+        color: #ff7148;
+        font-size: 27px;
+        font-weight: bold;
+      }
+
+      .letter-o {
+        color: #ffffffec;
+        font-size: 32px;
+        font-family: "Arial", sans-serif;
+      }
+      h1 {
+        color: #ff7148;
+        font-family: "Arial", sans-serif;
+        margin-bottom: 10px;
+      }
+
+      /* Basic styling for the header */
+      header {
+        background-color: #cccccca3;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+        padding-bottom: 10px;
+        border-top-right-radius: 0px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        height: 6vh;
+      }
+
+      .fas.fa-home {
+        font-size: 24px;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+      }
+
+      /* Set a high z-index to keep the header above other elements */
+      h1 {
+        font-size: 24px;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      nav li {
+        margin-right: 20px;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        margin-right: 30px;
+        font-size: 16px;
+        margin-top: 20px;
+        text-align: center;
+        margin-bottom: 30px;
+        transition: color 0.3s ease;
+        font-family: "Arial, Helvetica, sans-serif Sans";
+      }
+
+      nav a:hover {
+        color: #f0f0f0;
+      }
+
+      /* Footer styling */
+      footer {
+        background-color: #fff;
+        color: #ccc;
+        text-align: center;
+        padding: 10px;
+        height: 6vh;
+        position: fixed;
+        border-top: 2px solid #95959555;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: space-between;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+
+      .footers-button {
+        color: #777777;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footers-button i {
+        font-size: 16px;
+        margin-bottom: -5px;
+        color: #ff7148;
+      }
+
+      .footers-button p {
+        font-size: 14px;
+      }
+
+      .footers-button:hover {
+        color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <header>
     <div class="logo-container">
-        <div class="openworklogo">
-            <h1 class="logo">O<span class="letter-o">penwork</span></h1>
-        </div>
+      <div class="openworklogo">
+        <h1 class="logo">O<span class="letter-o">penwork</span></h1>
+      </div>
     </div>
     <nav>
-        <a href="{{ url_for('business_dashboard') }}" class="header-button">
-            <i class="fas fa-home"></i>
-        </a>
+      <a href="{{ url_for('business_dashboard') }}" class="header-button">
+        <i class="fas fa-home"></i>
+      </a>
     </nav>
-</header>
-<body>
-    <br>
-    <br>
-    
-    
+  </header>
+  <body>
+    <br />
+    <br />
+
     <!-- Content specific to each page will be inserted here -->
-    {% block content %}
-    {% endblock %}
-</body>
-<footer>
+    {% block content %} {% endblock %}
+  </body>
+  <footer>
     <a href="{{ url_for('create_job') }}" class="footers-button">
-        <i class="fas fa-search"></i>
-        <p>Create a Job</p>
+      <i class="fas fa-search"></i>
+      <p>Create a Job</p>
     </a>
 
     <a href="{{ url_for('business_created_jobs') }}" class="footers-button">
-        <i class="fas fa-comment"></i>
-        <p>Open Jobs</p>
+      <i class="fas fa-comment"></i>
+      <p>Open Jobs</p>
     </a>
 
     <a href="{{ url_for('business_active_jobs') }}" class="footers-button">
-        <i class="fas fa-arrow-right"></i>
-        <p>Active Jobs</p>
+      <i class="fas fa-arrow-right"></i>
+      <p>Active Jobs</p>
     </a>
 
     {% if current_user.is_authenticated %}
     <a href="{{ url_for('business_profile') }}" class="footers-button">
-        <i class="fas fa-bars"></i>
-        <p>Account</p>
+      <i class="fas fa-bars"></i>
+      <p>Account</p>
     </a>
-    {% endif %}   
-</footer>
+    {% endif %}
+  </footer>
 </html>

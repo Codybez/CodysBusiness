@@ -20,6 +20,10 @@
         padding: 0;
       }
 
+      .job-listing:first-of-type {
+        margin-top: 40px;
+      }
+
       .job-listing:last-of-type {
         margin-bottom: 80px;
       }
@@ -102,12 +106,7 @@
   </head>
   <body>
     {% extends 'base_business.html' %} {% block title %}Created Jobs{% endblock
-    %} {% block content %}
-    <div class="info-container">
-      <h1>Open Jobs</h1>
-    </div>
-
-    {% for job in created_jobs| reverse %}
+    %} {% block content %} {% for job in created_jobs| reverse %}
 
     <div class="job-listing">
       <h3>{{ job.job_name }}</h3>

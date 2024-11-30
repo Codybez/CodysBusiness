@@ -1,48 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Business Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='business_home.css') }}">
-  <style>
-  .sign-out-button {
-    text-decoration: none;
-   
-}
-</style>
-</head>
-<body>
-  {% extends 'base_business.html' %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Business Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <style>
+      .info-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-left: 10px;
+      }
 
-  {% block title %}Business{% endblock %}
+      .info-container h1 {
+        color: #fff;
+      }
+      .section-button-container {
+        background-color: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        margin-bottom: 50px;
+      }
 
-  {% block content %}
+      h2 {
+        color: #ff7148;
+      }
 
+      .sign-out-button {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 10px;
+        font-size: 16px;
+      }
 
-<div class="info-container">
-    <h1>Business Dashboard</h1>
-  </div>
-     <div 
+      .sign-out-button:hover {
+        background-color: #ff5e33;
+      }
 
-          class="section-button-container">
-          
-          <h2>User Information</h2>
-          <p>{{ current_user.location }}</p>
-          <p>{{ current_user.email }}</p>
-          <p>Jobs Completed: 0</p>
-         
-          <!-- Add more user information here -->
-     <div>
-  </div>
-</div>
+      .sign-out-button {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block title %}Business{% endblock %}
+    {% block content %}
 
+    <div class="info-container">
+      <h1>Business Dashboard</h1>
+    </div>
+    <div class="section-button-container">
+      <h2>User Information</h2>
+      <p>{{ current_user.location }}</p>
+      <p>{{ current_user.email }}</p>
+      <p>Jobs Completed: 0</p>
 
-<div>
-  <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
-</div>
+      <!-- Add more user information here -->
+      <div></div>
+    </div>
 
+    <div>
+      <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
+    </div>
 
     {% endblock %}
-</body>
+  </body>
 </html>

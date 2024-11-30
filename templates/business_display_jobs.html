@@ -130,14 +130,12 @@
       </p>
 
       <p>
-        <i class="far fa-clock"></i> Job posted {{ job.date_created|time_ago }}
-      </p>
-
-      <p>
         <i class="fas fa-map-marker-alt"></i>
         <strong>{{ job.job_category }}</strong> in {{ job.city }}, {{ job.suburb
         }}
       </p>
+
+      <p><i class="far fa-clock"></i> Posted {{ job.date_created|time_ago }}</p>
 
       <p>
         <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts

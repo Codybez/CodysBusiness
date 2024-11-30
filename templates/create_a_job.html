@@ -13,6 +13,175 @@
       href="{{ url_for('static', filename='styles_create_a_job.css') }}"
     />
     <style>
+      body {
+        background-color: #f7f7f7;
+        font-family: Arial, sans-serif;
+        margin: 10px;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        border-radius: 10px;
+        margin-bottom: 50px;
+        padding: 20px;
+        background-color: #ccccccdf;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        margin-bottom: 70px;
+      }
+
+      h2 {
+        color: #000000;
+        margin-bottom: 50px;
+      }
+      h1 {
+        color: #ff7148;
+        font-family: "Arial", sans-serif;
+        margin-bottom: 10px;
+        margin-top: 20px;
+      }
+
+      .logo {
+        color: #ff7148;
+        font-size: 29px;
+        margin-bottom: 20px;
+      }
+
+      .letter-o {
+        color: #ffffff;
+        font-size: 32px;
+      }
+
+      .form-group {
+        margin-bottom: 30px;
+      }
+
+      button {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        text-align: left;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%; /* Make button span 90% of its container */
+        position: relative; /* Position for the pseudo-element */
+      }
+
+      button::after {
+        content: "\203A"; /* Unicode for a right-pointing arrow */
+        font-size: 40px; /* Adjust the size of the arrow */
+        margin-left: 10px; /* Space between the text and the arrow */
+        position: absolute;
+        right: 20px; /* Position the arrow on the right */
+        top: 50%;
+        transform: translateY(-60%); /* Vertically center the arrow */
+      }
+
+      /* Style the form sections */
+      .form-section {
+        display: none;
+      }
+
+      .form-section.active {
+        display: block;
+      }
+
+      .form-group {
+        margin-bottom: 30px;
+      }
+      label {
+        display: block;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="password"] {
+        width: 93.5%;
+        padding: 12px;
+        border-radius: 5px;
+        border: 1px solid #ff7148;
+        font-size: 16px;
+        color: #333;
+      }
+      #job_description {
+        height: 50px;
+      }
+      textarea {
+        resize: vertical;
+      }
+      textarea {
+        width: 93.5%;
+        padding: 12px;
+        border-radius: 5px;
+        border: 1px solid #ff7148;
+        font-size: 16px;
+        color: #333;
+        resize: vertical; /* This allows vertical resizing of the textarea */
+      }
+      select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 5px;
+        border: 1px solid #ff7148;
+        font-size: 16px;
+        color: #333;
+      }
+
+      /* Style for the "Other" category input field */
+      .other-category {
+        display: none;
+      }
+      .hidden {
+        display: none;
+      }
+      /* Hide the default file input button */
+      input[type="file"] {
+        display: none;
+      }
+
+      /* Style the custom file input button */
+      .custom-file-input {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ff7148;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      /* Optional: Add hover and focus effects */
+      .custom-file-input:hover,
+      .custom-file-input:focus {
+        background-color: #ff8d6f;
+      }
+
+      input[type="submit"] {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 14px 24px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #ff8d6f;
+      }
+
       .info-container h1 {
         color: #555;
         font-size: small;
@@ -192,7 +361,7 @@
 
         <div class="form-group">
           <button type="button" class="submit-button" onclick="submitForm()">
-            Submit
+            Submit Job
           </button>
         </div>
       </form>

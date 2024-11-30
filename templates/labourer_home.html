@@ -1,42 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Labourer Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='labourer_home.css') }}">
- <style>
-  .sign-out-button {
-    text-decoration: none;
-   
-}
-</style>
-</head>
-<body>
- {% extends 'base_labour.html' %}
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Labourer Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='labourer_home.css') }}"
+    />
+    <style>
+      .info-container {
+        background-color: #fff;
+        margin-bottom: 20px;
+        margin-left: 10px;
+      }
 
-{% block title %}Labour{% endblock %}
+      .info-container h1 {
+        color: #585858d3;
+        font-size: small;
+      }
+      .section-button-container {
+        background-color: #fff;
+        padding: 20px;
+        border-bottom: 2px solid #ccc;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        margin-bottom: 50px;
+      }
 
-{% block content %}
+      h2 {
+        color: #ff7148;
+      }
 
-<div class="info-container">
-    <h1>Dashboard</h1>
-</div>
+      h6 {
+        color: #777777;
+        font-size: 12px;
+        margin-left: 10px;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .sign-out-button {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 10px;
+        font-size: 16px;
+      }
 
-<div class="section-button-container">    
-    <h2>User Information</h2>
-    <p>User: {{ current_user.email }}</p>
-    <p>Location: {{ current_user.location }}</p>
-    
-    <p>Jobs Completed: {{ current_user.jobs_completed }}</p>
-    <!-- Add more user information here -->
-</div>
+      .sign-out-button:hover {
+        background-color: #ff5e33;
+      }
 
-<div> 
-    <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
-</div>
+      .sign-out-button {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Labour{% endblock %} {%
+    block content %}
 
-{% endblock %}
-</body>
+    <div class="info-container">
+      <h6>Dashboard</h6>
+    </div>
+
+    <div class="section-button-container">
+      <h2>User Information</h2>
+      <p>User: {{ current_user.email }}</p>
+      <p>Location: {{ current_user.location }}</p>
+
+      <p>Jobs Completed: {{ current_user.jobs_completed }}</p>
+      <!-- Add more user information here -->
+    </div>
+
+    <div>
+      <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
+    </div>
+
+    {% endblock %}
+  </body>
 </html>
