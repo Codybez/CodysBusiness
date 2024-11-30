@@ -13,6 +13,17 @@
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <style>
+      /* Back arrow styling */
+      .back-arrow {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        font-size: 24px;
+        text-decoration: none;
+      }
+
       .openworklogo {
         margin-left: 10px;
       }
@@ -47,11 +58,11 @@
         left: 0;
         right: 0;
         z-index: 50;
-        height: 6vh;
+        height: 4vh;
       }
 
       .fas.fa-home {
-        font-size: 24px;
+        font-size: 20px;
         position: absolute;
         right: 20px;
         top: 50%;
@@ -134,13 +145,41 @@
       .footers-button:hover {
         color: #f0f0f0;
       }
+
+      /* Styling for the orange "O" */
+      .orange-letter {
+        color: #ff7148; /* Choose your preferred shade of orange */
+      }
+
+      .header-title {
+        display: inline-block;
+        margin-left: 35px; /* Adjust spacing between arrow and title */
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font */
+        color: #fff;
+        font-weight: bold;
+        line-height: 24px;
+        vertical-align: middle;
+        transition: margin-left 0.3s ease-in-out; /* Smooth slide effect */
+      }
+
+      /* When the back arrow is hidden, slide the title to the left */
+      .hide-back .header-title {
+        margin-left: 10px; /* Adjust to desired left position */
+      }
     </style>
   </head>
-  <header>
+  <header class="{% if is_dashboard_page %}hide-back{% endif %}">
     <div class="logo-container">
-      <div class="openworklogo">
-        <h1 class="logo">O<span class="letter-o">penwork</span></h1>
-      </div>
+      <!-- Check if the current page is not the dashboard -->
+      {% if not is_dashboard_page %}
+      <a href="javascript:history.back()" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      {% endif %}
+      <span class="header-title">
+        <span class="orange-letter">o</span>penwork
+      </span>
     </div>
     <nav>
       <a href="{{ url_for('business_dashboard') }}" class="header-button">

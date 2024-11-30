@@ -7,7 +7,7 @@
     <style>
       body {
         font-family: Arial, Helvetica, sans-serif;
-        background-color: #f0f0f0;
+        background-color: #ffffff;
         color: #333;
         margin: 0;
         padding: 0;
@@ -15,17 +15,20 @@
 
       .edit-form-container {
         max-width: 600px;
-        margin: 20px auto;
         padding: 20px;
         background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
       }
 
       h2 {
         text-align: center;
         margin-bottom: 20px;
         color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+        position: relative;
       }
 
       label {
@@ -37,14 +40,35 @@
       input {
         width: 100%;
         padding: 10px;
-        margin-bottom: 16px;
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 16px;
         box-sizing: border-box;
       }
 
-      button {
+      .help-button {
+        position: absolute;
+        transform: translateY(-180%);
+        top: 50%;
+        right: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #ff7148;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .help-button:hover {
+        background-color: #ff4500;
+      }
+
+      button[type="submit"] {
         display: block;
         width: 100%;
         padding: 10px;
@@ -56,8 +80,50 @@
         cursor: pointer;
       }
 
-      button:hover {
+      button[type="submit"]:hover {
         background-color: #555;
+      }
+
+      /* Modal styling */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 80%;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .modal-content h3 {
+        color: orange;
+        margin-bottom: 10px;
+      }
+
+      .close-modal {
+        background: #333;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+      }
+
+      .close-modal:hover {
+        background: #555;
       }
     </style>
   </head>
@@ -68,6 +134,7 @@
     <div class="edit-form-container">
       <h2>Edit Social Links</h2>
       <form method="POST">
+        <!-- Facebook -->
         <div class="form-group">
           <label for="facebook">Facebook URL:</label>
           <input
@@ -75,9 +142,17 @@
             id="facebook"
             name="facebook"
             value="{{ current_user.social_links.facebook if current_user.social_links else '' }}"
-            class="form-control"
           />
+          <button
+            type="button"
+            class="help-button"
+            onclick="openModal('facebook-help')"
+          >
+            ?
+          </button>
         </div>
+
+        <!-- Instagram -->
         <div class="form-group">
           <label for="instagram">Instagram URL:</label>
           <input
@@ -85,9 +160,17 @@
             id="instagram"
             name="instagram"
             value="{{ current_user.social_links.instagram if current_user.social_links else '' }}"
-            class="form-control"
           />
+          <button
+            type="button"
+            class="help-button"
+            onclick="openModal('instagram-help')"
+          >
+            ?
+          </button>
         </div>
+
+        <!-- Website -->
         <div class="form-group">
           <label for="website">Website URL:</label>
           <input
@@ -95,12 +178,112 @@
             id="website"
             name="website"
             value="{{ current_user.social_links.website if current_user.social_links else '' }}"
-            class="form-control"
           />
+          <button
+            type="button"
+            class="help-button"
+            onclick="openModal('website-help')"
+          >
+            ?
+          </button>
         </div>
+
+        <!-- Google Reviews -->
+        <div class="form-group">
+          <label for="google-reviews">Google Reviews URL:</label>
+          <input
+            type="text"
+            id="google-reviews"
+            name="google_reviews"
+            value="{{ current_user.social_links.google_reviews if current_user.social_links else '' }}"
+          />
+          <button
+            type="button"
+            class="help-button"
+            onclick="openModal('google-help')"
+          >
+            ?
+          </button>
+        </div>
+
         <button type="submit">Save Changes</button>
       </form>
     </div>
+
+    <!-- Modals -->
+    <div id="facebook-help" class="modal">
+      <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('facebook-help')">
+          Close
+        </button>
+        <h3>Facebook Link Help</h3>
+        <p>
+          Log in to Facebook, go to your page, and copy the URL from your
+          browser's address bar.
+        </p>
+        <p>
+        <strong>Example:</strong> 
+        <p> https://www.facebook.com/YourBusinessName </p>
+        </p>
+      </div>
+    </div>
+
+    <div id="instagram-help" class="modal">
+      <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('instagram-help')">
+          Close
+        </button>
+        <h3>Instagram Link Help</h3>
+        <p>
+          Log in to Instagram, go to your profile, and copy the URL from your
+          browser's address bar.
+        </p>
+        <p>
+        <strong>Example:</strong> 
+        <p>https://www.instagram.com/YourBusinessHandle</p>
+        </p>
+      </div>
+    </div>
+
+    <div id="website-help" class="modal">
+      <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('website-help')">
+          Close
+        </button>
+        <h3>Website Link Help</h3>
+        <p>
+          Enter the URL of your website. Ensure it starts with http:// or
+          https://.
+        </p>
+      </div>
+    </div>
+
+    <div id="google-help" class="modal">
+      <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('google-help')">
+          Close
+        </button>
+        <h3>Google Reviews Link Help</h3>
+        <p>
+          Log in to Google Business Profile, find the "Get More Reviews"
+          section, and copy the provided link.
+        </p>
+        <p>
+        <strong>Example:</strong> 
+        <p> https://g.page/r/YourBusinessReviewLink </p>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      function openModal(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+      }
+    </script>
 
     {% endblock %}
   </body>

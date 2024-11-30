@@ -13,16 +13,6 @@
       href="{{ url_for('static', filename='labourer_home.css') }}"
     />
     <style>
-      .info-container {
-        background-color: #fff;
-        margin-bottom: 20px;
-        margin-left: 10px;
-      }
-
-      .info-container h1 {
-        color: #585858d3;
-        font-size: small;
-      }
       .section-button-container {
         background-color: #fff;
         padding: 20px;
@@ -32,17 +22,6 @@
         margin-bottom: 50px;
       }
 
-      h2 {
-        color: #ff7148;
-      }
-
-      h6 {
-        color: #777777;
-        font-size: 12px;
-        margin-left: 10px;
-        padding: 0;
-        font-family: Arial, Helvetica, sans-serif;
-      }
       .sign-out-button {
         background-color: #ff7148;
         color: white;
@@ -65,10 +44,6 @@
   <body>
     {% extends 'base_labour.html' %} {% block title %}Labour{% endblock %} {%
     block content %}
-
-    <div class="info-container">
-      <h6>Dashboard</h6>
-    </div>
 
     <div class="section-button-container">
       <h2>User Information</h2>

@@ -39,7 +39,7 @@
 
       .job-listing h1 {
         color: #333;
-        font-size: 23px;
+        font-size: 22px;
         margin: 0;
       }
 
@@ -111,12 +111,7 @@
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Business{% endblock %} {%
-    block content %}
-    <div class="info-container">
-      <h6>Job Contacts</h6>
-    </div>
-
-    {% for job in applied_jobs | reverse %}
+    block content %} {% for job in applied_jobs | reverse %}
     <div class="job-listing" id="job_{{ job.id }}">
       <h1>{{ job.job_name }}</h1>
       <p class="job-location">
@@ -140,7 +135,7 @@
         href="{{ url_for('display_jobs', job_id=job.id) }}"
         class="view-job-link"
       >
-        View Job Details
+        Job Details
         <i class="fas fa-arrow-right"></i>
       </a>
 

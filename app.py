@@ -297,12 +297,12 @@ def logout():
 @app.route('/labourer/dashboard')
 @login_required
 def labourer_dashboard():
-    return render_template('labourer_home.html', current_user=current_user)
+    return render_template('labourer_home.html',is_dashboard_page=True, current_user=current_user)
 
 @app.route('/business/dashboard')
 @login_required
 def business_dashboard():
-    return render_template('business_home.html', current_user=current_user)
+    return render_template('business_home.html',is_dashboard_page=True, current_user=current_user)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
