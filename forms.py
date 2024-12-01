@@ -27,6 +27,6 @@ class EditLabourerProfileForm(FlaskForm):
     last_name = StringField('Last Name', validators=[DataRequired()])
     date_of_birth = DateField('Date of Birth', format='%Y-%m-%d', validators=[DataRequired()])
     phone_number = StringField('Phone Number', validators=[DataRequired()])
-    user_blurb = StringField('User', validators=[DataRequired()])
+    user_blurb = TextAreaField('User', validators=[DataRequired()])
 
     submit = SubmitField('Save Changes')

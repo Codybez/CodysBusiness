@@ -122,10 +122,10 @@
       }
 
       .edit-pic-button {
-        background-color: #ff7148;
+        background-color: #333;
         color: white;
         border: none;
-        padding: 5px 10px;
+        padding: 10px 10px;
         cursor: pointer;
         border-radius: 5px;
       }
@@ -148,6 +148,14 @@
         font-size: 14px;
         color: #333;
         line-height: 1.6;
+      }
+
+      .info-item span {
+        display: inline-block;
+        max-width: 100%; /* Limit the width of the URL */
+        white-space: nowrap; /* Prevent wrapping */
+        overflow: hidden; /* Hide the overflow */
+        text-overflow: ellipsis; /* Add an ellipsis when the URL overflows */
       }
     </style>
   </head>
@@ -216,7 +224,7 @@
           <span>{{ current_user.labourer_profile.phone_number }}</span>
         </div>
         <div class="info-item">
-          <strong>About Me:</strong>
+          <strong>About Us:</strong>
           <span>{{ current_user.labourer_profile.user_blurb }}</span>
         </div>
         <div class="edit-button">
@@ -240,6 +248,14 @@
           <span>{{ current_user.company_details.business_type }}</span>
         </div>
         <div class="info-item">
+          <strong>Trading Name:</strong>
+          <span>{{ current_user.company_details.trading_name }}</span>
+        </div>
+        <div class="info-item">
+          <strong>Established:</strong>
+          <span>{{ current_user.company_details.established }}</span>
+        </div>
+        <div class="info-item">
           <strong>NZBN:</strong>
           <span>{{ current_user.company_details.nzbn }}</span>
         </div>
@@ -259,10 +275,7 @@
           <strong>Unit/Flat No:</strong>
           <span>{{ current_user.company_details.unit_no }}</span>
         </div>
-        <div class="info-item">
-          <strong>Trading Name:</strong>
-          <span>{{ current_user.company_details.trading_name }}</span>
-        </div>
+
         <div class="edit-button">
           <a href="{{ url_for('edit_tradesman_profile') }}">Add/Edit</a>
         </div>
@@ -290,6 +303,11 @@
           <strong>Website:</strong>
           <span>{{ current_user.social_links.website }}</span>
         </div>
+        <div class="info-item">
+          <strong>Google:</strong>
+          <span>{{ current_user.social_links.google }}</span>
+        </div>
+
         <div class="edit-button">
           <a href="{{ url_for('edit_social_links') }}">Add/Edit</a>
         </div>

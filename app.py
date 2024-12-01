@@ -127,12 +127,15 @@ class CompanyDetails(db.Model):
     physical_address = db.Column(db.String(100), nullable=False)
     unit_no = db.Column(db.String(10))
     trading_name = db.Column(db.String(100), nullable=False)
+    established = db.Column(db.String(100), nullable=True)
+    
 
 class SocialLinks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     facebook = db.Column(db.String(255))
     instagram = db.Column(db.String(255))
     website = db.Column(db.String(255))
+    google= db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
@@ -856,6 +859,9 @@ def edit_tradesman_profile():
         physical_address = request.form.get('physicalAddress')
         unit_no = request.form.get('unitNo')
         trading_name = request.form.get('tradingName')
+        established = request.form.get('established')
+        
+
 
         user = current_user
 
@@ -869,7 +875,8 @@ def edit_tradesman_profile():
                 director_last_name=director_last_name,
                 physical_address=physical_address,
                 unit_no=unit_no,
-                trading_name=trading_name
+                trading_name=trading_name,
+                established=established
             )
             user.company_details = company_details
         else:
@@ -881,6 +888,7 @@ def edit_tradesman_profile():
             user.company_details.physical_address = physical_address
             user.company_details.unit_no = unit_no
             user.company_details.trading_name = trading_name
+            user.company_details.established = established
 
         # Commit the changes to the database
         db.session.commit()
@@ -915,6 +923,7 @@ def edit_social_links():
         facebook = request.form.get('facebook')
         instagram = request.form.get('instagram')
         website = request.form.get('website')
+        google = request.form.get('google')
 
         user = current_user
 
@@ -924,7 +933,8 @@ def edit_social_links():
             social_links = SocialLinks(
                 facebook=facebook,
                 instagram=instagram,
-                website=website
+                website=website,
+                google=google,
             )
             user.social_links = social_links  # Associate the new SocialLinks with the user
         else:
@@ -932,6 +942,7 @@ def edit_social_links():
             user.social_links.facebook = facebook
             user.social_links.instagram = instagram
             user.social_links.website = website
+            user.social_links.google = google
 
         # Commit the changes to the database
         db.session.commit()

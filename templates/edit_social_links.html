@@ -190,12 +190,12 @@
 
         <!-- Google Reviews -->
         <div class="form-group">
-          <label for="google-reviews">Google Reviews URL:</label>
+          <label for="google">Google Reviews URL:</label>
           <input
             type="text"
-            id="google-reviews"
-            name="google_reviews"
-            value="{{ current_user.social_links.google_reviews if current_user.social_links else '' }}"
+            id="google"
+            name="google"
+            value="{{ current_user.social_links.google if current_user.social_links else '' }}"
           />
           <button
             type="button"
