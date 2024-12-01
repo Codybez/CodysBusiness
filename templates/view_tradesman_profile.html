@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Labourer Profile Viewer</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+
+      .profile-container {
+        max-width: 600px;
+        margin: 30px auto;
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .profile-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .profile-pic {
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
+        border: 3px solid #ddd;
+        object-fit: cover;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin: 10px 0;
+        color: #333;
+      }
+
+      .user-location {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .section-container {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #ffffff;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #ff7148;
+        padding-bottom: 5px;
+        color: #333;
+      }
+
+      .info-item {
+        margin: 5px 0;
+        font-size: 16px;
+      }
+
+      .info-item strong {
+        font-weight: bold;
+        color: #333;
+      }
+
+      /* Social Links Container */
+      .user-social-links {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 3px solid #3f3f3f82;
+        border-radius: 10px;
+      }
+
+      /* Social Icon */
+      .social-icon {
+        text-decoration: none;
+        font-size: 24px;
+        transition: transform 0.3s ease, color 0.3s ease;
+      }
+
+      .social-icon i {
+        margin: 0 10px;
+      }
+
+      /* Facebook Icon Color */
+      .social-icon.facebook {
+        color: #3b5998; /* Facebook blue */
+      }
+
+      /* Instagram Icon Color */
+      .social-icon.instagram {
+        color: #e4405f; /* Instagram pinkish-red */
+      }
+
+      /* Website Icon Color */
+      .social-icon.website {
+        color: #4e73df; /* Standard blue for website link */
+      }
+
+      /* Hover Effect for Social Links */
+      .social-icon:hover {
+        transform: scale(1.1); /* Slightly grow the icon */
+        color: #ff7148; /* A more neutral color on hover */
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block title %}Labourer{% endblock %}
+    {% block content %}
+
+    <div class="profile-container">
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <img
+          src="{{ url_for('static', filename='profile_pics/' + (user.profile_image.filename if user.profile_image else 'default.png')) }}"
+          alt="Profile Image"
+          class="profile-pic"
+        />
+        <h1>{{ user.company_details.trading_name }}</h1>
+        <h1>
+          {{ user.labourer_profile.first_name }} {{
+          user.labourer_profile.last_name }}
+        </h1>
+        <p class="user-location">
+          <i class="fas fa-map-marker-alt"></i> {{ user.location }}
+        </p>
+      </div>
+
+      <!-- Social Links (Below Location) -->
+      <div class="user-social-links">
+        {% if user.social_links.facebook %}
+        <a
+          href="{{ user.social_links.facebook }}"
+          target="_blank"
+          class="social-icon facebook"
+        >
+          <i class="fab fa-facebook"></i>
+        </a>
+        {% endif %} {% if user.social_links.instagram %}
+        <a
+          href="{{ user.social_links.instagram }}"
+          target="_blank"
+          class="social-icon instagram"
+        >
+          <i class="fab fa-instagram"></i>
+        </a>
+        {% endif %} {% if user.social_links.website %}
+        <a
+          href="{{ user.social_links.website }}"
+          target="_blank"
+          class="social-icon website"
+        >
+          <i class="fas fa-globe"></i>
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- User Information -->
+      <div class="section-container">
+        <div class="section-title">About Us</div>
+        <p class="info-item">{{ user.labourer_profile.user_blurb }}</p>
+      </div>
+
+      <!-- Company Details -->
+      <div class="section-container">
+        <div class="section-title">Company Details</div>
+
+        <!-- Trading Name -->
+        <p class="info-item">
+          <strong>Trading Name:</strong> {{ user.company_details.trading_name }}
+        </p>
+        <!-- In Business Since (Add later) -->
+        <p class="info-item">
+          <strong>Established:</strong> {{
+          user.company_details.in_business_since | default('Not Available') }}
+        </p>
+
+        <!-- NZBN -->
+        <p class="info-item">
+          <strong>NZBN:</strong> {{ user.company_details.nzbn }}
+        </p>
+      </div>
+    </div>
+
+    {% endblock %}
+  </body>
+</html>

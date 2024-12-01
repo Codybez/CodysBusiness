@@ -51,6 +51,7 @@
 
       .applicant-profile h3 {
         color: #333;
+        text-decoration: underline orange;
         font-size: 23px;
         margin-top: 15px;
         margin-bottom: 10px;
@@ -138,14 +139,14 @@
           <a
             href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}"
           >
-            <span>View Full Profile</span>
+            <span>Chat</span>
             <i class="fas fa-arrow-right"></i>
           </a>
           <a
-            href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}"
+            href="{{ url_for('view_tradesman_profile', user_id=application.user.id) }}"
           >
-            <span>Chat</span>
-            <i class="fas fa-comments"></i>
+            <span>View Full Profile</span>
+            <i class="fas fa-arrow-right"></i>
           </a>
         </div>
         {% else %}

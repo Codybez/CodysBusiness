@@ -940,6 +940,21 @@ def edit_social_links():
 
     return render_template('edit_social_links.html')
 
+@app.route('/tradesman_profile/<int:user_id>')
+def view_tradesman_profile(user_id):
+    # Query the database for the user
+    user = User.query.get(user_id)
+    
+    if not user:
+        # If the user does not exist, return a 404 error
+        abort(404)
+    
+    # Render the profile page with the user's data
+    return render_template(
+        'view_tradesman_profile.html',
+        user=user
+    )
+
 if __name__ == '__main__':
     db.create_all()
     socketio.run(app, debug=True)
