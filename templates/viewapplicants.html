@@ -15,9 +15,9 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        background-color: #f7f7f7;
         margin: 0;
-        padding: 0;
+        padding: 5px;
       }
 
       /* Container for Applicant Profiles */
@@ -51,10 +51,9 @@
 
       .applicant-profile h3 {
         color: #333;
-        text-decoration: underline orange;
-        font-size: 23px;
+        text-decoration: underline #777;
+        font-size: 21px;
         margin-top: 15px;
-        margin-bottom: 10px;
         margin-left: 5px;
       }
 
@@ -62,6 +61,7 @@
         color: #555;
         margin-bottom: 8px;
         margin-left: 5px;
+        margin-top: -3px;
       }
 
       .button-container {
@@ -100,6 +100,12 @@
           font-size: 14px;
         }
       }
+      .applicant-profile h4 {
+        color: #ff7148;
+        margin-left: 5px;
+        font-size: 18px;
+        margin-top: -20px;
+      }
     </style>
   </head>
   <body>
@@ -121,17 +127,14 @@
         />
         <h3>{{ application.user.company_details.trading_name }}</h3>
 
+        <h4>
+          {{ application.user.first_name }} {{ application.user.last_name }}
+        </h4>
+
+        <p>Email: {{ application.user.email }}</p>
         <p>
-          <i class="fas fa-map-marker-alt"></i>
-          <span>{{ application.user.location }}</span>
-        </p>
-        <p>
-          <i class="fas fa-check-circle"></i> Jobs Completed: {{
-          application.user.jobs_completed }}
-        </p>
-        <p>
-          <i class="fas fa-check-circle"></i> Contact Number: {{
-          application.user.labourer_profile.phone_number }}
+          Contact Number:
+          <strong>{{ application.user.labourer_profile.phone_number }}</strong>
         </p>
 
         <!-- Buttons -->

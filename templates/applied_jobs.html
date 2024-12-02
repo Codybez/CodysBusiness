@@ -107,6 +107,35 @@
           width: 90%; /* Adjust the button width */
         }
       }
+
+      .chat-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-flex; /* Use inline-flex to align text and icon horizontally */
+        justify-content: space-between; /* Space out the text and icon */
+        width: 85%;
+        margin-bottom: 10px;
+        text-decoration: none;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .chat-button i {
+        margin-left: 10px; /* Add space between the text and icon */
+      }
+
+      /* Adjust layout for mobile devices */
+      @media (max-width: 600px) {
+        .view-job-link,
+        .chat-button {
+          width: 90%; /* Make buttons full width for smaller screens */
+          margin-left: 0; /* Remove spacing for stacked layout */
+        }
+      }
     </style>
   </head>
   <body>
@@ -137,6 +166,11 @@
       >
         Job Details
         <i class="fas fa-arrow-right"></i>
+      </a>
+
+      <a href="{{ url_for('chat', job_id=job.id) }}" class="chat-button">
+        Chat
+        <i class="fas fa-comment"></i>
       </a>
 
       {% endif %}

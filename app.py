@@ -549,62 +549,82 @@ def display_jobs(job_id):
 
     return render_template('display_job.html', job=job)
 
-
-@app.route('/chat/<int:job_id>')
+@app.route('/chat/<int:job_id>', methods=['GET', 'POST'])
 @login_required
 def chat(job_id):
-    # Fetch the job and check if the user is associated with the job
     job = Job.query.get_or_404(job_id)
-
-    if current_user.business_profile == job.business_profile or current_user.id in [applicant.user_id for applicant in job.applicants]:
-        return render_template('chat.html', job_id=job_id)
-    else:
+    
+    # Find the applicant based on the current user (assuming this is an applicant)
+    applicant = JobApplication.query.filter_by(job_id=job.id, user_id=current_user.id).first()
+    
+    # Ensure the current user is associated with the job
+    if not applicant and current_user.business_profile.id != job.business_profile_id:
         flash("You do not have permission to access this chat.", "error")
         return redirect(url_for('index'))
 
+    # If the user is an applicant, retrieve all messages related to the job
+    messages = Message.query.filter_by(room=job.id).order_by(Message.timestamp.asc()).all()
 
+    if request.method == 'POST':
+        # Handle message submission
+        content = request.form['message']
+        new_message = Message(content=content, room=str(job.id), sender_id=current_user.id)
+        db.session.add(new_message)
+        db.session.commit()
+        return redirect(url_for('chat', job_id=job.id))
+    
+    return render_template('chat.html', job=job, messages=messages, applicant=applicant)
 
-# Update the handle_join function
 @socketio.on('join')
 def handle_join(data):
-    room = data['room']
+    room = f"job_{data['job_id']}_applicant_{data['applicant_id']}"
     join_room(room)
 
     # Send existing messages to the joining user
     existing_messages = Message.query.filter_by(room=room).all()
-    emit('load_messages', [{'sender_id': msg.sender_id, 'sender_name': get_sender_name(msg.sender_id), 'message': msg.content, 'timestamp': msg.timestamp.strftime('%H:%M:%S')} for msg in existing_messages], room=room, broadcast=False)
+    emit('load_messages', [{
+        'sender_id': msg.sender_id, 
+        'sender_name': get_sender_name(msg.sender_id), 
+        'message': msg.content, 
+        'timestamp': msg.timestamp.strftime('%H:%M:%S')
+    } for msg in existing_messages], room=room, broadcast=False)
 
- # Update the handle_message function
 @socketio.on('message')
 def handle_message(data):
-    room = data['room']
+    room = f"job_{data['job_id']}_applicant_{data['applicant_id']}"
     message = data['message']
     sender_id = data['sender_id']
 
-    # Create a Message object and save it to the database
+    # Save the message to the database
     new_message = Message(room=room, content=message, sender_id=sender_id)
     db.session.add(new_message)
     db.session.commit()
 
+    # Get the sender's name
+    sender_name = get_sender_name(sender_id)
+
     # Emit the message to the sender
-    emit('message', {'sender_id': sender_id, 'sender_name': get_sender_name(sender_id), 'message': message, 'timestamp': new_message.timestamp.strftime('%H:%M:%S')}, room=request.sid)
+    emit('message', {
+        'sender_id': sender_id, 
+        'sender_name': sender_name, 
+        'message': message, 
+        'timestamp': new_message.timestamp.strftime('%H:%M:%S')
+    }, room=request.sid)
 
-    # Broadcast the message to all clients in the room except the sender
-    emit('message', {'sender_id': sender_id, 'sender_name': get_sender_name(sender_id), 'message': message, 'timestamp': new_message.timestamp.strftime('%H:%M:%S')}, room=room, skip_sid=request.sid)
+    # Broadcast the message to the room (excluding the sender)
+    emit('message', {
+        'sender_id': sender_id, 
+        'sender_name': sender_name, 
+        'message': message, 
+        'timestamp': new_message.timestamp.strftime('%H:%M:%S')
+    }, room=room, skip_sid=request.sid)
 
-
-
-def get_sender_name(sender_id):
-    # Implement a function to get the sender's name based on sender_id
-    # Adjust this function based on your application's logic
-    user = User.query.get(sender_id)
+def get_sender_name(user_id):
+    user = User.query.get(user_id)  # Fetch the user by ID
     if user:
-        # Assuming user has a user_type and corresponding profile
-        if user.user_type == 'Business' and user.business_profile:
-            return user.business_profile.business_name
-        elif user.user_type == 'Labourer' and user.labourer_profile:
-            return user.labourer_profile.first_name
-    return "Unknown"
+        return f"{user.first_name} {user.last_name}"  # Modify based on your User model fields
+    return "Unknown Sender"
+
 
 def get_user_details(user_id):
     user = User.query.get(user_id)

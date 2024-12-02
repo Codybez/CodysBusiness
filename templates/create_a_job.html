@@ -221,10 +221,6 @@
         line-height: 16px; /* Vertically center the X */
       }
 
-      .remove-btn:hover {
-        background-color: rgba(0, 0, 0, 0.7);
-      }
-
       .alert {
         padding: 10px;
         margin: 20px 0;
@@ -243,6 +239,16 @@
         font-size: 14px;
         margin-top: 10px;
       }
+
+      .form-instructions {
+        margin-bottom: 30px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-left: 4px solid #ff8d6f;
+        color: #555;
+        font-size: 14px;
+        line-height: 1.5;
+      }
     </style>
   </head>
   <body>
@@ -257,9 +263,20 @@
         action="{{ url_for('submit_job') }}"
         enctype="multipart/form-data"
       >
+        <p class="form-instructions">
+          Please fill out the form below to post a new job. Ensure all required
+          fields are completed, and provide as much detail as possible to help
+          potential candidates understand your needs.
+        </p>
         <div class="form-group">
           <label for="job_name">Job Name: *</label>
-          <input type="text" id="job_name" name="job_name" required />
+          <input
+            type="text"
+            id="job_name"
+            name="job_name"
+            required
+            placeholder="e.g Repair Weatherboards On House"
+          />
         </div>
 
         <div class="form-group">
@@ -328,13 +345,14 @@
 
         <div class="form-group">
           <label for="tasks">Basic Outline of Tasks: *</label>
-          <textarea id="tasks" name="tasks" rows="10" required></textarea>
+          <textarea id="tasks " name="tasks" rows="10" required></textarea>
         </div>
 
         <div class="form-group">
           <label for="additional-details">Additional Details:</label>
           <textarea
             id="additional-details"
+            placeholder="e.g Timeframe, Access to property "
             name="additional-details"
             rows="10"
           ></textarea>

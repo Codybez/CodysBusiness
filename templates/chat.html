@@ -1,236 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <link rel="stylesheet" href="...">
+  <head>
+    <link rel="stylesheet" href="..." />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+      }
+
+      @media only screen and (max-width: 600px) {
+        #chat-box {
+          width: 100%;
+          max-width: 99%;
+          margin: 20px auto;
+          background-color: #fff;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
         }
 
-        @media only screen and (max-width: 600px) {
-            #chat-box {
-                width: 100%;
-                max-width: 99%;
-                margin: 20px auto;
-                background-color: #fff;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-            }
-
-            #chat-container {
-                flex-grow: 1;
-                height: 500px;
-                overflow-y: auto;
-                padding: 10px;
-            }
+        #chat-container {
+          flex-grow: 1;
+          height: 500px;
+          overflow-y: auto;
+          padding: 10px;
         }
+      }
 
-        #message-input {
-            width: calc(100% - 20px);
-            max-height: 300px;
-            padding: 15px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-        }
+      #message-input {
+        width: calc(100% - 20px);
+        max-height: 300px;
+        padding: 15px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: none;
+      }
 
-        #send-button {
-            width: 100%;
-            padding: 10px;
-            background-color: #ff7148;
-            color: #fff;
-            border: none;
-            border-radius: 0 0 8px 8px;
-            cursor: pointer;
-        }
+      #send-button {
+        width: 100%;
+        padding: 10px;
+        background-color: #ff7148;
+        color: #fff;
+        border: none;
+        border-radius: 0 0 8px 8px;
+        cursor: pointer;
+      }
 
-        .user-message {
-            background-color: #ff7148;
-            color: #fff;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            max-width: 70%;
-            order: -1; /* Order messages from the current user to appear on the left */
-        }
+      .user-message {
+        background-color: #ff7148;
+        color: #fff;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 8px;
+        max-width: 70%;
+        order: -1;
+      }
 
-        .other-user-message {
-            background-color: #ccc;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            max-width: 70%;
-            order: 1; /* Order messages from other users to appear on the right */
-        }
+      .other-user-message {
+        background-color: #ccc;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 8px;
+        max-width: 70%;
+        order: 1;
+      }
 
-        .message-sender-name {
-            font-size: 10px;
-            margin-bottom: 5px;
-            color: #666;
-        }
+      .message-sender-name {
+        font-size: 10px;
+        margin-bottom: 5px;
+        color: #666;
+      }
 
-        .message-text {
-            font-size: 14px;
-        }
+      .message-text {
+        font-size: 14px;
+      }
 
-        .message-timestamp {
-            font-size: 10px;
-            align-self: flex-end;
-            color: #888;
-        }
+      .message-timestamp {
+        font-size: 10px;
+        align-self: flex-end;
+        color: #888;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="chat-box">
-        <div id="chat-container">
-            <!-- Display chat messages here -->
-        </div>
-        <textarea id="message-input" placeholder="Type your message..."></textarea>
-        <button id="send-button" onclick="sendMessage()">Send</button>
+      <div id="chat-container">
+        <!-- Display chat messages here -->
+      </div>
+      <textarea
+        id="message-input"
+        placeholder="Type your message..."
+      ></textarea>
+      <button id="send-button" onclick="sendMessage()">Send</button>
     </div>
 
     <script>
-        // Connect to the SocketIO server
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
+      // Get values passed from Flask (job_id, applicant_id, current_user_id)
+      var jobId = {{ job_id }};
+      var applicantId = {{ applicant_id }};
+      var currentUserId = {{ current_user_id }};
 
-        // Join the chat room
-        var room = {{ job_id }};
-        socket.emit('join', { room: room });
+      // Connect to the SocketIO server
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        // Receive and display messages
-        socket.on('load_messages', function (messages) {
-            var messageContainer = document.getElementById('chat-container');
-            messages.forEach(function (data) {
-                displayMessage(messageContainer, data);
-            });
+      // Join the chat room using both job_id and applicant_id
+      socket.emit('join', { job_id: jobId, applicant_id: applicantId });
 
-            // Call scrollToBottom after a short delay to ensure the DOM is fully rendered
-            setTimeout(scrollToBottom, 100);
-        });
+      // Receive and display messages
+      socket.on('load_messages', function (messages) {
+          var messageContainer = document.getElementById('chat-container');
+          messages.forEach(function (data) {
+              displayMessage(messageContainer, data);
+          });
+          setTimeout(scrollToBottom, 100);
+      });
 
-        socket.on('message', function (data) {
-            var messageContainer = document.getElementById('chat-container');
-            displayMessage(messageContainer, data);
-            scrollToBottom();
-        });
+      socket.on('message', function (data) {
+          var messageContainer = document.getElementById('chat-container');
+          displayMessage(messageContainer, data);
+          scrollToBottom();
+      });
 
-        // Function to send a message
-        function sendMessage() {
-            var messageInput = document.getElementById('message-input');
-            var message = messageInput.value.trim();
+      // Function to send a message
+      function sendMessage() {
+          var messageInput = document.getElementById('message-input');
+          var message = messageInput.value.trim();
 
-            if (message !== '') {
-                var senderId = {{ current_user.id }};
-                var messageContainer = document.getElementById('chat-container');
-                var className = 'user-message'; // Assuming the default class is for the current user
+          if (message !== '') {
+              var messageContainer = document.getElementById('chat-container');
+              var className = 'user-message';
 
-                var messageElement = document.createElement('div');
-                messageElement.className = className;
+              var messageElement = document.createElement('div');
+              messageElement.className = className;
 
-                // Create elements for sender name, message, and timestamp
-                var senderNameElement = document.createElement('div');
-                senderNameElement.className = 'message-sender-name';
-                senderNameElement.textContent = getSenderName(senderId);
-                messageElement.appendChild(senderNameElement);
+              var senderNameElement = document.createElement('div');
+              senderNameElement.className = 'message-sender-name';
+              senderNameElement.textContent = getSenderName(currentUserId);
+              messageElement.appendChild(senderNameElement);
 
-                var messageTextElement = document.createElement('div');
-                messageTextElement.className = 'message-text';
-                messageTextElement.textContent = message;
-                messageElement.appendChild(messageTextElement);
+              var messageTextElement = document.createElement('div');
+              messageTextElement.className = 'message-text';
+              messageTextElement.textContent = message;
+              messageElement.appendChild(messageTextElement);
 
-                // Emit the message to the server with sender_id
-                socket.emit('message', { room: room, message: message, sender_id: senderId });
+              // Emit the message to the server with sender_id
+              var room = `job_${jobId}_applicant_${applicantId}`; // Room based on job and applicant ID
+              socket.emit('message', {
+                  room: room,
+                  message: message,
+                  sender_id: currentUserId,
+                  job_id: jobId,
+                  applicant_id: applicantId
+              });
 
-                // Clear the input after sending the message
-                messageInput.value = '';
+              messageInput.value = ''; // Clear the input after sending
+              scrollToBottom();
+          }
+      }
 
-                scrollToBottom();
-            }
-        }
+      // Function to display a message
+      function displayMessage(container, data) {
+          var messageElement = document.createElement('div');
 
-        // Function to display a message
-        function displayMessage(container, data) {
-            var messageElement = document.createElement('div');
+          // Check if the message is from the current user or another user
+          if (data.sender_id === currentUserId) {
+              messageElement.className = 'user-message';
+          } else {
+              messageElement.className = 'other-user-message';
+          }
 
-            if (data.sender_id === {{ current_user.id }}) {
-                // Message sent by the current user
-                messageElement.className = 'user-message';
-            } else {
-                // Message sent by other users
-                messageElement.className = 'other-user-message';
-            }
+          var senderNameElement = document.createElement('div');
+          senderNameElement.className = 'message-sender-name';
+          senderNameElement.textContent = data.sender_name;
+          messageElement.appendChild(senderNameElement);
 
-            // Create elements for sender name, message, and timestamp
-            var senderNameElement = document.createElement('div');
-            senderNameElement.className = 'message-sender-name';
-            senderNameElement.textContent = getSenderName(data.sender_id);
-            messageElement.appendChild(senderNameElement);
+          var messageTextElement = document.createElement('div');
+          messageTextElement.className = 'message-text';
+          messageTextElement.textContent = data.message;
+          messageElement.appendChild(messageTextElement);
 
-            var messageTextElement = document.createElement('div');
-            messageTextElement.className = 'message-text';
-            messageTextElement.textContent = data.message;
-            messageElement.appendChild(messageTextElement);
+          var timestampElement = document.createElement('div');
+          timestampElement.className = 'message-timestamp';
+          timestampElement.textContent = formatTimestamp(data.timestamp);
+          messageElement.appendChild(timestampElement);
 
-                        var timestampElement = document.createElement('div');
-            timestampElement.className = 'message-timestamp';
-            timestampElement.textContent = formatTimestamp(data.timestamp);
-            messageElement.appendChild(timestampElement);
+          container.appendChild(messageElement);
+      }
 
-            container.appendChild(messageElement);
-        }
+      // Function to scroll to the bottom of the chat container
+      function scrollToBottom() {
+          var messageContainer = document.getElementById('chat-container');
+          messageContainer.scrollTop = messageContainer.scrollHeight;
+      }
 
-        // Function to scroll to the bottom of the chat container
-        function scrollToBottom() {
-            var messageContainer = document.getElementById('chat-container');
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        }
+      // Function to format timestamp in AM/PM format
+      function formatTimestamp(timestamp) {
+          var date = new Date(timestamp * 1000); // Convert Unix timestamp to JS Date object
+          var hours = date.getHours();
+          var minutes = date.getMinutes();
+          var ampm = hours >= 12 ? 'PM' : 'AM';
+          hours = hours % 12;
+          hours = hours ? hours : 12; // Handle midnight
+          var formattedTimestamp = `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+          return formattedTimestamp;
+      }
 
-
-        
-// Function to format timestamp in AM/PM format
-function formatTimestamp(timestamp) {
-    // Convert the timestamp to a JavaScript Date object
-    var date = new Date(timestamp);
-
-    // Get the individual components of the date
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-
-    // Determine AM or PM
-    var ampm = hours >= 12 ? 'PM' : 'AM';
-
-    // Convert to 12-hour format
-    hours = hours % 12;
-    hours = hours ? hours : 12; // Handle midnight (12 AM)
-
-    // Format the date and time as a string
-    var formattedTimestamp = `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-
-    return formattedTimestamp;
-}
-
-
-
-
-        // Placeholder for the getSenderName function
-        function getSenderName(sender_id) {
-            // Implement the logic to get the sender's name based on sender_id
-            // You can fetch the name from your backend or use some logic to determine the name
-            return "SenderName"; // Replace this with the actual logic
-        }
+      // Placeholder for the getSenderName function
+      function getSenderName(sender_id) {
+          // Replace with actual logic to fetch the sender's name (e.g., from the backend or front-end data)
+          var senderName = sender_id === currentUserId ? "You" : "Other User"; // Example logic
+          return senderName;
+      }
     </script>
-</body>
-
+  </body>
 </html>
-
-

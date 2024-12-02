@@ -15,9 +15,9 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        background-color: #ffffff;
+        background-color: #f7f7f7;
         margin: 0;
-        padding: 0;
+        padding: 5px;
       }
 
       .job-listing:first-of-type {
@@ -39,12 +39,13 @@
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
+        border-radius: 10px;
       }
 
       .job-listing h3 {
         color: #333;
-        font-size: 23px;
-        margin: 0;
+        font-size: 19px;
+        text-decoration: underline color #777;
       }
 
       .job-listing p {
@@ -111,21 +112,14 @@
     <div class="job-listing">
       <h3>{{ job.job_name }}</h3>
       <p class="job-location">
-        <strong style="color: orange">{{ job.location }}</strong>
+        <strong style="color: #ff7148">{{ job.location }}</strong>
       </p>
 
-      <p>
-        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
-        job.city }}, {{ job.suburb }}
-      </p>
+      <p>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
 
-      <p>
-        <i class="fas fa-user icon"></i>Posted by: {{ job.user.first_name }}
-      </p>
+      <p>Posted {{ job.date_created|time_ago }}</p>
 
-      <p>
-        <i class="fas fa-users icon"></i>{{ job.applicants|length }} Applicants
-      </p>
+      <p>{{ job.applicants|length }} Applicants</p>
 
       <!-- Add links for job details and applicants -->
       <a
