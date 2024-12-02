@@ -107,6 +107,26 @@
           width: 90%; /* Adjust the button width */
         }
       }
+
+      .chat-link {
+        text-decoration: none;
+        font-size: 16px;
+        color: #007bff; /* You can change this color */
+        padding: 8px 12px;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .chat-link:hover {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .chat-link i {
+        margin-left: 5px;
+      }
     </style>
   </head>
   <body>
@@ -137,6 +157,13 @@
       >
         Job Details
         <i class="fas fa-arrow-right"></i>
+      </a>
+      <a
+        href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
+        class="chat-link"
+      >
+        Chat
+        <i class="fas fa-comment"></i>
       </a>
 
       {% endif %}

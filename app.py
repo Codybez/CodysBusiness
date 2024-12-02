@@ -549,86 +549,28 @@ def display_jobs(job_id):
 
     return render_template('display_job.html', job=job)
 
+from flask_socketio import SocketIO, emit, join_room
 
-@app.route('/chat/<int:job_id>')
-@login_required
-def chat(job_id):
-    # Fetch the job and check if the user is associated with the job
-    job = Job.query.get_or_404(job_id)
-
-    if current_user.business_profile == job.business_profile or current_user.id in [applicant.user_id for applicant in job.applicants]:
-        return render_template('chat.html', job_id=job_id)
-    else:
-        flash("You do not have permission to access this chat.", "error")
-        return redirect(url_for('index'))
+socketio = SocketIO(app)
 
 
-
-# Update the handle_join function
-@socketio.on('join')
-def handle_join(data):
-    room = data['room']
-    join_room(room)
-
-    # Send existing messages to the joining user
-    existing_messages = Message.query.filter_by(room=room).all()
-    emit('load_messages', [{'sender_id': msg.sender_id, 'sender_name': get_sender_name(msg.sender_id), 'message': msg.content, 'timestamp': msg.timestamp.strftime('%H:%M:%S')} for msg in existing_messages], room=room, broadcast=False)
-
- # Update the handle_message function
-@socketio.on('message')
-def handle_message(data):
-    room = data['room']
-    message = data['message']
-    sender_id = data['sender_id']
-
-    # Create a Message object and save it to the database
-    new_message = Message(room=room, content=message, sender_id=sender_id)
-    db.session.add(new_message)
-    db.session.commit()
-
-    # Emit the message to the sender
-    emit('message', {'sender_id': sender_id, 'sender_name': get_sender_name(sender_id), 'message': message, 'timestamp': new_message.timestamp.strftime('%H:%M:%S')}, room=request.sid)
-
-    # Broadcast the message to all clients in the room except the sender
-    emit('message', {'sender_id': sender_id, 'sender_name': get_sender_name(sender_id), 'message': message, 'timestamp': new_message.timestamp.strftime('%H:%M:%S')}, room=room, skip_sid=request.sid)
-
-
-
-def get_sender_name(sender_id):
-    # Implement a function to get the sender's name based on sender_id
-    # Adjust this function based on your application's logic
-    user = User.query.get(sender_id)
-    if user:
-        # Assuming user has a user_type and corresponding profile
-        if user.user_type == 'Business' and user.business_profile:
-            return user.business_profile.business_name
-        elif user.user_type == 'Labourer' and user.labourer_profile:
-            return user.labourer_profile.first_name
-    return "Unknown"
-
-def get_user_details(user_id):
-    user = User.query.get(user_id)
-    labourer_profile = LabourerProfile.query.filter_by(user_id=user_id).first()
-    profile_image = UserProfileImage.query.filter_by(user_id=user_id).first()
-    
-    return {
-        'user': user,
-        'labourer_profile': labourer_profile,
-        'profile_image': profile_image
-    }
-
-
-
-
-
-# Add this route to your Flask application
-@app.route('/viewapplicants/<int:job_id>', methods=['GET'])
-@login_required
+@app.route('/view_applicants/<int:job_id>', methods=['GET'])
 def view_applicants(job_id):
-    # Fetch job applications for the given job_id
+    # Fetch the job applications for the given job_id
     job_applications = JobApplication.query.filter_by(job_id=job_id).all()
 
-    return render_template('viewapplicants.html', job_applications=job_applications)
+    # Check if job exists
+    job = Job.query.get_or_404(job_id)
+
+    # Include user details for each application
+    for application in job_applications:
+        application.user = User.query.get(application.user_id)
+
+    return render_template(
+        'viewapplicants.html',
+        job=job,
+        job_applications=job_applications
+    )
 
 @app.route('/process_applications/<int:job_id>/<int:user_id>', methods=['POST'])
 def process_applications(job_id, user_id):
@@ -656,21 +598,6 @@ def process_applications(job_id, user_id):
     return redirect(url_for('business_active_jobs', job_id=job_id, user_id=user_id))
 
 
-
-def get_job_details(job_id):
-    # Assuming that job_id is the ID of the job
-
-    # Fetch the job, business profile, and job applications
-    job = Job.query.get(job_id)
-    business_profile = BusinessProfile.query.filter_by(id=job.business_profile_id).first()
-    job_applications = JobApplication.query.filter_by(job_id=job_id).all()
-
-    return {
-        'job': job,
-        'business_profile': business_profile,
-        'job_applications': job_applications
-    }
-
 @app.route('/confirm_user/<int:job_id>/<int:user_id>', methods=['GET'])
 @login_required
 def confirm_user(job_id, user_id):
@@ -691,6 +618,22 @@ def choose_user(job_id, user_id):
     
     return render_template('confirm_user.html', job_details={'job': job}, selected_user=user)
 # Assuming get_user_details is defined in your Flask application
+
+
+def get_user_details(user_id):
+    user = User.query.get(user_id)
+    labourer_profile = LabourerProfile.query.filter_by(user_id=user_id).first()
+    profile_image = UserProfileImage.query.filter_by(user_id=user_id).first()
+    
+    return {
+        'user': user,
+        'labourer_profile': labourer_profile,
+        'profile_image': profile_image
+    }
+
+
+
+
 
 @app.route('/business_active_jobs')
 @login_required
@@ -965,6 +908,55 @@ def view_tradesman_profile(user_id):
         'view_tradesman_profile.html',
         user=user
     )
+
+
+@app.route('/get_messages', methods=['GET'])
+def get_messages():
+    messages = Message.query.order_by(Message.timestamp).all()
+    messages_data = [
+        {
+            "content": msg.content,
+            "sender_id": msg.sender_id,
+            "timestamp": msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        for msg in messages
+    ]
+    return jsonify(messages_data)
+
+
+# Route to chat for a job application (Unique chat for each applicant-job poster pair)
+@app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
+def chat(job_id, user_id):
+    # Generate unique room name based on job_id and user_id (applicant's user ID)
+    room = f"job_{job_id}_user_{user_id}"
+
+    if request.method == 'POST':
+        content = request.form.get('message')
+        if content:
+            message = Message(sender_id=current_user.id, content=content, room=room)
+
+            db.session.add(message)
+            db.session.commit()
+
+    # Fetch messages for the chat between job_id and user_id
+    messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
+    
+    return render_template('chat.html', messages=messages, job_id=job_id, user_id=user_id)
+
+
+# Route to send messages via API (JSON)
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    sender_id = request.json.get('sender_id')
+    content = request.json.get('content')
+    room = request.json.get('room')
+
+    if sender_id and content and room:
+        new_message = Message(sender_id=sender_id, content=content, room=room)
+        db.session.add(new_message)
+        db.session.commit()
+        return jsonify({"status": "Message sent!"}), 200
+    return jsonify({"error": "Invalid data"}), 400
 
 if __name__ == '__main__':
     db.create_all()

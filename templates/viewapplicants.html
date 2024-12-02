@@ -137,11 +137,9 @@
         <!-- Buttons -->
         <div class="button-container">
           <a
-            href="{{ url_for('chat', job_id=application.job.id, user_id=application.user.id) }}"
+            href="{{ url_for('chat', job_id=application.job_id, user_id=application.user_id) }}"
+            >Chat with applicant {{ application.user_id }}</a
           >
-            <span>Chat</span>
-            <i class="fas fa-arrow-right"></i>
-          </a>
           <a
             href="{{ url_for('view_tradesman_profile', user_id=application.user.id) }}"
           >
