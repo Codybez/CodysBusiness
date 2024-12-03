@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat</title>
@@ -10,7 +14,7 @@
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f4f4f4;
+        background-color: #ffffff;
         display: flex;
         flex-direction: column;
         height: 100vh; /* Full height */
@@ -21,14 +25,16 @@
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        justify-content: space-between; /* Space between messages and input form */
-        height: 100%;
+        padding-top: 7vh; /* Space for the header */
+        padding-bottom: 6vh; /* Space for the footer */
+        overflow: hidden;
       }
 
+      /* Messages container */
       #messages-container {
         padding: 10px;
         background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
         flex-grow: 1; /* Take up all available space */
         overflow-y: auto; /* Allow scrolling */
       }
@@ -53,6 +59,14 @@
         background-color: #e5e5ea;
         color: black;
       }
+      .message.received .timestamp {
+        display: block;
+        font-size: 12px;
+        color: #000000;
+        margin-top: 5px;
+        text-align: right; /* Align the timestamp to the right */
+        font-family: "Arial", sans-serif; /* Clean font */
+      }
 
       /* Input area and send button */
       form {
@@ -61,6 +75,7 @@
         align-items: center;
         padding: 10px;
         background-color: #fff;
+        margin-bottom: 20px;
       }
 
       textarea {
@@ -71,28 +86,140 @@
         border: 1px solid #ccc;
         font-size: 14px;
         resize: none;
+        font-family: Arial, Helvetica, sans-serif;
       }
 
-      button {
-        width: 15%;
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        font-size: 18px;
+      .send-button {
+        width: 50px; /* Adjust the size of the button */
+        height: 50px; /* Make it a square to ensure it is round */
+        background-color: #007bff; /* Blue background for the button */
+        color: white; /* White arrow */
+        border: none; /* Remove border */
+        border-radius: 50%; /* Make it circular */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px; /* Size of the arrow */
         cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth transition for hover */
       }
 
-      button:hover {
-        background-color: #0056b3;
+      .send-button i {
+        color: white; /* White color for the arrow */
+      }
+
+      header {
+        background-color: #cccccca3; /* Light gray background */
+        color: #333; /* Neutral text color */
+        text-align: center;
+        padding: 7px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5vh; /* Adjusted height */
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Center the chat partner's name */
+        z-index: 1000; /* Keep it above other elements */
+      }
+
+      .fas.fa-home {
+        font-size: 20px;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+      }
+
+      .orange-letter {
+        color: #ff7148; /* Choose your preferred shade of orange */
+      }
+
+      .chat-partner-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #ffffff; /* Blue for emphasis */
+      }
+
+      .back-arrow {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        font-size: 24px;
+        text-decoration: none;
+      }
+      /* Footer styling */
+      footer {
+        background-color: #fff;
+        color: #ccc;
+        text-align: center;
+        padding: 10px;
+        height: 6vh;
+        position: fixed;
+        border-top: 2px solid #95959555;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        display: flex;
+        justify-content: space-between;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+
+      .footers-button {
+        color: #777777;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footers-button i {
+        font-size: 16px;
+        margin-bottom: -5px;
+        color: #ff7148;
+      }
+
+      .footers-button p {
+        font-size: 14px;
+      }
+
+      .footers-button:hover {
+        color: #f0f0f0;
       }
 
       /* Remove smooth scroll */
       #messages-container {
         scroll-behavior: unset;
       }
+
+      /* Style for the timestamp */
+      .timestamp {
+        display: block;
+        font-size: 12px;
+        color: #ffffff;
+        margin-top: 5px;
+        text-align: right; /* Align the timestamp to the right */
+        font-family: "Arial", sans-serif; /* Clean font */
+      }
     </style>
+    <header>
+      <a href="{{ url_for('applied_jobs', job_id=job_id) }}" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <span class="header-title"> {{ chat_partner_name }} </span>
+
+      {% if trading_name %}
+      <div class="trading-name">
+        <small>{{ trading_name }}</small>
+      </div>
+      {% endif %}
+    </header>
   </head>
   <body>
     <div class="chat-container">
@@ -101,9 +228,12 @@
         <div
           class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
         >
-          <strong>Message from User {{ message.sender_id }}:</strong>
           <p>{{ message.content }}</p>
-          <small>{{ message.timestamp }}</small>
+          <!-- Formatted Date and Time -->
+          <small class="timestamp">
+            {{ message.timestamp.strftime('%d/%m/%y') }} | {{
+            message.timestamp.strftime('%I:%M %p') }}
+          </small>
         </div>
         {% endfor %}
       </div>
@@ -117,33 +247,57 @@
           placeholder="Type your message here"
           required
         ></textarea>
-        <button type="submit">Send</button>
+        <button type="submit" class="send-button">
+          <i class="fas fa-arrow-up"></i>
+        </button>
       </form>
     </div>
 
-    <script>
-      // Function to keep the chat container at the bottom
-      function keepAtBottom() {
-        var messagesContainer = document.getElementById("messages-container");
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }
+    <footer>
+      <a href="{{ url_for('find_a_job') }}" class="footers-button">
+        <i class="fas fa-search"></i>
+        <p>Find a Job</p>
+      </a>
+      <a href="{{ url_for('applied_jobs') }}" class="footers-button">
+        <i class="fas fa-comment"></i>
+        <p>Applied Jobs</p>
+      </a>
 
-      // Keep the chat container at the bottom when the page loads
-      window.onload = function () {
-        keepAtBottom(); // Scroll to the bottom when the page loads
-      };
-
-      // Prevent scrolling jump on submit but still scroll to bottom
-      document.querySelector("form").addEventListener("submit", function () {
-        setTimeout(keepAtBottom, 100); // Ensure the new message is fully rendered
-      });
-
-      // Observe for new messages being added and keep the chat container at the bottom
-      const messagesContainer = document.getElementById("messages-container");
-      new MutationObserver(keepAtBottom).observe(messagesContainer, {
-        childList: true, // Watch for new messages
-        subtree: true, // Also watch nested changes
-      });
-    </script>
+      <a href="{{ url_for('active_jobs') }}" class="footers-button">
+        <i class="fas fa-arrow-right"></i>
+        <p>Active Jobs</p>
+      </a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('labourer_profile') }}" class="footers-button">
+        <i class="fas fa-bars"></i>
+        <p>Account</p>
+        {% endif %}
+      </a>
+    </footer>
   </body>
+
+  <script>
+    // Function to keep the chat container at the bottom
+    function keepAtBottom() {
+      var messagesContainer = document.getElementById("messages-container");
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Keep the chat container at the bottom when the page loads
+    window.onload = function () {
+      keepAtBottom(); // Scroll to the bottom when the page loads
+    };
+
+    // Prevent scrolling jump on submit but still scroll to bottom
+    document.querySelector("form").addEventListener("submit", function () {
+      setTimeout(keepAtBottom, 100); // Ensure the new message is fully rendered
+    });
+
+    // Observe for new messages being added and keep the chat container at the bottom
+    const messagesContainer = document.getElementById("messages-container");
+    new MutationObserver(keepAtBottom).observe(messagesContainer, {
+      childList: true, // Watch for new messages
+      subtree: true, // Also watch nested changes
+    });
+  </script>
 </html>

@@ -926,21 +926,38 @@ def get_messages():
 
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 def chat(job_id, user_id):
-    # Generate unique room name based on job_id and user_id (applicant's user ID)
+    # Generate unique room name based on job_id and user_id
     room = f"job_{job_id}_user_{user_id}"
 
     if request.method == 'POST':
         content = request.form.get('message')
         if content:
             message = Message(sender_id=current_user.id, content=content, room=room)
-
             db.session.add(message)
             db.session.commit()
 
     # Fetch messages for the chat between job_id and user_id
     messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
 
-    # Check if the user has a LabourerProfile or BusinessProfile
+    # Get the job poster's user_id from the job details
+    job = Job.query.get(job_id)
+    job_poster = User.query.get(job.user_id)  # Fetch the job poster's user using the user_id field
+
+    # Set the job poster's name (either first name or full name)
+    job_poster_name = f"{job_poster.first_name} {job_poster.last_name}" if job_poster.first_name and job_poster.last_name else job_poster.first_name or job_poster.email
+
+    # Get the labourer's user data
+    labourer = User.query.get(user_id)
+    
+    # Set the labourer's name (either first name or full name)
+    labourer_name = f"{labourer.first_name} {labourer.last_name}" if labourer.first_name and labourer.last_name else labourer.first_name or labourer.email
+
+    # Fetch the trading name only if the current user is the labourer
+    trading_name = None
+    if current_user.labourer_profile and current_user.business_profile:
+        trading_name = current_user.business_profile.trading_name
+
+    # Check if the current user has a LabourerProfile or BusinessProfile
     if current_user.labourer_profile:
         user_profile_type = 'labourer'
     elif current_user.business_profile:
@@ -948,11 +965,19 @@ def chat(job_id, user_id):
     else:
         user_profile_type = 'unknown'
 
+    # Determine which name to display based on whether the current user is the job poster or the labourer
+    if current_user.id == job.user_id:
+        # Current user is the job poster, so show the labourer's name
+        chat_partner_name = labourer_name
+    else:
+        # Current user is the labourer, so show the job poster's name
+        chat_partner_name = job_poster_name
+
     # Redirect to appropriate template based on the user profile type
     if user_profile_type == 'labourer':
-        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id)
+        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id, trading_name=trading_name, chat_partner_name=chat_partner_name)
     elif user_profile_type == 'business':
-        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id)
+        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id, trading_name=trading_name, chat_partner_name=chat_partner_name)
     else:
         # Default or error page in case the user doesn't have a profile
         return redirect(url_for('home'))  # Or some error page

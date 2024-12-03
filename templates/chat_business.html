@@ -60,6 +60,14 @@
         color: black;
       }
 
+      .message.received .timestamp {
+        display: block;
+        font-size: 12px;
+        color: #000000;
+        margin-top: 5px;
+        text-align: right; /* Align the timestamp to the right */
+        font-family: "Arial", sans-serif; /* Clean font */
+      }
       /* Input area and send button */
       form {
         display: flex;
@@ -100,20 +108,20 @@
         color: white; /* White color for the arrow */
       }
 
-      /* Header styling */
       header {
-        background-color: #cccccca3;
-        color: #fff;
-        text-align: left;
-        padding: 10px;
-        padding-bottom: 10px;
-        border-top-right-radius: 0px;
+        background-color: #cccccca3; /* Light gray background */
+        color: #333; /* Neutral text color */
+        text-align: center;
+        padding: 7px;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-
-        height: 4vh;
+        height: 5vh; /* Adjusted height */
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Center the chat partner's name */
+        z-index: 1000; /* Keep it above other elements */
       }
 
       .fas.fa-home {
@@ -125,20 +133,14 @@
         color: #ffffff;
       }
 
-      .header-title {
-        display: inline-block;
-        margin-left: 35px; /* Adjust spacing between arrow and title */
-        font-size: 24px;
-        font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font */
-        color: #fff;
-        font-weight: bold;
-        line-height: 24px;
-        vertical-align: middle;
-        transition: margin-left 0.3s ease-in-out; /* Smooth slide effect */
-      }
-
       .orange-letter {
         color: #ff7148; /* Choose your preferred shade of orange */
+      }
+
+      .chat-partner-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #ffffff; /* Blue for emphasis */
       }
 
       .back-arrow {
@@ -195,30 +197,34 @@
       #messages-container {
         scroll-behavior: unset;
       }
+
+      /* Style for the timestamp */
+      .timestamp {
+        display: block;
+        font-size: 12px;
+        color: #ffffff;
+        margin-top: 5px;
+        text-align: right; /* Align the timestamp to the right */
+        font-family: "Arial", sans-serif; /* Clean font */
+      }
     </style>
+    <header>
+      <a
+        href="{{ url_for('view_applicants', job_id=job_id) }}"
+        class="back-arrow"
+      >
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <span class="header-title"> {{ chat_partner_name }} </span>
+
+      {% if trading_name %}
+      <div class="trading-name">
+        <small>{{ trading_name }}</small>
+      </div>
+      {% endif %}
+    </header>
   </head>
   <body>
-    <header>
-      <div class="logo-container">
-        <!-- Check if the current page is not the dashboard -->
-        <a
-          href="{{ url_for('view_applicants', job_id=job_id) }}"
-          class="back-arrow"
-        >
-          <i class="fas fa-arrow-left"></i>
-        </a>
-
-        <span class="header-title">
-          <span class="orange-letter">o</span>penwork
-        </span>
-      </div>
-      <nav>
-        <a href="{{ url_for('business_dashboard') }}" class="header-button">
-          <i class="fas fa-home"></i>
-        </a>
-      </nav>
-    </header>
-
     <div class="chat-container">
       <div id="messages-container">
         {% for message in messages %}
@@ -226,7 +232,11 @@
           class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
         >
           <p>{{ message.content }}</p>
-          <small>{{ message.timestamp }}</small>
+          <!-- Formatted Date and Time -->
+          <small class="timestamp">
+            {{ message.timestamp.strftime('%d/%m/%y') }} | {{
+            message.timestamp.strftime('%I:%M %p') }}
+          </small>
         </div>
         {% endfor %}
       </div>
