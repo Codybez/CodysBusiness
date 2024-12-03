@@ -924,7 +924,6 @@ def get_messages():
     return jsonify(messages_data)
 
 
-# Route to chat for a job application (Unique chat for each applicant-job poster pair)
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 def chat(job_id, user_id):
     # Generate unique room name based on job_id and user_id (applicant's user ID)
@@ -940,9 +939,23 @@ def chat(job_id, user_id):
 
     # Fetch messages for the chat between job_id and user_id
     messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
-    
-    return render_template('chat.html', messages=messages, job_id=job_id, user_id=user_id)
 
+    # Check if the user has a LabourerProfile or BusinessProfile
+    if current_user.labourer_profile:
+        user_profile_type = 'labourer'
+    elif current_user.business_profile:
+        user_profile_type = 'business'
+    else:
+        user_profile_type = 'unknown'
+
+    # Redirect to appropriate template based on the user profile type
+    if user_profile_type == 'labourer':
+        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id)
+    elif user_profile_type == 'business':
+        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id)
+    else:
+        # Default or error page in case the user doesn't have a profile
+        return redirect(url_for('home'))  # Or some error page
 
 # Route to send messages via API (JSON)
 @app.route('/send_message', methods=['POST'])

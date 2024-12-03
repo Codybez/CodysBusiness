@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <style>
+      /* Basic styles for the chat page */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        height: 100vh; /* Full height */
+      }
+
+      /* Main container to wrap the entire chat and form */
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding-top: 7vh; /* Space for the header */
+        padding-bottom: 6vh; /* Space for the footer */
+        overflow: hidden;
+      }
+
+      /* Messages container */
+      #messages-container {
+        padding: 10px;
+        background-color: #fff;
+
+        flex-grow: 1; /* Take up all available space */
+        overflow-y: auto; /* Allow scrolling */
+      }
+
+      /* Styling for individual message bubbles */
+      .message {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 20px;
+        max-width: 70%;
+        word-wrap: break-word;
+      }
+
+      .message.sent {
+        background-color: #007bff;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+      }
+
+      .message.received {
+        background-color: #e5e5ea;
+        color: black;
+      }
+
+      /* Input area and send button */
+      form {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #fff;
+        margin-bottom: 20px;
+      }
+
+      textarea {
+        width: 80%;
+        height: 50px;
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        resize: none;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .send-button {
+        width: 50px; /* Adjust the size of the button */
+        height: 50px; /* Make it a square to ensure it is round */
+        background-color: #007bff; /* Blue background for the button */
+        color: white; /* White arrow */
+        border: none; /* Remove border */
+        border-radius: 50%; /* Make it circular */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px; /* Size of the arrow */
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth transition for hover */
+      }
+
+      .send-button i {
+        color: white; /* White color for the arrow */
+      }
+
+      /* Header styling */
+      header {
+        background-color: #cccccca3;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+        padding-bottom: 10px;
+        border-top-right-radius: 0px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 4vh;
+      }
+
+      .fas.fa-home {
+        font-size: 20px;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+      }
+
+      .header-title {
+        display: inline-block;
+        margin-left: 35px; /* Adjust spacing between arrow and title */
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font */
+        color: #fff;
+        font-weight: bold;
+        line-height: 24px;
+        vertical-align: middle;
+        transition: margin-left 0.3s ease-in-out; /* Smooth slide effect */
+      }
+
+      .orange-letter {
+        color: #ff7148; /* Choose your preferred shade of orange */
+      }
+
+      .back-arrow {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        font-size: 24px;
+        text-decoration: none;
+      }
+      /* Footer styling */
+      footer {
+        background-color: #fff;
+        color: #ccc;
+        text-align: center;
+        padding: 10px;
+        height: 6vh;
+        position: fixed;
+        border-top: 2px solid #95959555;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        display: flex;
+        justify-content: space-between;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+
+      .footers-button {
+        color: #777777;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footers-button i {
+        font-size: 16px;
+        margin-bottom: -5px;
+        color: #ff7148;
+      }
+
+      .footers-button p {
+        font-size: 14px;
+      }
+
+      .footers-button:hover {
+        color: #f0f0f0;
+      }
+
+      /* Remove smooth scroll */
+      #messages-container {
+        scroll-behavior: unset;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo-container">
+        <!-- Check if the current page is not the dashboard -->
+        <a
+          href="{{ url_for('view_applicants', job_id=job_id) }}"
+          class="back-arrow"
+        >
+          <i class="fas fa-arrow-left"></i>
+        </a>
+
+        <span class="header-title">
+          <span class="orange-letter">o</span>penwork
+        </span>
+      </div>
+      <nav>
+        <a href="{{ url_for('business_dashboard') }}" class="header-button">
+          <i class="fas fa-home"></i>
+        </a>
+      </nav>
+    </header>
+
+    <div class="chat-container">
+      <div id="messages-container">
+        {% for message in messages %}
+        <div
+          class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
+        >
+          <p>{{ message.content }}</p>
+          <small>{{ message.timestamp }}</small>
+        </div>
+        {% endfor %}
+      </div>
+
+      <form
+        action="{{ url_for('chat', job_id=job_id, user_id=user_id) }}"
+        method="POST"
+      >
+        <textarea
+          name="message"
+          placeholder="Type your message here"
+          required
+        ></textarea>
+        <button type="submit" class="send-button">
+          <i class="fas fa-arrow-up"></i>
+        </button>
+      </form>
+    </div>
+
+    <footer>
+      <a href="{{ url_for('create_job') }}" class="footers-button">
+        <i class="fas fa-search"></i>
+        <p>Create a Job</p>
+      </a>
+
+      <a href="{{ url_for('business_created_jobs') }}" class="footers-button">
+        <i class="fas fa-comment"></i>
+        <p>Open Jobs</p>
+      </a>
+
+      <a href="{{ url_for('business_active_jobs') }}" class="footers-button">
+        <i class="fas fa-arrow-right"></i>
+        <p>Active Jobs</p>
+      </a>
+
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('business_profile') }}" class="footers-button">
+        <i class="fas fa-bars"></i>
+        <p>Account</p>
+      </a>
+      {% endif %}
+    </footer>
+  </body>
+
+  <script>
+    // Function to keep the chat container at the bottom
+    function keepAtBottom() {
+      var messagesContainer = document.getElementById("messages-container");
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Keep the chat container at the bottom when the page loads
+    window.onload = function () {
+      keepAtBottom(); // Scroll to the bottom when the page loads
+    };
+
+    // Prevent scrolling jump on submit but still scroll to bottom
+    document.querySelector("form").addEventListener("submit", function () {
+      setTimeout(keepAtBottom, 100); // Ensure the new message is fully rendered
+    });
+
+    // Observe for new messages being added and keep the chat container at the bottom
+    const messagesContainer = document.getElementById("messages-container");
+    new MutationObserver(keepAtBottom).observe(messagesContainer, {
+      childList: true, // Watch for new messages
+      subtree: true, // Also watch nested changes
+    });
+  </script>
+</html>
