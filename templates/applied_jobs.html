@@ -25,21 +25,19 @@
 
       .job-listing {
         background-color: #fff;
-
         border: 1px solid #ddd;
-        padding: 20px;
+        padding: 25px;
         margin: 5px auto;
         max-width: 600px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        position: relative; /* Add this if it's not already there */
-        transition: all 0.3s ease;
+        position: relative;
         text-decoration: none;
         color: inherit;
       }
 
       .job-listing h1 {
-        color: #333;
-        font-size: 22px;
+        color: #555;
+        font-size: 18px;
         margin: 0;
       }
 
@@ -49,136 +47,116 @@
         margin-top: 10px;
       }
 
-      .job-listing .icon {
-        margin-right: 10px;
-      }
-
-      .delete-job-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: #ffffff;
-        color: rgb(0, 0, 0);
-        border: none;
-        padding: 5px 10px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 1.6rem;
-        text-align: center;
-        width: 30px;
-        height: 30px;
+      .button-container {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        text-decoration: none;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 15px;
       }
-      .view-job-link {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 12px;
-        cursor: pointer;
+
+      .view-job-link,
+      .chat-link {
+        flex: 1;
+        padding: 10px 0;
+        text-align: left; /* Text on the left */
         border-radius: 5px;
-        display: inline-flex; /* Use inline-flex to align text and icon horizontally */
-        justify-content: space-between; /* Space out the text and icon */
-        width: 85%;
-        margin-bottom: 10px;
+        font-size: 16px;
         text-decoration: none;
-        text-align: center;
-        font-family: Arial, Helvetica, sans-serif;
+        color: white;
+        display: flex;
+        justify-content: space-between; /* Text and icon at opposite ends */
+        align-items: center; /* Center items vertically */
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
-      .view-job-link i {
-        margin-left: 10px; /* Add space between the text and icon */
-      }
-
-      h6 {
-        color: #777777;
-        font-size: 12px;
-        margin-left: 10px;
-        padding: 0;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-
-      /* For mobile devices, adjust button size and layout */
-      @media (max-width: 600px) {
-        .view-job-link,
-        .chat-link {
-          width: 90%; /* Adjust the button width */
-        }
+      .view-job-link {
+        background-color: #ff7148;
       }
 
       .chat-link {
+        background-color: #ff7148;
+      }
+
+      .job-listing {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 25px;
+        margin: 5px auto;
+        max-width: 600px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
         text-decoration: none;
+        color: inherit;
+      }
+
+      .remove-job-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: #ffffff;
+
+        color: #000000;
+        padding: 8px;
+        border-radius: 5px;
         font-size: 16px;
-        color: #007bff; /* You can change this color */
-        padding: 8px 12px;
-        border: 1px solid #007bff;
-        border-radius: 4px;
-        display: inline-flex;
+        display: flex;
+        justify-content: center;
         align-items: center;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
       }
 
-      .chat-link:hover {
-        background-color: #007bff;
-        color: white;
-      }
-
-      .chat-link i {
-        margin-left: 5px;
+      .remove-job-btn i {
+        font-size: 18px;
       }
     </style>
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Business{% endblock %} {%
-    block content %} {% for job in applied_jobs | reverse %}
+    block content %} {% for job in applied_jobs | reverse %} {% if
+    job.applicants | selectattr("user_id", "equalto", current_user.id) |
+    selectattr("is_visible", "equalto", true) | list %}
+
     <div class="job-listing" id="job_{{ job.id }}">
       <h1>{{ job.job_name }}</h1>
       <p class="job-location">
-        <strong style="color: orange">{{ job.location }}</strong>
+        <strong style="color: #777">{{ job.location }}</strong>
       </p>
+
+      <a
+        href="{{ url_for('remove_application', job_id=job.id) }}"
+        class="remove-job-btn"
+      >
+        <i class="fas fa-trash-alt"></i>
+      </a>
 
       {% for application in job.applicants %} {% if application.user_id ==
       current_user.id %} {% if application.status == 'paid' %}
-      <p>
-        <i class="fas fa-user icon"></i>Posted by: {{ job.user.first_name }} {{
-        job.user.last_name }}
-      </p>
-      <p><i class="fas fa-envelope icon"></i>Email: {{ job.user.email }}</p>
-      <p><i class="fas fa-phone icon"></i>Phone: {{ job.contact_number }}</p>
-      {% endif %} {% endif %} {% endfor %}
-
-      <!-- Delete job button (styled as a small X) -->
-      {% if current_user.is_authenticated and current_user.id in
-      job.applicants|map(attribute='user_id') %}
-      <a
-        href="{{ url_for('display_jobs', job_id=job.id) }}"
-        class="view-job-link"
-      >
-        Job Details
-        <i class="fas fa-arrow-right"></i>
-      </a>
-      <a
-        href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
-        class="chat-link"
-      >
-        Chat
-        <i class="fas fa-comment"></i>
-      </a>
-
+      <p>Posted by: {{ job.user.first_name }} {{ job.user.last_name }}</p>
+      <p>Email: {{ job.user.email }}</p>
+      <p>Phone: {{ job.contact_number }}</p>
+      {% endif %} {% endif %} {% endfor %} {% if current_user.is_authenticated
+      and current_user.id in job.applicants | map(attribute='user_id') %}
+      <div class="button-container">
+        <a
+          href="{{ url_for('display_jobs', job_id=job.id) }}"
+          class="view-job-link"
+        >
+          <span>Job Details</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
+        <a
+          href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
+          class="chat-link"
+        >
+          <span>Message</span>
+          <i class="fas fa-comment"></i>
+        </a>
+      </div>
       {% endif %}
     </div>
-
-    {% endfor %} {% endblock %}
-
-    <script>
-      // Add functionality to remove a job (you can replace with your backend logic)
-      function dropJob(jobId) {
-        if (confirm("Are you sure you want to drop this job?")) {
-          // Add backend request here to remove the job
-          alert("Job dropped!");
-        }
-      }
-    </script>
+    {% endif %} {% endfor %} {% endblock %}
   </body>
 </html>

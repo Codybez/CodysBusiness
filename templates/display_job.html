@@ -23,11 +23,11 @@
       .job-details-container h1 {
         color: #555;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 24px;
+        font-size: 18px;
       }
 
       .job-details-container h2 {
-        color: #555;
+        color: #777;
         font-family: Arial, Helvetica, sans-serif;
       }
 
@@ -117,9 +117,9 @@
       }
 
       .job-details-container .job-location {
-        color: orange;
+        color: #777;
         margin-bottom: 25px;
-        font-size: 21px;
+        font-size: 17px;
       }
 
       h6 {
@@ -134,9 +134,6 @@
   <body>
     {% extends 'base_labour.html' %} {% block title %}Job Details{% endblock %}
     {% block content %}
-    <div class="info-container">
-      <h6>Job Details</h6>
-    </div>
 
     <div class="job-details-container">
       <h1>{{ job.job_name }}</h1>
@@ -147,7 +144,7 @@
 
       <p>
         <i class="fas fa-map-marker-alt"></i>
-        <strong>{{ job.job_category }}</strong> in {{ job.city }}, {{ job.suburb
+        <strong>{{ job.job_category }}</strong>in {{ job.city }}, {{ job.suburb
         }}
       </p>
       <p><i class="far fa-clock"></i> Posted {{ job.date_created|time_ago }}</p>
@@ -195,7 +192,7 @@
         "
       >
         Unlock Chat Services for this job for just
-        <strong style="color: orange">$4.99</strong>. A small investment for
+        <strong style="color: #ff7148">$4.99</strong>. A small investment for
         your next opportunity!
       </p>
       {% endif %}

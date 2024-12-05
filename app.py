@@ -102,6 +102,7 @@ class Job(db.Model):
 
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    is_visible = db.Column(db.Boolean, default=True)
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
     status = db.Column(db.String(20), default='pending')  # 'pending', 'accepted', 'rejected', etc.
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
@@ -116,6 +117,8 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     room = db.Column(db.String(50), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    job_application_id = db.Column(db.Integer, db.ForeignKey('job_application.id'), nullable=True)
 
 class CompanyDetails(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -465,8 +468,14 @@ from datetime import datetime
 
 @app.route('/find_a_job')
 def find_a_job():
-    # Retrieve job data from the database
     job_data = Job.query.all()
+
+    # Ensure image_list is a list of paths
+    for job in job_data:
+        if job.image_paths:
+            job.image_list = job.image_paths.split(',')
+        else:
+            job.image_list = []
 
     return render_template('find_a_job.html', job_data=job_data)
 
@@ -750,20 +759,17 @@ def active_jobs():
 @app.route('/remove_application/<int:job_id>')
 @login_required
 def remove_application(job_id):
+    # Find the job and application
     job = Job.query.get(job_id)
-
     if job:
-        # Find the user's application for the job
         application = JobApplication.query.filter_by(user_id=current_user.id, job_id=job_id).first()
-
         if application:
-            # If the application is found, delete it from the database
-            db.session.delete(application)
+            # Toggle visibility instead of deleting
+            application.is_visible = False
             db.session.commit()
 
     # Redirect back to the applied_jobs page
     return redirect(url_for('applied_jobs'))
-
 
 
 
@@ -909,10 +915,9 @@ def view_tradesman_profile(user_id):
         user=user
     )
 
-
-@app.route('/get_messages', methods=['GET'])
-def get_messages():
-    messages = Message.query.order_by(Message.timestamp).all()
+@app.route('/get_messages/<int:job_application_id>', methods=['GET'])
+def get_messages(job_application_id):
+    messages = Message.query.filter_by(job_application_id=job_application_id).order_by(Message.timestamp).all()
     messages_data = [
         {
             "content": msg.content,
@@ -926,75 +931,114 @@ def get_messages():
 
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 def chat(job_id, user_id):
-    # Generate unique room name based on job_id and user_id
-    room = f"job_{job_id}_user_{user_id}"
+    # Fetch the job application for the given job and user IDs
+    job_application = JobApplication.query.filter_by(job_id=job_id, user_id=user_id).first()
 
-    if request.method == 'POST':
-        content = request.form.get('message')
-        if content:
-            message = Message(sender_id=current_user.id, content=content, room=room)
-            db.session.add(message)
-            db.session.commit()
+    if not job_application:
+        return jsonify({"error": "Job application not found"}), 404
 
-    # Fetch messages for the chat between job_id and user_id
-    messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
+    # Check if the current user is a business or labourer and redirect accordingly
+    if current_user.business_profile:
+        # Handle message posting for business profile
+        if request.method == 'POST':
+            content = request.form.get('message')
+            if content:
+                message = Message(
+                    sender_id=current_user.id,
+                    receiver_id=user_id if current_user.id != user_id else job_application.job.user_id,
+                    content=content,
+                    job_application_id=job_application.id,
+                    room=f"job_{job_id}_user_{user_id}"
+                )
+                db.session.add(message)
+                db.session.commit()
 
-    # Get the job poster's user_id from the job details
-    job = Job.query.get(job_id)
-    job_poster = User.query.get(job.user_id)  # Fetch the job poster's user using the user_id field
+        # Fetch the messages for this job application
+        messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
+        chat_partner_name = User.query.get(user_id).first_name or "Labourer"
+        
+        # Render the business chat template
+        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id, chat_partner_name=chat_partner_name)
 
-    # Set the job poster's name (either first name or full name)
-    job_poster_name = f"{job_poster.first_name} {job_poster.last_name}" if job_poster.first_name and job_poster.last_name else job_poster.first_name or job_poster.email
+    elif current_user.labourer_profile:
+        # Handle message posting for labourer profile
+        if request.method == 'POST':
+            content = request.form.get('message')
+            if content:
+                message = Message(
+                    sender_id=current_user.id,
+                    receiver_id=user_id if current_user.id != user_id else job_application.job.user_id,
+                    content=content,
+                    job_application_id=job_application.id,
+                    room=f"job_{job_id}_user_{user_id}"
+                )
+                db.session.add(message)
+                db.session.commit()
 
-    # Get the labourer's user data
-    labourer = User.query.get(user_id)
-    
-    # Set the labourer's name (either first name or full name)
-    labourer_name = f"{labourer.first_name} {labourer.last_name}" if labourer.first_name and labourer.last_name else labourer.first_name or labourer.email
+        # Fetch the messages for this job application
+        messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
+        chat_partner_name = User.query.get(job_application.job.user_id).first_name or "Job Poster"
+        
+        # Render the labourer chat template
+        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id, chat_partner_name=chat_partner_name)
 
-    # Fetch the trading name only if the current user is the labourer
-    trading_name = None
-    if current_user.labourer_profile and current_user.business_profile:
-        trading_name = current_user.business_profile.trading_name
-
-    # Check if the current user has a LabourerProfile or BusinessProfile
-    if current_user.labourer_profile:
-        user_profile_type = 'labourer'
-    elif current_user.business_profile:
-        user_profile_type = 'business'
     else:
-        user_profile_type = 'unknown'
+        return jsonify({"error": "User profile type not found"}), 404
 
-    # Determine which name to display based on whether the current user is the job poster or the labourer
-    if current_user.id == job.user_id:
-        # Current user is the job poster, so show the labourer's name
-        chat_partner_name = labourer_name
-    else:
-        # Current user is the labourer, so show the job poster's name
-        chat_partner_name = job_poster_name
-
-    # Redirect to appropriate template based on the user profile type
-    if user_profile_type == 'labourer':
-        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id, trading_name=trading_name, chat_partner_name=chat_partner_name)
-    elif user_profile_type == 'business':
-        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id, trading_name=trading_name, chat_partner_name=chat_partner_name)
-    else:
-        # Default or error page in case the user doesn't have a profile
-        return redirect(url_for('home'))  # Or some error page
-
-# Route to send messages via API (JSON)
 @app.route('/send_message', methods=['POST'])
 def send_message():
     sender_id = request.json.get('sender_id')
     content = request.json.get('content')
-    room = request.json.get('room')
+    job_application_id = request.json.get('job_application_id')
 
-    if sender_id and content and room:
-        new_message = Message(sender_id=sender_id, content=content, room=room)
+    if sender_id and content and job_application_id:
+        new_message = Message(
+            sender_id=sender_id,
+            content=content,
+            job_application_id=job_application_id,
+            room=f"job_app_{job_application_id}"
+        )
         db.session.add(new_message)
         db.session.commit()
         return jsonify({"status": "Message sent!"}), 200
     return jsonify({"error": "Invalid data"}), 400
+
+@app.route('/messages')
+def messages():
+    # Fetch all messages for the current user
+    messages = Message.query.filter(
+        (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
+    ).all()
+
+    # Group the messages by job_application_id
+    conversations = {}
+    for message in messages:
+        job_application = JobApplication.query.get(message.job_application_id)
+        if job_application:
+            job_id = job_application.job.id  # Access job via the relationship
+            user_id = job_application.user_id if current_user.id != job_application.user_id else message.receiver_id
+
+            # Fetch the job name from the Job model (assuming 'job_name' is the correct attribute)
+            job_name = job_application.job.job_name  # Use 'job_name' instead of 'name'
+
+            # If this job application_id hasn't been added to the conversations dictionary, add it
+            if job_application.id not in conversations:
+                conversations[job_application.id] = {
+                    'job_id': job_id,
+                    'user_id': user_id,
+                    'job_name': job_name,  # Add job name here
+                    'other_user_name': User.query.get(user_id).first_name,  # Or other user details
+                    'most_recent_message': message.content,
+                    'timestamp': message.timestamp
+                }
+            else:
+                # If this job application already exists in the conversations, update the most recent message
+                if message.timestamp > conversations[job_application.id]['timestamp']:
+                    conversations[job_application.id]['most_recent_message'] = message.content
+                    conversations[job_application.id]['timestamp'] = message.timestamp
+
+    # Now, conversations holds one conversation per job application
+    return render_template('messages.html', conversations=conversations.values())
 
 if __name__ == '__main__':
     db.create_all()

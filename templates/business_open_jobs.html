@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Created Jobs</title>
@@ -31,7 +27,7 @@
       .job-listing {
         background-color: #fff;
         border: 1px solid #ddd;
-        padding: 20px;
+        padding: 25px;
         margin: 5px auto;
         max-width: 600px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -39,12 +35,14 @@
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
+        font-family: Arial, Helvetica, sans-serif;
       }
 
       .job-listing h3 {
-        color: #333;
-        font-size: 23px;
+        color: #555;
+        font-size: 18px;
         margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
       }
 
       .job-listing p {
@@ -56,50 +54,48 @@
       .job-listing .icon {
         margin-right: 10px;
       }
-
-      .view-job-link {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 12px;
-        cursor: pointer;
-        border-radius: 5px;
-        display: inline-flex;
-        justify-content: space-between;
-        width: 85%;
-        margin-bottom: 10px;
-        text-decoration: none;
-        text-align: center;
-        font-family: Arial, Helvetica, sans-serif;
+      .job-listing p i {
+        margin-right: 10px;
+      }
+      /* Flex container for buttons */
+      .button-container {
+        display: flex;
+        gap: 10px; /* space between buttons */
+        justify-content: flex-start;
+        margin-top: 15px;
       }
 
-      .view-job-link i {
-        margin-left: 10px;
-      }
-
+      .view-job-link,
       .chat-link {
-        background-color: #8b8b8b;
+        background-color: #ff7148;
         color: white;
         border: none;
-        padding: 12px;
+        padding: 10px 20px; /* Reduced padding for a more balanced look */
         cursor: pointer;
         border-radius: 5px;
         display: inline-flex;
         justify-content: space-between;
-        width: 85%;
+        align-items: center;
+        width: auto; /* Adjust width to auto to fit text content */
+        white-space: nowrap; /* Ensure text stays on one line */
         text-decoration: none;
         text-align: center;
         font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px; /* Adjusted font size for better readability */
       }
 
-      .chat-link i {
+      /* Add arrow to the right */
+      .view-job-link::after,
+      .chat-link::after {
+        content: " →";
         margin-left: 10px;
+        font-weight: bold;
       }
 
       @media (max-width: 600px) {
         .view-job-link,
         .chat-link {
-          width: 90%;
+          width: 100%; /* Full width on small screens */
         }
       }
     </style>
@@ -107,40 +103,34 @@
   <body>
     {% extends 'base_business.html' %} {% block title %}Created Jobs{% endblock
     %} {% block content %} {% for job in created_jobs| reverse %}
-
     <div class="job-listing">
       <h3>{{ job.job_name }}</h3>
       <p class="job-location">
-        <strong style="color: orange">{{ job.location }}</strong>
+        <strong style="color: #777">{{ job.location }}</strong>
       </p>
 
-      <p>
-        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
-        job.city }}, {{ job.suburb }}
-      </p>
+      <p>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
 
-      <p>
-        <i class="fas fa-user icon"></i>Posted by: {{ job.user.first_name }}
-      </p>
+      <p>Posted: {{ job.date_created|time_ago }}</p>
 
-      <p>
-        <i class="fas fa-users icon"></i>{{ job.applicants|length }} Applicants
-      </p>
+      <p>Applicants: {{ job.applicants|length }}</p>
 
-      <!-- Add links for job details and applicants -->
-      <a
-        href="{{ url_for('business_display_jobs', job_id=job.id) }}"
-        class="view-job-link"
-      >
-        <i class="fas fa-eye"></i> View Job
-      </a>
+      <!-- Add container for buttons -->
+      <div class="button-container">
+        <a
+          href="{{ url_for('business_display_jobs', job_id=job.id) }}"
+          class="view-job-link"
+        >
+          View Job
+        </a>
 
-      <a
-        href="{{ url_for('view_applicants', job_id=job.id) }}"
-        class="chat-link"
-      >
-        <i class="fas fa-users"></i> View Applicants
-      </a>
+        <a
+          href="{{ url_for('view_applicants', job_id=job.id) }}"
+          class="chat-link"
+        >
+          View Applicants
+        </a>
+      </div>
     </div>
     {% endfor %} {% endblock %}
   </body>

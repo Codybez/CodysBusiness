@@ -21,12 +21,13 @@
       .job-details-container h1 {
         color: #555;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 24px;
+        font-size: 18px;
       }
 
       .job-details-container h2 {
-        color: #555;
+        color: #777;
         font-family: Arial, Helvetica, sans-serif;
+        font-size: 18px;
       }
 
       .job-details-container p {
@@ -112,9 +113,9 @@
       }
 
       .job-details-container .job-location {
-        color: orange;
+        color: #777;
         margin-bottom: 25px;
-        font-size: 21px;
+        font-size: 18px;
       }
     </style>
   </head>
@@ -125,9 +126,9 @@
     <div class="job-details-container">
       <h1>{{ job.job_name }}</h1>
 
-      <p class="job-location">
+      <h2 class="job-location">
         <strong>{{ job.location }}</strong>
-      </p>
+      </h2>
 
       <p>
         <i class="fas fa-map-marker-alt"></i>
