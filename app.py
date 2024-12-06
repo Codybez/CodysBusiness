@@ -35,6 +35,8 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)  # Create a LoginManager instance
 login_manager.login_view = 'login'  # Set the login view
 
+app.run(debug=True)
+
 
 @app.route('/')
 def index():
@@ -119,6 +121,21 @@ class Message(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     job_application_id = db.Column(db.Integer, db.ForeignKey('job_application.id'), nullable=True)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    read = db.Column(db.Boolean, default=False)
+    notification_type = db.Column(db.String(50))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  
+    job = db.relationship('Job', backref='notifications', lazy=True)
+
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+
+    def __repr__(self):
+        return f'<Notification {self.id} for User {self.user_id}>'
 
 class CompanyDetails(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -510,9 +527,16 @@ def apply_for_job(job_id):
         db.session.commit()
         flash("Application submitted and marked as paid!", "success")
 
-    # Redirect to the applied jobs page
-    return redirect(url_for('applied_jobs'))
+        # Create a notification for the job poster (job user)
+        create_notification(
+            job.user_id,  # Job poster's user ID
+            f"{current_user.first_name} applied for your job: {job.job_name}",
+            notification_type="job_application",  # Indicating it's a job application notification
+            job_id=job.id  # Pass job_id to link the notification to the job
+        )
 
+    # Optionally, redirect the user to the job detail page or another page
+    return redirect(url_for('applied_jobs', job_id=job.id))
 
 @app.route('/applied_jobs')
 @login_required
@@ -1039,6 +1063,77 @@ def messages():
 
     # Now, conversations holds one conversation per job application
     return render_template('messages.html', conversations=conversations.values())
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    # Fetch notifications for the current user
+    notifications = Notification.query.filter_by(user_id=current_user.id).all()
+
+    # Add job-related flag to notifications (based on notification_type)
+    for notification in notifications:
+        if notification.notification_type == 'job_application' and notification.job_id:
+            notification.is_job_application = True
+        else:
+            notification.is_job_application = False
+
+    return render_template('notifications.html', notifications=notifications)
+
+@app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
+def delete_notification(notification_id):
+    notification = Notification.query.get(notification_id)
+    
+    if notification:
+        db.session.delete(notification)  # Delete the notification from the database
+        db.session.commit()  # Commit the transaction
+        return '', 204  # No content response to indicate success
+    
+    return '', 404  # Not found if notification doesn't exist
+
+
+
+@app.route('/notifications/<int:notification_id>', methods=['GET', 'POST'])
+@login_required
+def view_notification(notification_id):
+    # Fetch the specific notification
+    notification = Notification.query.get_or_404(notification_id)
+
+    if request.method == 'POST':
+        data = request.get_json()
+        if data.get('read', False):
+            # Mark the notification as read
+            notification.read = True
+            db.session.commit()
+        return '', 200  # Return an empty response with HTTP status 200
+
+    # Mark the notification as read when accessed via GET
+    if notification.user_id == current_user.id and not notification.read:
+        notification.read = True
+        db.session.commit()
+
+    # Redirect the user based on notification type
+    if notification.notification_type == "job_application" and notification.job_id:
+        return redirect(url_for('view_applicants', job_id=notification.job_id))
+    return redirect(url_for('notifications'))  # Otherwise, just redirect to notifications page
+
+
+def create_notification(user_id, message, notification_type=None, job_id=None):
+    notification = Notification(
+        user_id=user_id,
+        message=message,
+        notification_type=notification_type,
+        timestamp=datetime.utcnow(),
+        job_id=job_id  # Ensure job_id is passed for job-related notifications
+    )
+    db.session.add(notification)
+    db.session.commit()
+
+@app.context_processor
+def inject_unread_notifications_count():
+    unread_notifications_count = Notification.query.filter_by(user_id=current_user.id, read=False).count() if current_user.is_authenticated else 0
+    return dict(unread_notifications_count=unread_notifications_count)
+
+
 
 if __name__ == '__main__':
     db.create_all()

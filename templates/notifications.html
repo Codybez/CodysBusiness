@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Notifications</title>
+    <style>
+      .notification-list {
+        color: #333;
+        background-color: #ffffff;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        margin-top: 30px;
+        padding: 20px;
+      }
+      .notification-item {
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      .notification-item:hover {
+        background-color: #f0f0f0;
+      }
+      .notification-message {
+        font-size: 16px;
+        color: #333;
+      }
+      .notification-time {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 10px;
+      }
+      /* Styling for unread notifications */
+      .notification-item.unread {
+        border-left: 4px solid orange; /* Orange border for unread notifications */
+        background-color: #fff8e1; /* Slight background color to make it stand out */
+      }
+      .notification-item.unread::before {
+        content: "🔔"; /* Bell icon */
+        position: absolute;
+        top: 5px; /* Adjusts the icon to be a bit above */
+        right: 15px; /* Places the icon on the right side */
+        font-size: 20px; /* Adjust size of the icon */
+        color: orange;
+      }
+      /* "X" button to close notification */
+      .notification-item .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 18px;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+      .notification-item .close-btn:hover {
+        color: red; /* Red color when hovered */
+      }
+    </style>
+    <script>
+      function markAsReadAndRedirect(notificationElement) {
+        const notificationId = notificationElement.dataset.notificationId;
+        const notificationType = notificationElement.dataset.notificationType;
+        const jobId = notificationElement.dataset.jobId;
+
+        // Debug logs
+        console.log("Notification ID:", notificationId);
+        console.log("Notification Type:", notificationType);
+        console.log("Job ID:", jobId);
+
+        // Mark the notification as read
+        fetch(`/notifications/${notificationId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ read: true }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Remove the notification from the DOM after it's marked as read
+              notificationElement.style.display = "none"; // Hides the notification
+
+              if (notificationType === "job_application") {
+                // Redirect to job applicants page
+                window.location.href = `/view_applicants/${jobId}`;
+              } else {
+                // Redirect back to notifications
+                window.location.href = "/notifications";
+              }
+            } else {
+              console.error("Failed to mark notification as read");
+            }
+          })
+          .catch((error) => {
+            console.error("Error during fetch request:", error);
+          });
+      }
+
+      function removeNotification(notificationElement) {
+        const notificationId = notificationElement.dataset.notificationId;
+
+        // Make a request to delete the notification from the database
+        fetch(`/notifications/delete/${notificationId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Remove the notification from the DOM after deletion
+              notificationElement.remove(); // This removes the element entirely
+            } else {
+              console.error("Failed to delete notification");
+            }
+          })
+          .catch((error) => {
+            console.error("Error during fetch request:", error);
+          });
+      }
+    </script>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block content %}
+    <div class="notification-list">
+      <h1>Your Notifications</h1>
+      {% if notifications %} {% for notification in notifications|reverse %}
+      <div
+        class="notification-item {% if not notification.read %}unread{% endif %}"
+        data-notification-id="{{ notification.id }}"
+        data-notification-type="{{ notification.notification_type }}"
+        data-job-id="{{ notification.job_id if notification.notification_type == 'job_application' else 'null' }}"
+        onclick="markAsReadAndRedirect(this)"
+      >
+        <div class="notification-message">{{ notification.message }}</div>
+        <div class="notification-time">
+          {{ notification.timestamp.strftime('%I:%M %p') }}
+        </div>
+        <!-- Close "X" button -->
+        <span
+          class="close-btn"
+          onclick="removeNotification(this.closest('.notification-item'), event)"
+          >&times;</span
+        >
+      </div>
+      {% endfor %} {% else %}
+      <p>No notifications available.</p>
+      {% endif %}
+    </div>
+    {% endblock %}
+  </body>
+</html>
