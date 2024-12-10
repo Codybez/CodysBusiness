@@ -117,6 +117,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False, nullable=True)
     room = db.Column(db.String(50), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
@@ -952,62 +953,66 @@ def get_messages(job_application_id):
     ]
     return jsonify(messages_data)
 
-
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def chat(job_id, user_id):
-    # Fetch the job application for the given job and user IDs
-    job_application = JobApplication.query.filter_by(job_id=job_id, user_id=user_id).first()
+    try:
+        # Fetch the relevant JobApplication
+        job_application = JobApplication.query.filter_by(job_id=job_id, user_id=user_id).first()
+        if not job_application:
+            return jsonify({"error": "Job application not found"}), 404
 
-    if not job_application:
-        return jsonify({"error": "Job application not found"}), 404
+        # Fetch the associated Job
+        job = job_application.job
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
 
-    # Check if the current user is a business or labourer and redirect accordingly
-    if current_user.business_profile:
-        # Handle message posting for business profile
+        room = f"job_{job_id}_user_{user_id}"
+
+        # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
-            if content:
-                message = Message(
-                    sender_id=current_user.id,
-                    receiver_id=user_id if current_user.id != user_id else job_application.job.user_id,
-                    content=content,
-                    job_application_id=job_application.id,
-                    room=f"job_{job_id}_user_{user_id}"
-                )
-                db.session.add(message)
-                db.session.commit()
+            if not content:
+                return jsonify({"error": "Message content cannot be empty"}), 400
 
-        # Fetch the messages for this job application
+            # Create and save a new message
+            message = Message(
+                sender_id=current_user.id,
+                receiver_id=None,  # Receiver ID is optional since we focus on the room
+                content=content,
+                job_application_id=job_application.id,
+                room=room
+            )
+            db.session.add(message)
+            db.session.commit()
+
+        # Fetch all messages for this JobApplication
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
-        chat_partner_name = User.query.get(user_id).first_name or "Labourer"
-        
-        # Render the business chat template
-        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id, chat_partner_name=chat_partner_name)
 
-    elif current_user.labourer_profile:
-        # Handle message posting for labourer profile
-        if request.method == 'POST':
-            content = request.form.get('message')
-            if content:
-                message = Message(
-                    sender_id=current_user.id,
-                    receiver_id=user_id if current_user.id != user_id else job_application.job.user_id,
-                    content=content,
-                    job_application_id=job_application.id,
-                    room=f"job_{job_id}_user_{user_id}"
-                )
-                db.session.add(message)
-                db.session.commit()
+        # Mark all unread messages as read for the current user
+        Message.query.filter_by(
+            job_application_id=job_application.id,
+            receiver_id=current_user.id,
+            is_read=False
+        ).update({"is_read": True})
+        db.session.commit()
 
-        # Fetch the messages for this job application
-        messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
-        chat_partner_name = User.query.get(job_application.job.user_id).first_name or "Job Poster"
-        
-        # Render the labourer chat template
-        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id, chat_partner_name=chat_partner_name)
+        # Render the chat template
+        return render_template(
+            'chat_business.html',
+            messages=messages,
+            room=room,
+            job_name=job.job_name,
+            applicant_name=f"{job_application.user.first_name} {job_application.user.last_name}",
+            job_location=job.location,
+            job_id=job_id,
+            user_id=job_application.user.id  # Use the user_id from the JobApplication
+        )
 
-    else:
-        return jsonify({"error": "User profile type not found"}), 404
+    except Exception as e:
+        print(f"Error in chat route for job_id={job_id}, user_id={user_id}: {e}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
+
 
 @app.route('/send_message', methods=['POST'])
 def send_message():

@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat</title>
     <style>
-      /* Basic styles for the chat page */
+      /* Your existing styles */
       body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -20,7 +20,7 @@
         height: 100vh; /* Full height */
       }
 
-      /* Main container to wrap the entire chat and form */
+      /* Keep the rest of your existing CSS here */
       .chat-container {
         display: flex;
         flex-direction: column;
@@ -28,18 +28,19 @@
         padding-top: 7vh; /* Space for the header */
         padding-bottom: 6vh; /* Space for the footer */
         overflow: hidden;
+        
       }
 
-      /* Messages container */
       #messages-container {
         padding: 10px;
         background-color: #fff;
-
         flex-grow: 1; /* Take up all available space */
         overflow-y: auto; /* Allow scrolling */
+        margin-top: 50px;
+        
+        
       }
 
-      /* Styling for individual message bubbles */
       .message {
         padding: 10px;
         margin: 10px 0;
@@ -60,15 +61,14 @@
         color: black;
       }
 
-      .message.received .timestamp {
-        display: block;
+      .message .timestamp {
         font-size: 12px;
-        color: #000000;
+        color: white;
         margin-top: 5px;
-        text-align: right; /* Align the timestamp to the right */
-        font-family: "Arial", sans-serif; /* Clean font */
+        text-align: right;
+        font-family: "Arial", sans-serif;
       }
-      /* Input area and send button */
+
       form {
         display: flex;
         justify-content: space-between;
@@ -87,60 +87,38 @@
         font-size: 14px;
         resize: none;
         font-family: Arial, Helvetica, sans-serif;
+        margin-bottom: 6vh;
       }
 
       .send-button {
-        width: 50px; /* Adjust the size of the button */
-        height: 50px; /* Make it a square to ensure it is round */
-        background-color: #ff7148ff; /* Blue background for the button */
-        color: white; /* White arrow */
-        border: none; /* Remove border */
-        border-radius: 50%; /* Make it circular */
+        width: 50px;
+        height: 50px;
+        background-color: #ff7148ff;
+        color: white;
+        border: none;
+        border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 24px; /* Size of the arrow */
+        font-size: 24px;
         cursor: pointer;
-        transition: background-color 0.3s ease; /* Smooth transition for hover */
-      }
-
-      .send-button i {
-        color: white; /* White color for the arrow */
+        margin-bottom: 5vh;
       }
 
       header {
-        background-color: #cccccca3; /* Light gray background */
-        color: #333; /* Neutral text color */
+        background-color: #cccccca3;
+        color: #333;
         text-align: center;
         padding: 7px;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        height: 5vh; /* Adjusted height */
+        height: 5vh;
         display: flex;
         align-items: center;
-        justify-content: center; /* Center the chat partner's name */
-        z-index: 1000; /* Keep it above other elements */
-      }
-
-      .fas.fa-home {
-        font-size: 20px;
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #ffffff;
-      }
-
-      .orange-letter {
-        color: #ff7148; /* Choose your preferred shade of orange */
-      }
-
-      .chat-partner-name {
-        font-size: 20px;
-        font-weight: 600;
-        color: #ffffff; /* Blue for emphasis */
+        justify-content: center;
+        z-index: 1000;
       }
 
       .back-arrow {
@@ -152,6 +130,110 @@
         font-size: 24px;
         text-decoration: none;
       }
+    
+      /* Styling for the new message icon */
+      .fas.fa-envelope,
+      .fas.fa-bell,
+      .fas.fa-home {
+        font-size: 20px;
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      /* Notification badge styling */
+      .notification-badge {
+        position: absolute;
+        top: -10px; /* Adjust the distance from the top of the bell */
+        right: 7px; /* Adjust the distance from the right of the bell */
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        font-size: 12px;
+        padding: 2px 5px;
+      }
+
+      /* Ensure the bell icon is positioned relatively, not the envelope or home */
+      .fas.fa-bell {
+        font-size: 20px;
+        color: #ffffff;
+        cursor: pointer;
+        position: relative; /* Positioning context for the badge */
+        margin-right: 20px;
+      }
+
+      /* Styling for the message icon */
+      .fas.fa-envelope {
+        font-size: 20px;
+        color: #ffffff;
+        cursor: pointer;
+        position: relative; /* Maintain the relative positioning of the message icon */
+        margin-right: 30px;
+      }
+
+      /* Home button styling */
+      .fas.fa-home {
+        font-size: 20px;
+        color: #ffffff;
+        cursor: pointer;
+        position: relative;
+        right: 10px; /* Keep it in place */
+      }
+
+      /* Back arrow styling */
+      .back-arrow {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ffffff;
+        font-size: 24px;
+        text-decoration: none;
+        font-weight: lighter;
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      /* Logo styling */
+      .logo {
+        color: #ff7148;
+        font-size: 27px;
+        font-weight: normal;
+      }
+
+      .letter-o {
+        color: #ffffffec;
+        font-size: 32px;
+        font-family: "Arial", sans-serif;
+      }
+
+      /* Basic styling for the header */
+      header {
+        background-color: #cccccca3;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+        border-top-right-radius: 0px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4vh;
+        font-weight: 400;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+      }
+
       /* Footer styling */
       footer {
         background-color: #fff;
@@ -164,7 +246,6 @@
         bottom: 0;
         left: 0;
         right: 0;
-
         display: flex;
         justify-content: space-between;
         font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
@@ -193,53 +274,85 @@
         color: #f0f0f0;
       }
 
-      /* Remove smooth scroll */
-      #messages-container {
-        scroll-behavior: unset;
+      /* Styling for the orange "O" */
+      .orange-letter {
+        color: #ff7148; /* Choose your preferred shade of orange */
       }
 
-      /* Style for the timestamp */
-      .timestamp {
-        display: block;
-        font-size: 12px;
-        color: #ffffff;
-        margin-top: 5px;
-        text-align: right; /* Align the timestamp to the right */
-        font-family: "Arial", sans-serif; /* Clean font */
+      .header-title {
+        display: inline-block;
+        margin-left: 35px; /* Adjust spacing between arrow and title */
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font */
+        color: #fff;
+        font-weight: normal;
+        line-height: 24px;
+        vertical-align: middle;
+        transition: margin-left 0.3s ease-in-out; /* Smooth slide effect */
+      }
+
+      /* When the back arrow is hidden, slide the title to the left */
+      .hide-back .header-title {
+        margin-left: 10px; /* Adjust to desired left position */
       }
     </style>
-    <header>
-      <a
-        href="{{ url_for('view_applicants', job_id=job_id) }}"
-        class="back-arrow"
-      >
+      
+    </style>
+  </head>
+  
+  <body>
+  <header class="{% if is_dashboard_page %}hide-back{% endif %}">
+    <div class="logo-container">
+      <!-- Back Arrow -->
+      {% if not is_dashboard_page %}
+      <a href="javascript:history.back()" class="back-arrow">
         <i class="fas fa-arrow-left"></i>
       </a>
-      <span class="header-title"> {{ chat_partner_name }} </span>
-
-      {% if trading_name %}
-      <div class="trading-name">
-        <small>{{ trading_name }}</small>
-      </div>
       {% endif %}
-    </header>
-  </head>
-  <body>
-    <div class="chat-container">
-      <div id="messages-container">
-        {% for message in messages %}
-        <div
-          class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
-        >
-          <p>{{ message.content }}</p>
-          <!-- Formatted Date and Time -->
-          <small class="timestamp">
-            {{ message.timestamp.strftime('%d/%m/%y') }} | {{
-            message.timestamp.strftime('%I:%M %p') }}
-          </small>
-        </div>
-        {% endfor %}
-      </div>
+      <!-- Logo -->
+      <span class="header-title">
+        <span class="orange-letter">o</span>penwork
+      </span>
+    </div>
+
+    <nav>
+      <!-- Notifications Icon with Badge -->
+      <a
+        href="{{ url_for('notifications') }}"
+        class="header-button"
+        style="position: relative"
+      >
+        <i class="fas fa-bell"></i>
+        {% if unread_notifications_count > 0 %}
+        <span class="notification-badge">{{ unread_notifications_count }}</span>
+        {% endif %}
+      </a>
+
+      <!-- Message Icon -->
+      <a href="{{ url_for('messages') }}" class="header-button">
+        <i class="fas fa-envelope"></i>
+      </a>
+
+      <!-- Home Button -->
+      <a href="{{ url_for('business_dashboard') }}" class="header-button">
+        <i class="fas fa-home"></i>
+      </a>
+    </nav>
+  </header>
+
+<div id="messages-container">
+  {% for message in messages %}
+  <div
+    class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
+  >
+    <p>{{ message.content }}</p>
+    <small class="timestamp">
+      {{ message.timestamp.strftime('%d/%m/%y') }} | {{ message.timestamp.strftime('%I:%M %p') }}
+    </small>
+  </div>
+  {% endfor %}
+</div>
+
 
       <form
         action="{{ url_for('chat', job_id=job_id, user_id=user_id) }}"
@@ -255,31 +368,30 @@
         </button>
       </form>
     </div>
-
-    <footer>
-      <a href="{{ url_for('create_job') }}" class="footers-button">
-        <i class="fas fa-search"></i>
-        <p>Create a Job</p>
-      </a>
-
-      <a href="{{ url_for('business_created_jobs') }}" class="footers-button">
-        <i class="fas fa-comment"></i>
-        <p>Open Jobs</p>
-      </a>
-
-      <a href="{{ url_for('business_active_jobs') }}" class="footers-button">
-        <i class="fas fa-arrow-right"></i>
-        <p>Active Jobs</p>
-      </a>
-
-      {% if current_user.is_authenticated %}
-      <a href="{{ url_for('business_profile') }}" class="footers-button">
-        <i class="fas fa-bars"></i>
-        <p>Account</p>
-      </a>
-      {% endif %}
-    </footer>
   </body>
+    <footer>
+    <a href="{{ url_for('create_job') }}" class="footers-button">
+      <i class="fas fa-search"></i>
+      <p>Create a Job</p>
+    </a>
+
+    <a href="{{ url_for('business_created_jobs') }}" class="footers-button">
+      <i class="fas fa-comment"></i>
+      <p>Open Jobs</p>
+    </a>
+
+    <a href="{{ url_for('business_active_jobs') }}" class="footers-button">
+      <i class="fas fa-arrow-right"></i>
+      <p>Active Jobs</p>
+    </a>
+
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('business_profile') }}" class="footers-button">
+      <i class="fas fa-bars"></i>
+      <p>Account</p>
+    </a>
+    {% endif %}
+  </footer>
 
   <script>
     // Function to keep the chat container at the bottom
@@ -288,21 +400,9 @@
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // Keep the chat container at the bottom when the page loads
-    window.onload = function () {
-      keepAtBottom(); // Scroll to the bottom when the page loads
-    };
-
-    // Prevent scrolling jump on submit but still scroll to bottom
+    window.onload = keepAtBottom;
     document.querySelector("form").addEventListener("submit", function () {
-      setTimeout(keepAtBottom, 100); // Ensure the new message is fully rendered
-    });
-
-    // Observe for new messages being added and keep the chat container at the bottom
-    const messagesContainer = document.getElementById("messages-container");
-    new MutationObserver(keepAtBottom).observe(messagesContainer, {
-      childList: true, // Watch for new messages
-      subtree: true, // Also watch nested changes
+      setTimeout(keepAtBottom, 100);
     });
   </script>
 </html>
