@@ -1,3 +1,5 @@
+{% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {% else
+%} {% extends 'base_business.html' %} {% endif %} {% block content %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -39,7 +41,7 @@
         flex-direction: column;
         justify-content: space-between;
         position: relative;
-        cursor: pointer; /* Make the card clickable */
+        cursor: pointer;
         transition: all 0.3s ease-in-out;
       }
 
@@ -96,7 +98,6 @@
     </style>
   </head>
   <body>
-    {% extends 'base_business.html' %} {% block content %}
     <div class="messages-container">
       {% if conversations %}
       <div class="messages-list">
@@ -122,6 +123,6 @@
       <p>No conversations available.</p>
       {% endif %}
     </div>
-    {% endblock %}
   </body>
 </html>
+{% endblock %}

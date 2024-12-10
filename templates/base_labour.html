@@ -5,7 +5,13 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <title>{% block title %}Business{% endblock %}</title>
+    <title>{% block title %}Labourer{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='base_business.css') }}"
+    />
+    <!-- Include Socket.IO script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 
     <style>
       /* Back arrow styling */
@@ -20,94 +26,77 @@
         font-weight: lighter;
       }
 
-      /* Adjust logo position */
-
       /* Basic styling for the header */
       header {
         background-color: #95959555;
         color: #fff;
-
-        text-align: left;
         padding: 10px;
-        padding-bottom: 10px;
-        border-top-right-radius: 0px;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 50;
-        height: 4vh;
-      }
-
-      /* Header title styling */
-      .header-title {
-        display: inline-block;
-        margin-left: 35px; /* Adjust spacing between arrow and title */
-        font-size: 24px;
-        font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font */
-        color: #fff;
-
-        line-height: 24px;
-        vertical-align: middle;
-        transition: margin-left 0.3s ease-in-out; /* Smooth slide effect */
-      }
-
-      /* When the back arrow is hidden, slide the title to the left */
-      .hide-back .header-title {
-        margin-left: 10px; /* Adjust to desired left position */
-      }
-
-      /* Styling for the orange "O" */
-      .orange-letter {
-        color: #ff7148; /* Choose your preferred shade of orange */
-      }
-
-      .fas.fa-home {
-        font-size: 20px;
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #ffffff;
-      }
-
-      /* Set a high z-index to keep the header above other elements */
-      h1 {
-        font-size: 12px;
-        margin: 0;
-        padding: 0;
-      }
-
-      nav ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
+        height: 4vh; /* Adjusted height for better layout */
         display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      /* Logo and title styling */
+      .logo-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .header-title {
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #fff;
+        margin-left: 40px;
+      }
+
+      /* Orange "O" in the title */
+      .orange-letter {
+        color: #ff7148;
+      }
+
+      /* Header icons */
+      .header-icons {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .header-button {
+        color: #fff;
+        font-size: 18px;
+        text-decoration: none;
+        position: relative;
+        display: flex;
+        align-items: center;
         justify-content: center;
       }
 
-      nav li {
-        margin-right: 20px;
+      .header-button i {
+        font-size: 20px;
       }
 
-      nav a {
-        color: #fff;
-        text-decoration: none;
-        margin-right: 30px;
-        font-size: 16px;
-        margin-top: 20px;
-        text-align: center;
-        margin-bottom: 30px;
-        transition: color 0.3s ease;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-      }
-
-      nav a:hover {
+      .header-button:hover {
         color: #f0f0f0;
       }
 
-      /* Footer styling */
+      /* Notifications and messages counters (if needed later) */
+      .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        font-size: 12px;
+        border-radius: 50%;
+        padding: 2px 5px;
+      }
+
       /* Footer styling */
       footer {
         background-color: #fff;
@@ -148,13 +137,17 @@
       .footers-button:hover {
         color: #f0f0f0;
       }
+
+      /* When the back arrow is hidden, slide the title to the left */
+      .hide-back .header-title {
+        margin-left: 10px; /* Adjust to desired left position */
+      }
     </style>
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
   </head>
   <header class="{% if is_dashboard_page %}hide-back{% endif %}">
     <div class="logo-container">
-      <!-- Check if the current page is not the dashboard -->
       {% if not is_dashboard_page %}
       <a href="javascript:history.back()" class="back-arrow">
         <i class="fas fa-arrow-left"></i>
@@ -164,11 +157,21 @@
         <span class="orange-letter">o</span>penwork
       </span>
     </div>
-    <nav>
+    <div class="header-icons">
+      <a href="{{ url_for('notifications') }}" class="header-button">
+        <i class="fas fa-bell"></i>
+      </a>
+      <a href="{{ url_for('messages') }}" class="header-button">
+        <i class="fas fa-comment"></i>
+        {% if unread_messages_count > 0 %}
+        <span class="badge">{{ unread_messages_count }}</span>
+        {% endif %}
+      </a>
+
       <a href="{{ url_for('labourer_dashboard') }}" class="header-button">
         <i class="fas fa-home"></i>
       </a>
-    </nav>
+    </div>
   </header>
 
   <body>

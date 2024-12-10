@@ -118,7 +118,9 @@ class Message(db.Model):
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     room = db.Column(db.String(50), nullable=False)
-    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    is_read = db.Column(db.Boolean, nullable=True, default=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey
+    ('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     job_application_id = db.Column(db.Integer, db.ForeignKey('job_application.id'), nullable=True)
 
@@ -641,6 +643,13 @@ def confirm_user(job_id, user_id):
      
     return render_template('confirm_user.html', user_details=user_details, job_details=job_details, selected_user=selected_user)
 
+def get_job_details(job_id):
+    # Fetch job details from the database
+    job = Job.query.filter_by(id=job_id).first()
+    if not job:
+        raise ValueError("Job not found")
+    return job
+
 
 @app.route('/chooseuser/<int:job_id>/<int:user_id>', methods=['GET'])
 @login_required
@@ -955,59 +964,64 @@ def get_messages(job_application_id):
 
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 def chat(job_id, user_id):
-    # Fetch the job application for the given job and user IDs
-    job_application = JobApplication.query.filter_by(job_id=job_id, user_id=user_id).first()
+    try:
+        # Fetch the job application for the given job and user IDs
+        job_application = JobApplication.query.filter_by(job_id=job_id, user_id=user_id).first()
+        if not job_application:
+            return jsonify({"error": "Job application not found"}), 404
 
-    if not job_application:
-        return jsonify({"error": "Job application not found"}), 404
+        # Determine if the current user is a business or a labourer
+        is_business = current_user.business_profile
+        chat_partner_id = user_id if is_business else job_application.job.user_id
 
-    # Check if the current user is a business or labourer and redirect accordingly
-    if current_user.business_profile:
-        # Handle message posting for business profile
+        # Fetch the chat partner's name, fall back to defaults if not found
+        chat_partner = User.query.get(chat_partner_id)
+        chat_partner_name = chat_partner.first_name if chat_partner else (
+            "Labourer" if is_business else "Job Poster"
+        )
+
+        # Handle message posting
         if request.method == 'POST':
             content = request.form.get('message')
-            if content:
-                message = Message(
-                    sender_id=current_user.id,
-                    receiver_id=user_id if current_user.id != user_id else job_application.job.user_id,
-                    content=content,
-                    job_application_id=job_application.id,
-                    room=f"job_{job_id}_user_{user_id}"
-                )
-                db.session.add(message)
-                db.session.commit()
+            if not content:
+                return jsonify({"error": "Message content cannot be empty"}), 400
 
-        # Fetch the messages for this job application
+            message = Message(
+                sender_id=current_user.id,
+                receiver_id=chat_partner_id,
+                content=content,
+                job_application_id=job_application.id,
+                room=f"job_{job_id}_user_{user_id}"
+            )
+            db.session.add(message)
+            db.session.commit()
+
+        # Fetch messages for the given job application, ordered by timestamp
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
-        chat_partner_name = User.query.get(user_id).first_name or "Labourer"
-        
-        # Render the business chat template
-        return render_template('chat_business.html', messages=messages, job_id=job_id, user_id=user_id, chat_partner_name=chat_partner_name)
 
-    elif current_user.labourer_profile:
-        # Handle message posting for labourer profile
-        if request.method == 'POST':
-            content = request.form.get('message')
-            if content:
-                message = Message(
-                    sender_id=current_user.id,
-                    receiver_id=user_id if current_user.id != user_id else job_application.job.user_id,
-                    content=content,
-                    job_application_id=job_application.id,
-                    room=f"job_{job_id}_user_{user_id}"
-                )
-                db.session.add(message)
-                db.session.commit()
+        # Mark all unread messages as read for the current user
+        Message.query.filter_by(
+            job_application_id=job_application.id,
+            receiver_id=current_user.id,
+            is_read=False
+        ).update({"is_read": True})
+        db.session.commit()
 
-        # Fetch the messages for this job application
-        messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
-        chat_partner_name = User.query.get(job_application.job.user_id).first_name or "Job Poster"
-        
-        # Render the labourer chat template
-        return render_template('chat_labourer.html', messages=messages, job_id=job_id, user_id=user_id, chat_partner_name=chat_partner_name)
+        # Select the appropriate chat template based on user type
+        template = 'chat_business.html' if is_business else 'chat_labourer.html'
 
-    else:
-        return jsonify({"error": "User profile type not found"}), 404
+        return render_template(
+            template,
+            messages=messages,
+            job_id=job_id,
+            user_id=user_id,
+            chat_partner_name=chat_partner_name
+        )
+
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in chat route: {e}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -1027,42 +1041,6 @@ def send_message():
         return jsonify({"status": "Message sent!"}), 200
     return jsonify({"error": "Invalid data"}), 400
 
-@app.route('/messages')
-def messages():
-    # Fetch all messages for the current user
-    messages = Message.query.filter(
-        (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
-    ).all()
-
-    # Group the messages by job_application_id
-    conversations = {}
-    for message in messages:
-        job_application = JobApplication.query.get(message.job_application_id)
-        if job_application:
-            job_id = job_application.job.id  # Access job via the relationship
-            user_id = job_application.user_id if current_user.id != job_application.user_id else message.receiver_id
-
-            # Fetch the job name from the Job model (assuming 'job_name' is the correct attribute)
-            job_name = job_application.job.job_name  # Use 'job_name' instead of 'name'
-
-            # If this job application_id hasn't been added to the conversations dictionary, add it
-            if job_application.id not in conversations:
-                conversations[job_application.id] = {
-                    'job_id': job_id,
-                    'user_id': user_id,
-                    'job_name': job_name,  # Add job name here
-                    'other_user_name': User.query.get(user_id).first_name,  # Or other user details
-                    'most_recent_message': message.content,
-                    'timestamp': message.timestamp
-                }
-            else:
-                # If this job application already exists in the conversations, update the most recent message
-                if message.timestamp > conversations[job_application.id]['timestamp']:
-                    conversations[job_application.id]['most_recent_message'] = message.content
-                    conversations[job_application.id]['timestamp'] = message.timestamp
-
-    # Now, conversations holds one conversation per job application
-    return render_template('messages.html', conversations=conversations.values())
 
 @app.route('/notifications')
 @login_required
@@ -1132,9 +1110,81 @@ def create_notification(user_id, message, notification_type=None, job_id=None):
 def inject_unread_notifications_count():
     unread_notifications_count = Notification.query.filter_by(user_id=current_user.id, read=False).count() if current_user.is_authenticated else 0
     return dict(unread_notifications_count=unread_notifications_count)
+@app.route('/messages')
+@login_required
+def messages():
+    try:
+        # Fetch all messages where the current user is either the sender or receiver
+        messages = Message.query.filter(
+            (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
+        ).all()
+
+        conversations = []  # To store conversation data
+        for message in messages:
+            job_application = JobApplication.query.get(message.job_application_id)
+            if job_application:
+                job_id = job_application.job.id  # Get the job ID
+                user_id = job_application.user_id  # Get the user ID of the applicant
+                job_poster_id = job_application.job.user_id  # Job poster's user ID
+
+                # We only need the user_id for accessing the conversation
+                # We don’t need to track a separate 'chat_partner_id'
+                if current_user.business_profile:
+                    # If current user is business (job poster), chat partner is the applicant
+                    other_user_id = job_application.user_id
+                else:
+                    # If current user is labourer (applicant), chat partner is the job poster
+                    other_user_id = job_poster_id
+
+                # Check if the conversation already exists for this job_application
+                conversation = next((conv for conv in conversations if conv['job_application_id'] == job_application.id), None)
+                if not conversation:
+                    # Create a new conversation entry if it doesn't exist
+                    conversations.append({
+                        'job_application_id': job_application.id,
+                        'job_id': job_id,
+                        'user_id': user_id,
+                        'job_name': job_application.job.job_name,  # Assuming 'job_name' exists
+                        'most_recent_message': message.content,
+                        'timestamp': message.timestamp,
+                        'other_user_id': other_user_id  # Store other user's ID
+                    })
+                else:
+                    # Update existing conversation with the most recent message and timestamp
+                    if message.timestamp > conversation['timestamp']:
+                        conversation['most_recent_message'] = message.content
+                        conversation['timestamp'] = message.timestamp
+
+        # Fetch the name of the other user (job applicant or job poster) for all conversations in a single query
+        user_ids = [conv['other_user_id'] for conv in conversations]
+        users = User.query.filter(User.id.in_(user_ids)).all()
+        user_map = {user.id: user.first_name for user in users}
+
+        # Update each conversation with the name of the other user
+        for conv in conversations:
+            conv['other_user_name'] = user_map.get(conv['other_user_id'], "Unknown")
+
+        # Render the template with the conversations
+        return render_template('messages.html', conversations=conversations)
+
+    except Exception as e:
+        print(f"Error in messages route: {e}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 
+def create_message(sender_id, receiver_id, content, job_application_id=None, room=None):
+    message = Message(
+        sender_id=sender_id,
+        receiver_id=receiver_id,
+        content=content,
+        timestamp=datetime.utcnow(),
+        job_application_id=job_application_id,
+        room=room
+    )
+    db.session.add(message)
+    db.session.commit()
 
-if __name__ == '__main__':
-    db.create_all()
-    socketio.run(app, debug=True)
+@app.context_processor
+def inject_unread_messages_count():
+    unread_messages_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count() if current_user.is_authenticated else 0
+    return dict(unread_messages_count=unread_messages_count)
