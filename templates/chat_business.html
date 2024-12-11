@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat</title>
     <style>
-      /* Your existing styles */
+      /* General Styles */
       body {
         font-family: Arial, sans-serif;
         margin: 0;
@@ -17,69 +17,93 @@
         background-color: #ffffff;
         display: flex;
         flex-direction: column;
-        height: 100vh; /* Full height */
-      }
-
-      /* Keep the rest of your existing CSS here */
-      .chat-container {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        padding-top: 7vh; /* Space for the header */
-        padding-bottom: 6vh; /* Space for the footer */
-        overflow: hidden;
-        
+        height: 100vh;
       }
 
       #messages-container {
+        display: flex;
+        flex-direction: column;
         padding: 10px;
         background-color: #fff;
-        flex-grow: 1; /* Take up all available space */
-        overflow-y: auto; /* Allow scrolling */
-        margin-top: 50px;
-        
-        
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 50px;
       }
 
+      /* Message Styles */
+      /* Message Styles */
       .message {
         padding: 10px;
         margin: 10px 0;
         border-radius: 20px;
-        max-width: 70%;
+        min-width: 60%;
+        max-width: 80%;
         word-wrap: break-word;
+        display: inline-block;
+        box-sizing: border-box;
+        position: relative;
       }
 
+      .message.sent::after {
+        content: "";
+        position: absolute;
+        right: -5px; /* Position to the right of the bubble */
+        bottom: 10px; /* Adjust to align with bubble vertically */
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 10px 0 10px 10px;
+        border-color: transparent transparent transparent #ff7148;
+      }
+
+      /* Sent Message (Right-Aligned) */
       .message.sent {
         background-color: #ff7148;
         color: white;
-        margin-left: auto;
-        text-align: right;
+        margin-left: auto; /* Push to the right */
+        text-align: left; /* Align text to the left inside the bubble */
       }
 
+      .message.received::after {
+        content: "";
+        position: absolute;
+        left: -5px; /* Position to the left of the bubble */
+        bottom: 10px; /* Adjust to align with bubble vertically */
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent #e5e5ea transparent transparent;
+      }
+
+      /* Received Message (Left-Aligned) */
       .message.received {
         background-color: #e5e5ea;
         color: black;
+        margin-right: auto; /* Push to the left */
+        text-align: left;
       }
 
-      .message .timestamp {
+      .timestamp {
         font-size: 12px;
-        color: white;
         margin-top: 5px;
         text-align: right;
-        font-family: "Arial", sans-serif;
+        font-family: Arial, sans-serif;
       }
 
+      /* Form Styles */
       form {
         display: flex;
-        justify-content: space-between;
         align-items: center;
         padding: 10px;
         background-color: #fff;
-        margin-bottom: 20px;
+        position: sticky;
+        bottom: 10vh;
+        z-index: 10;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
       }
-
       textarea {
-        width: 80%;
+        width: 85%;
         height: 50px;
         padding: 10px;
         border-radius: 20px;
@@ -87,13 +111,12 @@
         font-size: 14px;
         resize: none;
         font-family: Arial, Helvetica, sans-serif;
-        margin-bottom: 6vh;
+        margin-right: 10px;
       }
-
       .send-button {
         width: 50px;
         height: 50px;
-        background-color: #ff7148ff;
+        background-color: #ff7148;
         color: white;
         border: none;
         border-radius: 50%;
@@ -102,204 +125,37 @@
         align-items: center;
         font-size: 24px;
         cursor: pointer;
-        margin-bottom: 5vh;
       }
 
-      header {
-        background-color: #cccccca3;
-        color: #333;
-        text-align: center;
-        padding: 7px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-      }
-
-      .back-arrow {
-        position: absolute;
-        left: 13px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #ffffff;
-        font-size: 24px;
-        text-decoration: none;
-      }
-    
-      /* Styling for the new message icon */
-      .fas.fa-envelope,
-      .fas.fa-bell,
-      .fas.fa-home {
-        font-size: 20px;
-        color: #ffffff;
-        cursor: pointer;
-      }
-
-      /* Notification badge styling */
-      .notification-badge {
-        position: absolute;
-        top: -10px; /* Adjust the distance from the top of the bell */
-        right: 7px; /* Adjust the distance from the right of the bell */
-        background-color: red;
-        color: white;
-        border-radius: 50%;
-        font-size: 12px;
-        padding: 2px 5px;
-      }
-
-      /* Ensure the bell icon is positioned relatively, not the envelope or home */
-      .fas.fa-bell {
-        font-size: 20px;
-        color: #ffffff;
-        cursor: pointer;
-        position: relative; /* Positioning context for the badge */
-        margin-right: 20px;
-      }
-
-      /* Styling for the message icon */
-      .fas.fa-envelope {
-        font-size: 20px;
-        color: #ffffff;
-        cursor: pointer;
-        position: relative; /* Maintain the relative positioning of the message icon */
-        margin-right: 30px;
-      }
-
-      /* Home button styling */
-      .fas.fa-home {
-        font-size: 20px;
-        color: #ffffff;
-        cursor: pointer;
-        position: relative;
-        right: 10px; /* Keep it in place */
-      }
-
-      /* Back arrow styling */
-      .back-arrow {
-        position: absolute;
-        left: 13px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #ffffff;
-        font-size: 24px;
-        text-decoration: none;
-        font-weight: lighter;
-      }
-
-      .logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-      }
-
-      /* Logo styling */
-      .logo {
-        color: #ff7148;
-        font-size: 27px;
-        font-weight: normal;
-      }
-
-      .letter-o {
-        color: #ffffffec;
-        font-size: 32px;
-        font-family: "Arial", sans-serif;
-      }
-
-      /* Basic styling for the header */
-      header {
-        background-color: #cccccca3;
-        color: #fff;
-        text-align: left;
+      /* User Info Container */
+      #user-info-container {
         padding: 10px;
-        border-top-right-radius: 0px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4vh;
-        font-weight: 400;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      nav {
-        display: flex;
-        align-items: center;
-      }
-
-      /* Footer styling */
-      footer {
-        background-color: #fff;
-        color: #ccc;
+        background-color: #f4f4f4;
+        border-bottom: 1px solid #ccc;
         text-align: center;
-        padding: 10px;
-        height: 6vh;
-        position: fixed;
-        border-top: 2px solid #95959555;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: space-between;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
       }
 
-      .footers-button {
-        color: #777777;
-        text-decoration: none;
+      .user-info {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
       }
 
-      .footers-button i {
+      .user-info strong {
         font-size: 16px;
-        margin-bottom: -5px;
-        color: #ff7148;
+        color: #333;
       }
 
-      .footers-button p {
+      .user-info p {
+        margin: 5px 0 0;
         font-size: 14px;
+        color: #666;
       }
-
-      .footers-button:hover {
-        color: #f0f0f0;
-      }
-
-      /* Styling for the orange "O" */
-      .orange-letter {
-        color: #ff7148; /* Choose your preferred shade of orange */
-      }
-
-      .header-title {
-        display: inline-block;
-        margin-left: 35px; /* Adjust spacing between arrow and title */
-        font-size: 24px;
-        font-family: Arial, Helvetica, sans-serif; /* Ensure consistent font */
-        color: #fff;
-        font-weight: normal;
-        line-height: 24px;
-        vertical-align: middle;
-        transition: margin-left 0.3s ease-in-out; /* Smooth slide effect */
-      }
-
-      /* When the back arrow is hidden, slide the title to the left */
-      .hide-back .header-title {
-        margin-left: 10px; /* Adjust to desired left position */
-      }
-    </style>
-      
     </style>
   </head>
-  
   <body>
     {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
     elif current_user.business_profile %} {% extends 'base_business.html' %} {%
@@ -307,109 +163,63 @@
     <h1>Error: Invalid profile type.</h1>
     <p>Your account does not have a valid profile.</p>
     {% endif %} {% block content %}
-  <header class="{% if is_dashboard_page %}hide-back{% endif %}">
-    <div class="logo-container">
-      <!-- Back Arrow -->
-      {% if not is_dashboard_page %}
-      <a href="javascript:history.back()" class="back-arrow">
-        <i class="fas fa-arrow-left"></i>
-      </a>
-      {% endif %}
-      <!-- Logo -->
-      <span class="header-title">
-        <span class="orange-letter">o</span>penwork
-      </span>
-    </div>
+    <!-- User Info Container -->
+    <div id="user-info-container">
+      <div class="user-info">
+        <strong>{{ user_name }}</strong>
+        {% if current_user.labourer_profile %}
+        <p>{{ job_name }}</p>
 
-    <nav>
-      <!-- Notifications Icon with Badge -->
-      <a
-        href="{{ url_for('notifications') }}"
-        class="header-button"
-        style="position: relative"
-      >
-        <i class="fas fa-bell"></i>
-        {% if unread_notifications_count > 0 %}
-        <span class="notification-badge">{{ unread_notifications_count }}</span>
+        {% elif current_user.business_profile %}
+        <p>{{ job_name }}</p>
         {% endif %}
-      </a>
-
-      <!-- Message Icon -->
-      <a href="{{ url_for('messages') }}" class="header-button">
-        <i class="fas fa-envelope"></i>
-      </a>
-
-      <!-- Home Button -->
-      <a href="{{ url_for('business_dashboard') }}" class="header-button">
-        <i class="fas fa-home"></i>
-      </a>
-    </nav>
-  </header>
-
-<div id="messages-container">
-  {% for message in messages %}
-  <div
-    class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
-  >
-    <p>{{ message.content }}</p>
-    <small class="timestamp">
-      {{ message.timestamp.strftime('%d/%m/%y') }} | {{ message.timestamp.strftime('%I:%M %p') }}
-    </small>
-  </div>
-  {% endfor %}
-</div>
-
-
-      <form
-        action="{{ url_for('chat', job_id=job_id, user_id=user_id) }}"
-        method="POST"
-      >
-        <textarea
-          name="message"
-          placeholder="Type your message here"
-          required
-        ></textarea>
-        <button type="submit" class="send-button">
-          <i class="fas fa-arrow-up"></i>
-        </button>
-      </form>
+      </div>
     </div>
+
+    <div id="messages-container">
+      {% for message in messages %}
+      <div
+        class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
+      >
+        <p>{{ message.content }}</p>
+        <small class="timestamp">
+          {{ message.timestamp.strftime('%d/%m/%y') }} | {{
+          message.timestamp.strftime('%I:%M %p') }}
+        </small>
+      </div>
+      {% endfor %}
+    </div>
+
+    <form
+      action="{{ url_for('chat', job_id=job_id, user_id=user_id) }}"
+      method="POST"
+    >
+      <textarea
+        name="message"
+        placeholder="Type your message here"
+        required
+      ></textarea>
+      <button type="submit" class="send-button">
+        <i class="fas fa-arrow-up"></i>
+      </button>
+    </form>
+
+    <script>
+      // Keep the chat container at the bottom when the page loads
+      window.onload = function () {
+        const messagesContainer = document.getElementById("messages-container");
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      };
+
+      // Scroll to bottom after sending a message
+      document.querySelector("form").addEventListener("submit", function () {
+        setTimeout(() => {
+          const messagesContainer =
+            document.getElementById("messages-container");
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 100);
+      });
+    </script>
   </body>
-  {% endblock %}
-    <footer>
-    <a href="{{ url_for('create_job') }}" class="footers-button">
-      <i class="fas fa-search"></i>
-      <p>Create a Job</p>
-    </a>
-
-    <a href="{{ url_for('business_created_jobs') }}" class="footers-button">
-      <i class="fas fa-comment"></i>
-      <p>Open Jobs</p>
-    </a>
-
-    <a href="{{ url_for('business_active_jobs') }}" class="footers-button">
-      <i class="fas fa-arrow-right"></i>
-      <p>Active Jobs</p>
-    </a>
-
-    {% if current_user.is_authenticated %}
-    <a href="{{ url_for('business_profile') }}" class="footers-button">
-      <i class="fas fa-bars"></i>
-      <p>Account</p>
-    </a>
-    {% endif %}
-  </footer>
-
-  <script>
-    // Function to keep the chat container at the bottom
-    function keepAtBottom() {
-      var messagesContainer = document.getElementById("messages-container");
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    window.onload = keepAtBottom;
-    document.querySelector("form").addEventListener("submit", function () {
-      setTimeout(keepAtBottom, 100);
-    });
-  </script>
+  {%endblock%}
 </html>
