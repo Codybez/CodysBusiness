@@ -980,6 +980,14 @@ def chat(job_id, user_id):
 
         room = f"job_{job_id}_user_{user_id}"
 
+        # Fetch the trading name of the applicant (labourer) from CompanyDetails
+        labourer_trading_name = job_application.user.company_details.trading_name if job_application.user.company_details else None
+
+        # Fetch the first name of the job poster (business)
+        job_poster_first_name = job.user.first_name
+
+        
+
         # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
@@ -1029,7 +1037,8 @@ def chat(job_id, user_id):
             room=room,
             job_name=job.job_name,
             applicant_name=f"{job_application.user.first_name} {job_application.user.last_name}",
-            job_location=job.location,
+            labourer_trading_name=labourer_trading_name,
+            job_poster_first_name=job_poster_first_name,              job_location=job.location,
             job_id=job_id,
             user_id=job_application.user.id  # Use the user_id from the JobApplication
         )

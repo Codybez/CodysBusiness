@@ -23,6 +23,7 @@
 
       .sort-options {
         margin: 10px;
+        margin-top: 20px;
         margin-bottom: 20px;
         display: flex;
         justify-content: center;
@@ -67,14 +68,14 @@
       }
 
       .job-listing h3 {
-        color: #333;
+        color: #555;
         margin: 0;
         font-size: 20px;
         font-family: Arial, Helvetica, sans-serif;
       }
 
       .job-listing p {
-        color: #777;
+        color: #555;
         margin: 10px 0;
       }
 
@@ -163,7 +164,7 @@
         >
           <div>
             <h3>{{ job.job_name }}</h3>
-            <p><strong style="color: #777">{{ job.location }}</strong></p>
+            <p><strong style="color: #ff7048f8">{{ job.location }}</strong></p>
             <p>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
             <p>Job posted: {{ job.date_created|time_ago }}</p>
             <p>
