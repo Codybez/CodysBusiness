@@ -13,6 +13,7 @@
         margin-top: 30px;
         padding: 20px;
       }
+
       .notification-item {
         background-color: #fff;
         padding: 20px;
@@ -22,32 +23,36 @@
         transition: all 0.3s ease;
         position: relative;
       }
+
       .notification-item:hover {
         background-color: #f0f0f0;
       }
+
       .notification-message {
         font-size: 16px;
         color: #333;
       }
+
       .notification-time {
         font-size: 12px;
         color: #aaa;
         margin-top: 10px;
       }
-      /* Styling for unread notifications */
+
       .notification-item.unread {
-        border-left: 4px solid orange; /* Orange border for unread notifications */
-        background-color: #fff8e1; /* Slight background color to make it stand out */
+        border-left: 4px solid orange;
+        background-color: #fff8e1;
       }
+
       .notification-item.unread::before {
-        content: "🔔"; /* Bell icon */
+        content: "🔔";
         position: absolute;
-        top: 5px; /* Adjusts the icon to be a bit above */
-        right: 15px; /* Places the icon on the right side */
-        font-size: 20px; /* Adjust size of the icon */
+        top: 5px;
+        right: 15px;
+        font-size: 20px;
         color: orange;
       }
-      /* "X" button to close notification */
+
       .notification-item .close-btn {
         position: absolute;
         top: 10px;
@@ -57,20 +62,17 @@
         cursor: pointer;
         transition: color 0.3s ease;
       }
+
       .notification-item .close-btn:hover {
-        color: red; /* Red color when hovered */
+        color: red;
       }
     </style>
     <script>
-      function markAsReadAndRedirect(notificationElement) {
-        const notificationId = notificationElement.dataset.notificationId;
-        const notificationType = notificationElement.dataset.notificationType;
-        const jobId = notificationElement.dataset.jobId;
+      function markAsReadAndRedirect(notificationElement, event) {
+        event.stopPropagation(); // Prevent "onclick" propagation
 
-        // Debug logs
-        console.log("Notification ID:", notificationId);
-        console.log("Notification Type:", notificationType);
-        console.log("Job ID:", jobId);
+        const notificationId = notificationElement.dataset.notificationId;
+        const chatUrl = notificationElement.dataset.chatUrl;
 
         // Mark the notification as read
         fetch(`/notifications/${notificationId}`, {
@@ -82,15 +84,10 @@
         })
           .then((response) => {
             if (response.ok) {
-              // Remove the notification from the DOM after it's marked as read
-              notificationElement.style.display = "none"; // Hides the notification
-
-              if (notificationType === "job_application") {
-                // Redirect to job applicants page
-                window.location.href = `/view_applicants/${jobId}`;
+              if (chatUrl) {
+                window.location.href = chatUrl; // Redirect to the chat page
               } else {
-                // Redirect back to notifications
-                window.location.href = "/notifications";
+                window.location.href = "/notifications"; // Go back to notifications page
               }
             } else {
               console.error("Failed to mark notification as read");
@@ -101,10 +98,11 @@
           });
       }
 
-      function removeNotification(notificationElement) {
+      function removeNotification(notificationElement, event) {
+        event.stopPropagation(); // Prevent "onclick" propagation
+
         const notificationId = notificationElement.dataset.notificationId;
 
-        // Make a request to delete the notification from the database
         fetch(`/notifications/delete/${notificationId}`, {
           method: "POST",
           headers: {
@@ -113,8 +111,7 @@
         })
           .then((response) => {
             if (response.ok) {
-              // Remove the notification from the DOM after deletion
-              notificationElement.remove(); // This removes the element entirely
+              notificationElement.remove(); // Remove notification element from the DOM
             } else {
               console.error("Failed to delete notification");
             }
@@ -126,27 +123,42 @@
     </script>
   </head>
   <body>
-    {% extends 'base_business.html' %} {% block content %}
+    {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
+    elif current_user.business_profile %} {% extends 'base_business.html' %} {%
+    else %}
+    <h1>Error: Invalid profile type.</h1>
+    <p>Your account does not have a valid profile.</p>
+    {% endif %} {% block content %}
     <div class="notification-list">
       <h1>Your Notifications</h1>
+
       {% if notifications %} {% for notification in notifications|reverse %}
       <div
         class="notification-item {% if not notification.read %}unread{% endif %}"
         data-notification-id="{{ notification.id }}"
         data-notification-type="{{ notification.notification_type }}"
-        data-job-id="{{ notification.job_id if notification.notification_type == 'job_application' else 'null' }}"
-        onclick="markAsReadAndRedirect(this)"
+        data-chat-url="{{ url_for('chat', job_id=notification.job_id, user_id=notification.job_application_user_id) if notification.notification_type == 'message' else '' }}"
+        onclick="markAsReadAndRedirect(this, event)"
       >
-        <div class="notification-message">{{ notification.message }}</div>
+        <div class="notification-message">
+          {% if notification.notification_type == 'message' %}
+          <a
+            href="{{ url_for('chat', job_id=notification.job_id, user_id=notification.job_application_user_id) }}"
+            style="text-decoration: none; color: inherit"
+          >
+            {{ notification.message }}
+          </a>
+          {% else %} {{ notification.message }} {% endif %}
+        </div>
         <div class="notification-time">
           {{ notification.timestamp.strftime('%I:%M %p') }}
         </div>
-        <!-- Close "X" button -->
         <span
           class="close-btn"
           onclick="removeNotification(this.closest('.notification-item'), event)"
-          >&times;</span
         >
+          &times;
+        </span>
       </div>
       {% endfor %} {% else %}
       <p>No notifications available.</p>

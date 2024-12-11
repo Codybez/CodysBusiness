@@ -301,6 +301,12 @@
   </head>
   
   <body>
+    {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
+    elif current_user.business_profile %} {% extends 'base_business.html' %} {%
+    else %}
+    <h1>Error: Invalid profile type.</h1>
+    <p>Your account does not have a valid profile.</p>
+    {% endif %} {% block content %}
   <header class="{% if is_dashboard_page %}hide-back{% endif %}">
     <div class="logo-container">
       <!-- Back Arrow -->
@@ -369,6 +375,7 @@
       </form>
     </div>
   </body>
+  {% endblock %}
     <footer>
     <a href="{{ url_for('create_job') }}" class="footers-button">
       <i class="fas fa-search"></i>

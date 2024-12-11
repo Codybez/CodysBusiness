@@ -133,6 +133,9 @@ class Notification(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  
     job = db.relationship('Job', backref='notifications', lazy=True)
+    
+    job_application_id = db.Column(db.Integer, db.ForeignKey('job_application.id'), nullable=True)
+    job_application = db.relationship('JobApplication', backref='notifications', lazy=True)
 
     user = db.relationship('User', backref=db.backref('notifications', lazy=True))
 
@@ -960,6 +963,7 @@ def get_messages(job_application_id):
         for msg in messages
     ]
     return jsonify(messages_data)
+
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def chat(job_id, user_id):
@@ -1067,17 +1071,28 @@ def send_message():
 @app.route('/notifications')
 @login_required
 def notifications():
-    # Fetch notifications for the current user
-    notifications = Notification.query.filter_by(user_id=current_user.id).all()
+    try:
+        # Fetch notifications for the current user
+        notifications = Notification.query.filter_by(user_id=current_user.id).all()
 
-    # Add job-related flag to notifications (based on notification_type)
-    for notification in notifications:
-        if notification.notification_type == 'job_application' and notification.job_id:
-            notification.is_job_application = True
-        else:
-            notification.is_job_application = False
+        # Add job-related flag to notifications (based on notification_type)
+        for notification in notifications:
+            if notification.notification_type == 'message' and notification.job_id:
+                job_application = JobApplication.query.filter_by(job_id=notification.job_id, user_id=current_user.id).first()
+                if job_application:
+                    notification.job_application_user_id = job_application.user_id
+                else:
+                    # For job poster (business), get the job_application with the applicant user_id
+                    job_application = JobApplication.query.filter_by(job_id=notification.job_id).first()
+                    if job_application:
+                        notification.job_application_user_id = job_application.user_id
 
-    return render_template('notifications.html', notifications=notifications)
+        # Render the template with the notifications
+        return render_template('notifications.html', notifications=notifications)
+
+    except Exception as e:
+        print(f"Error in notifications route: {e}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
 def delete_notification(notification_id):
