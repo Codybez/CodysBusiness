@@ -119,7 +119,6 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False, nullable=True)
     room = db.Column(db.String(50), nullable=False)
-    is_read = db.Column(db.Boolean, nullable=True, default=False)
     sender_id = db.Column(db.Integer, db.ForeignKey
     ('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
@@ -961,7 +960,6 @@ def get_messages(job_application_id):
         for msg in messages
     ]
     return jsonify(messages_data)
-
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def chat(job_id, user_id):
@@ -984,16 +982,30 @@ def chat(job_id, user_id):
             if not content:
                 return jsonify({"error": "Message content cannot be empty"}), 400
 
+            # Determine the receiver
+            if current_user.id == job_application.user_id:
+                receiver_id = job.user_id  # Receiver is the job poster
+            else:
+                receiver_id = job_application.user_id  # Receiver is the applicant
+
             # Create and save a new message
             message = Message(
                 sender_id=current_user.id,
-                receiver_id=None,  # Receiver ID is optional since we focus on the room
+                receiver_id=receiver_id,
                 content=content,
                 job_application_id=job_application.id,
                 room=room
             )
             db.session.add(message)
             db.session.commit()
+
+            # Create a notification for the receiver
+            create_notification(
+                user_id=receiver_id,
+                message="You have a new message!",
+                notification_type="message",
+                job_id=job_id
+            )
 
         # Fetch all messages for this JobApplication
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
@@ -1022,25 +1034,35 @@ def chat(job_id, user_id):
         print(f"Error in chat route for job_id={job_id}, user_id={user_id}: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
 
-
 @app.route('/send_message', methods=['POST'])
 def send_message():
     sender_id = request.json.get('sender_id')
+    receiver_id = request.json.get('receiver_id')  # Ensure the receiver ID is passed
     content = request.json.get('content')
     job_application_id = request.json.get('job_application_id')
 
     if sender_id and content and job_application_id:
         new_message = Message(
             sender_id=sender_id,
+            receiver_id=receiver_id,
             content=content,
             job_application_id=job_application_id,
             room=f"job_app_{job_application_id}"
         )
         db.session.add(new_message)
         db.session.commit()
+
+        # Create a notification for the receiver
+        if receiver_id:
+            create_notification(
+                user_id=receiver_id,
+                message="You have a new message!",
+                notification_type="message",
+                job_id=None  # Optional: include job_id if applicable
+            )
+
         return jsonify({"status": "Message sent!"}), 200
     return jsonify({"error": "Invalid data"}), 400
-
 
 @app.route('/notifications')
 @login_required
@@ -1110,6 +1132,7 @@ def create_notification(user_id, message, notification_type=None, job_id=None):
 def inject_unread_notifications_count():
     unread_notifications_count = Notification.query.filter_by(user_id=current_user.id, read=False).count() if current_user.is_authenticated else 0
     return dict(unread_notifications_count=unread_notifications_count)
+    
 @app.route('/messages')
 @login_required
 def messages():
@@ -1184,7 +1207,3 @@ def create_message(sender_id, receiver_id, content, job_application_id=None, roo
     db.session.add(message)
     db.session.commit()
 
-@app.context_processor
-def inject_unread_messages_count():
-    unread_messages_count = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count() if current_user.is_authenticated else 0
-    return dict(unread_messages_count=unread_messages_count)
