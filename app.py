@@ -1004,6 +1004,14 @@ def chat(job_id, user_id):
             db.session.add(message)
             db.session.commit()
 
+                        # Create a notification for the receiver
+            create_message_notification(
+                receiver_id=receiver_id,
+                message_content=f"New message from {current_user.first_name} regarding job '{job.job_name}'",
+                job_application_id=job_application.id,
+                job_id=job.id  # optional, if you want to associate the notification with a job
+            )
+
         # Fetch all messages for this JobApplication
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
 
@@ -1031,37 +1039,6 @@ def chat(job_id, user_id):
     except Exception as e:
         print(f"Error in chat route for job_id={job_id}, user_id={user_id}: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
-    
-@app.route('/send_message', methods=['POST'])
-def send_message():
-    sender_id = request.json.get('sender_id')
-    receiver_id = request.json.get('receiver_id')  # Ensure the receiver ID is passed
-    content = request.json.get('content')
-    job_application_id = request.json.get('job_application_id')
-
-    if sender_id and content and job_application_id:
-        # Fetch the JobApplication object to get job_id
-        job_application = JobApplication.query.get(job_application_id)
-        
-        if not job_application:
-            return jsonify({"error": "Job application not found"}), 404
-        
-        job_id = job_application.job_id  # Access the job_id from the JobApplication
-        
-        # Create the message with the room name
-        new_message = Message(
-            sender_id=sender_id,
-            receiver_id=receiver_id,
-            content=content,
-            job_application_id=job_application_id,
-            room=f"job_{job_id}_user_{receiver_id}"  # Now job_id is defined
-        )
-        db.session.add(new_message)
-        db.session.commit()
-
-        return jsonify({"status": "Message sent!"}), 200
-    return jsonify({"error": "Invalid data"}), 400
-
     
 
 @app.route('/messages')
@@ -1138,3 +1115,93 @@ def create_message(sender_id, receiver_id, content, job_application_id=None, roo
     db.session.add(message)
     db.session.commit()
 
+@app.route('/notifications/unread')
+@login_required
+def get_unread_notifications():
+    notifications = Notification.query.filter_by(
+        user_id=current_user.id,
+        read=False
+    ).all()
+    
+    return jsonify({
+        "notifications": [{"id": n.id, "message": n.message, "timestamp": n.timestamp, "notification_type": n.notification_type, 
+                           "job_id": n.job_id, "job_application_user_id": n.job_application_user_id, "read": n.read} for n in notifications]
+    })
+
+@app.route('/notifications/<int:notification_id>', methods=['POST'])
+@login_required
+def mark_notification_read(notification_id):
+    notification = Notification.query.get(notification_id)
+    if notification and notification.user_id == current_user.id:
+        notification.read = True
+        db.session.commit()
+        return jsonify({"status": "Notification marked as read!"}), 200
+    
+    return jsonify({"error": "Notification not found or not yours"}), 404
+
+@app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
+@login_required
+def delete_notification(notification_id):
+    notification = Notification.query.get(notification_id)
+    if notification and notification.user_id == current_user.id:
+        db.session.delete(notification)
+        db.session.commit()
+        return jsonify({"status": "Notification deleted!"}), 200
+    
+    return jsonify({"error": "Notification not found or not yours"}), 404
+
+
+
+def create_message_notification(receiver_id, message_content, job_application_id=None, job_id=None):
+    try:
+        if job_application_id:
+            job_application = JobApplication.query.get(job_application_id)
+            job_id = job_application.job.id if job_application else None
+
+            notification = Notification(
+                user_id=receiver_id,
+                message=message_content,
+                read=False,
+                notification_type='message',
+                timestamp=datetime.utcnow(),
+                job_application_id=job_application_id,
+                job_id=job_id
+            )
+        elif job_id:
+            notification = Notification(
+                user_id=receiver_id,
+                message=message_content,
+                read=False,
+                notification_type='message',
+                timestamp=datetime.utcnow(),
+                job_id=job_id
+            )
+        else:
+            return None  # Handle if no job_id or job_application_id is provided
+        
+        db.session.add(notification)
+        db.session.commit()
+        print(f"Notification created: {notification}")  # Log to check notification creation
+    except Exception as e:
+        print(f"Error creating notification: {e}")
+        db.session.rollback()  # Rollback in case of error
+    return notification
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    # Fetch the notifications for the current user
+    notifications = Notification.query.filter_by(user_id=current_user.id).all()
+
+    # Render the notifications page template with the notifications data
+    return render_template('notifications.html', notifications=notifications)
+
+
+@app.context_processor
+def inject_unread_notifications_count():
+    # Check if the user is authenticated before querying
+    if current_user.is_authenticated:
+        unread_count = Notification.query.filter_by(user_id=current_user.id, read=False).count()
+    else:
+        unread_count = 0  # If the user is not logged in, there are no unread notifications
+    return dict(unread_notifications_count=unread_count)
