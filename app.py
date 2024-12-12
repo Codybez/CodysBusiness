@@ -532,6 +532,13 @@ def apply_for_job(job_id):
         db.session.commit()
         flash("Application submitted and marked as paid!", "success")
 
+                # Notify the job poster
+        create_job_application_notification(
+            receiver_id=job.user_id,  # Assuming job.user_id is the poster's ID
+            job_id=job.id,
+            applicant_name=f"{current_user.first_name} {current_user.last_name}"
+        )
+
 
     # Optionally, redirect the user to the job detail page or another page
     return redirect(url_for('applied_jobs', job_id=job.id))
@@ -1205,3 +1212,34 @@ def inject_unread_notifications_count():
     else:
         unread_count = 0  # If the user is not logged in, there are no unread notifications
     return dict(unread_notifications_count=unread_count)
+
+
+def create_job_application_notification(receiver_id, job_id, applicant_name):
+    """
+    Create a notification for a new job application.
+    """
+    try:
+        # Validate input
+        if not receiver_id or not job_id:
+            print(f"Invalid input: receiver_id={receiver_id}, job_id={job_id}, applicant_name={applicant_name}")
+            return False
+
+        # Create notification
+        notification = Notification(
+            user_id=receiver_id,
+            message=f"{applicant_name} has applied for your job.",
+            read=False,
+            notification_type='job_application',
+            timestamp=datetime.utcnow(),
+            job_id=job_id
+        )
+        db.session.add(notification)
+        db.session.commit()
+        print(f"Job application notification created: {notification}")
+        return notification
+    except Exception as e:
+        # Handle errors
+        print(f"Error creating job application notification: {e}")
+        db.session.rollback()
+        return False
+
