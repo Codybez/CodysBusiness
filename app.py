@@ -532,13 +532,6 @@ def apply_for_job(job_id):
         db.session.commit()
         flash("Application submitted and marked as paid!", "success")
 
-        # Create a notification for the job poster (job user)
-        create_notification(
-            job.user_id,  # Job poster's user ID
-            f"{current_user.first_name} applied for your job: {job.job_name}",
-            notification_type="job_application",  # Indicating it's a job application notification
-            job_id=job.id  # Pass job_id to link the notification to the job
-        )
 
     # Optionally, redirect the user to the job detail page or another page
     return redirect(url_for('applied_jobs', job_id=job.id))
@@ -1011,14 +1004,6 @@ def chat(job_id, user_id):
             db.session.add(message)
             db.session.commit()
 
-            # Create a notification for the receiver
-            create_notification(
-                user_id=receiver_id,
-                message="You have a new message!",
-                notification_type="message",
-                job_id=job_id
-            )
-
         # Fetch all messages for this JobApplication
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
 
@@ -1074,97 +1059,11 @@ def send_message():
         db.session.add(new_message)
         db.session.commit()
 
-        # Create a notification for the receiver
-        if receiver_id:
-            create_notification(
-                user_id=receiver_id,
-                message="You have a new message!",
-                notification_type="message",
-                job_id=job_id  # Optional: include job_id if applicable
-            )
-
         return jsonify({"status": "Message sent!"}), 200
     return jsonify({"error": "Invalid data"}), 400
 
     
-@app.route('/notifications')
-@login_required
-def notifications():
-    try:
-        # Fetch notifications for the current user
-        notifications = Notification.query.filter_by(user_id=current_user.id).all()
 
-        for notification in notifications:
-            if notification.notification_type == 'message' and notification.job_id:
-                # Determine the job_application user_id for the chat room
-                job_application = JobApplication.query.filter_by(job_id=notification.job_id).first()
-
-                if job_application:
-                    # The relevant user_id is always from the JobApplication (applicant's user_id)
-                    notification.job_application_user_id = job_application.user_id
-
-        # Render the template with the notifications
-        return render_template('notifications.html', notifications=notifications)
-
-    except Exception as e:
-        print(f"Error in notifications route: {e}")
-        return jsonify({"error": "An unexpected error occurred"}), 500
-
-
-@app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
-def delete_notification(notification_id):
-    notification = Notification.query.get(notification_id)
-    
-    if notification:
-        db.session.delete(notification)  # Delete the notification from the database
-        db.session.commit()  # Commit the transaction
-        return '', 204  # No content response to indicate success
-    
-    return '', 404  # Not found if notification doesn't exist
-
-
-
-@app.route('/notifications/<int:notification_id>', methods=['GET', 'POST'])
-@login_required
-def view_notification(notification_id):
-    # Fetch the specific notification
-    notification = Notification.query.get_or_404(notification_id)
-
-    if request.method == 'POST':
-        data = request.get_json()
-        if data.get('read', False):
-            # Mark the notification as read
-            notification.read = True
-            db.session.commit()
-        return '', 200  # Return an empty response with HTTP status 200
-
-    # Mark the notification as read when accessed via GET
-    if notification.user_id == current_user.id and not notification.read:
-        notification.read = True
-        db.session.commit()
-
-    # Redirect the user based on notification type
-    if notification.notification_type == "job_application" and notification.job_id:
-        return redirect(url_for('view_applicants', job_id=notification.job_id))
-    return redirect(url_for('notifications'))  # Otherwise, just redirect to notifications page
-
-
-def create_notification(user_id, message, notification_type=None, job_id=None):
-    notification = Notification(
-        user_id=user_id,
-        message=message,
-        notification_type=notification_type,
-        timestamp=datetime.utcnow(),
-        job_id=job_id  # Ensure job_id is passed for job-related notifications
-    )
-    db.session.add(notification)
-    db.session.commit()
-
-@app.context_processor
-def inject_unread_notifications_count():
-    unread_notifications_count = Notification.query.filter_by(user_id=current_user.id, read=False).count() if current_user.is_authenticated else 0
-    return dict(unread_notifications_count=unread_notifications_count)
-    
 @app.route('/messages')
 @login_required
 def messages():
