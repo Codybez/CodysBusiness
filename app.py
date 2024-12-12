@@ -1046,7 +1046,7 @@ def chat(job_id, user_id):
     except Exception as e:
         print(f"Error in chat route for job_id={job_id}, user_id={user_id}: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
-
+    
 @app.route('/send_message', methods=['POST'])
 def send_message():
     sender_id = request.json.get('sender_id')
@@ -1055,12 +1055,21 @@ def send_message():
     job_application_id = request.json.get('job_application_id')
 
     if sender_id and content and job_application_id:
+        # Fetch the JobApplication object to get job_id
+        job_application = JobApplication.query.get(job_application_id)
+        
+        if not job_application:
+            return jsonify({"error": "Job application not found"}), 404
+        
+        job_id = job_application.job_id  # Access the job_id from the JobApplication
+        
+        # Create the message with the room name
         new_message = Message(
             sender_id=sender_id,
             receiver_id=receiver_id,
             content=content,
             job_application_id=job_application_id,
-            room=f"job_app_{job_application_id}"
+            room=f"job_{job_id}_user_{receiver_id}"  # Now job_id is defined
         )
         db.session.add(new_message)
         db.session.commit()
@@ -1071,12 +1080,13 @@ def send_message():
                 user_id=receiver_id,
                 message="You have a new message!",
                 notification_type="message",
-                job_id=None  # Optional: include job_id if applicable
+                job_id=job_id  # Optional: include job_id if applicable
             )
 
         return jsonify({"status": "Message sent!"}), 200
     return jsonify({"error": "Invalid data"}), 400
 
+    
 @app.route('/notifications')
 @login_required
 def notifications():
@@ -1084,17 +1094,14 @@ def notifications():
         # Fetch notifications for the current user
         notifications = Notification.query.filter_by(user_id=current_user.id).all()
 
-        # Add job-related flag to notifications (based on notification_type)
         for notification in notifications:
             if notification.notification_type == 'message' and notification.job_id:
-                job_application = JobApplication.query.filter_by(job_id=notification.job_id, user_id=current_user.id).first()
+                # Determine the job_application user_id for the chat room
+                job_application = JobApplication.query.filter_by(job_id=notification.job_id).first()
+
                 if job_application:
+                    # The relevant user_id is always from the JobApplication (applicant's user_id)
                     notification.job_application_user_id = job_application.user_id
-                else:
-                    # For job poster (business), get the job_application with the applicant user_id
-                    job_application = JobApplication.query.filter_by(job_id=notification.job_id).first()
-                    if job_application:
-                        notification.job_application_user_id = job_application.user_id
 
         # Render the template with the notifications
         return render_template('notifications.html', notifications=notifications)
@@ -1102,6 +1109,7 @@ def notifications():
     except Exception as e:
         print(f"Error in notifications route: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
+
 
 @app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
 def delete_notification(notification_id):
