@@ -54,9 +54,11 @@
       .job-listing .icon {
         margin-right: 10px;
       }
+
       .job-listing p i {
         margin-right: 10px;
       }
+
       /* Flex container for buttons */
       .button-container {
         display: flex;
@@ -98,6 +100,35 @@
           width: 100%; /* Full width on small screens */
         }
       }
+
+      /* Container for the "Close Job" button */
+      .close-button-container {
+        margin-top: 20px; /* Add space between sections */
+        text-align: right; /* Align to the right */
+      }
+
+      /* Style for the "Close Job" button */
+      .close-job-link {
+        background-color: #4caf50; /* Green background */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        text-decoration: none;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+      }
+
+      /* Add arrow to the right for the "Close Job" button */
+      .close-job-link::after {
+        content: " →";
+        margin-left: 10px;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -129,6 +160,16 @@
           class="chat-link"
         >
           View Applicants
+        </a>
+      </div>
+
+      <!-- Close Job button below on the right -->
+      <div class="close-button-container">
+        <a
+          href="{{ url_for('close_job', job_id=job.id) }}"
+          class="close-job-link"
+        >
+          Close Job
         </a>
       </div>
     </div>

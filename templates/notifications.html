@@ -10,7 +10,7 @@
         background-color: #ffffff;
         min-height: 100vh;
         font-family: Arial, sans-serif;
-        margin-top: 30px;
+
         padding: 20px;
       }
 
@@ -126,12 +126,9 @@
     </script>
   </head>
   <body>
-    {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
-    elif current_user.business_profile %} {% extends 'base_business.html' %} {%
-    else %}
-    <h1>Error: Invalid profile type.</h1>
-    <p>Your account does not have a valid profile.</p>
-    {% endif %} {% block content %}
+    {% if current_user.business_profile %} {% extends 'base_business.html' %} {%
+    else %} {% extends 'base_labour.html' %} {% endif %} {% block content %}
+
     <div class="notification-list">
       <h1>Your Notifications</h1>
 

@@ -319,7 +319,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.', 'success')
+   
     return redirect(url_for('login'))  # Redirect to the login page after logout
 
 @app.route('/labourer/dashboard')
@@ -490,7 +490,15 @@ from datetime import datetime
 
 @app.route('/find_a_job')
 def find_a_job():
-    job_data = Job.query.all()
+    # Check if the user is a labourer and if their profile and company details are set up
+    if (
+        (not current_user.labourer_profile or not current_user.company_details)
+    ):
+        flash("Please complete your profile and company details to access this page.", "warning")
+        return redirect(url_for('labourer_profile'))  # Redirect to a profile setup page
+
+    # Fetch only jobs with status 'open'
+    job_data = Job.query.filter_by(status='open').all()
 
     # Ensure image_list is a list of paths
     for job in job_data:
@@ -524,7 +532,7 @@ def apply_for_job(job_id):
         # If application exists, update its status to 'paid'
         application.status = 'paid'
         db.session.commit()
-        flash("Your application has been marked as paid!", "success")
+        flash("Your application has been succesful!")
     else:
         # Create a new job application with status 'paid'
         application = JobApplication(user_id=current_user.id, job_id=job.id, status='paid')
@@ -546,11 +554,11 @@ def apply_for_job(job_id):
 @app.route('/applied_jobs')
 @login_required
 def applied_jobs():
-    # Assuming you have a relationship between User and JobApplication
+    # Fetch jobs the current user has applied for, including closed jobs
     applied_jobs = (
         Job.query
         .join(Job.applicants)
-        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status != 'accepted'))
+        .filter(JobApplication.user_id == current_user.id)
         .all()
     )
 
@@ -776,21 +784,27 @@ def search_jobs():
 
     return render_template('your_template.html', job_data=job_data)
 
+
+from sqlalchemy import or_
+
 @app.route('/active_jobs')
 @login_required
 def active_jobs():
-    # Assuming you have a relationship between User and JobApplication
+    # Query for jobs where the current user is the accepted applicant or the job poster
     active_jobs = (
         Job.query
-        .join(Job.applicants)
-        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status == 'accepted'))
+        .filter(
+            or_(
+                Job.accepted_user_id == current_user.id,  # The current user is the accepted applicant
+                Job.user_id == current_user.id  # The current user is the business/job poster
+            ),
+            Job.status == 'closed'  # The job status is 'closed'
+        )
         .all()
     )
 
-    # Pass the current user as 'applicant' to the template
+    # Pass the active jobs and current user as 'applicant' to the template
     return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user)
-
-
 
 @app.route('/remove_application/<int:job_id>')
 @login_required
@@ -1243,3 +1257,38 @@ def create_job_application_notification(receiver_id, job_id, applicant_name):
         db.session.rollback()
         return False
 
+@app.route('/jobs/<int:job_id>/close', methods=['GET', 'POST'])
+def close_job(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    # Check if the current user is the owner of the job
+    if job.business_profile_id != current_user.business_profile.id:
+        flash("You don't have permission to close this job.", 'error')
+        return redirect(url_for('business_dashboard'))
+
+    # Fetch applicants with related user and company details for display
+    applicants = JobApplication.query.options(
+        joinedload(JobApplication.user).joinedload(User.company_details)
+    ).filter_by(job_id=job_id).all()
+
+    if request.method == 'POST':
+        # Get the user's input
+        filled_status = request.form.get('filled_status')
+        accepted_user_id = request.form.get('accepted_user')
+
+        if filled_status == 'yes' and accepted_user_id:
+            job.status = 'closed'
+            job.accepted_user_id = int(accepted_user_id)
+            db.session.commit()
+            flash('Job successfully closed, and the applicant has been selected.', 'success')
+        elif filled_status == 'no':
+            job.status = 'closed'
+            job.accepted_user_id = None  # Explicitly set to None if no applicant is selected
+            db.session.commit()
+            flash('Job successfully closed without selecting an applicant.', 'info')
+        else:
+            flash('Please make a valid selection.', 'error')
+
+        return redirect(url_for('business_dashboard'))
+
+    return render_template('close_job.html', job=job, applicants=applicants)

@@ -119,11 +119,17 @@
     block content %} {% for job in applied_jobs | reverse %} {% if
     job.applicants | selectattr("user_id", "equalto", current_user.id) |
     selectattr("is_visible", "equalto", true) | list %}
-
     <div class="job-listing" id="job_{{ job.id }}">
       <h1>{{ job.job_name }}</h1>
       <p class="job-location">
         <strong style="color: #777">{{ job.location }}</strong>
+      </p>
+      <p>
+        Status: {% if job.status == 'closed' %}
+        <span style="color: red">Closed</span>
+        {% else %}
+        <span style="color: green">Open</span>
+        {% endif %}
       </p>
 
       <a
@@ -139,7 +145,8 @@
       <p>Email: {{ job.user.email }}</p>
       <p>Phone: {{ job.contact_number }}</p>
       {% endif %} {% endif %} {% endfor %} {% if current_user.is_authenticated
-      and current_user.id in job.applicants | map(attribute='user_id') %}
+      and current_user.id in job.applicants | map(attribute='user_id') %} {% if
+      job.status != 'closed' %}
       <div class="button-container">
         <a
           href="{{ url_for('display_jobs', job_id=job.id) }}"
@@ -156,7 +163,7 @@
           <i class="fas fa-comment"></i>
         </a>
       </div>
-      {% endif %}
+      {% endif %} {% endif %}
     </div>
     {% endif %} {% endfor %} {% endblock %}
   </body>
