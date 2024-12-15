@@ -536,7 +536,8 @@ def apply_for_job(job_id):
         create_job_application_notification(
             receiver_id=job.user_id,  # Assuming job.user_id is the poster's ID
             job_id=job.id,
-            applicant_name=f"{current_user.first_name} {current_user.last_name}"
+            trading_name=f"{current_user.company_details.trading_name}",
+            applicant_name=f"{current_user.first_name}"
         )
 
 
@@ -1214,7 +1215,7 @@ def inject_unread_notifications_count():
     return dict(unread_notifications_count=unread_count)
 
 
-def create_job_application_notification(receiver_id, job_id, applicant_name):
+def create_job_application_notification(receiver_id, job_id, applicant_name, trading_name):
     """
     Create a notification for a new job application.
     """
@@ -1227,7 +1228,7 @@ def create_job_application_notification(receiver_id, job_id, applicant_name):
         # Create notification
         notification = Notification(
             user_id=receiver_id,
-            message=f"{applicant_name} has applied for your job.",
+            message=f"{applicant_name} from {trading_name} has applied for your job.",
             read=False,
             notification_type='job_application',
             timestamp=datetime.utcnow(),
@@ -1242,4 +1243,5 @@ def create_job_application_notification(receiver_id, job_id, applicant_name):
         print(f"Error creating job application notification: {e}")
         db.session.rollback()
         return False
+
 
