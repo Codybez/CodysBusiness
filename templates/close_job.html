@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Close Job</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Close Job: {{ job.job_name }}</h1>
+
+    <form method="POST">
+      <label for="job_filled">Have you filled this job?</label>
+      <select name="job_filled" id="job_filled">
+        <option value="">Select</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <div id="completion-dropdown" style="display: none">
+        <label for="completion_choice">Who was chosen for the job?</label>
+        <select name="completion_choice" id="completion_choice">
+          <option value="">Select</option>
+          {% for application in job.applicants %}
+          <option
+            value="{{ application.user.first_name }} from {{ application.user.company_details.trading_name }}"
+          >
+            {{ application.user.first_name }} from {{
+            application.user.company_details.trading_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("job_filled")
+        .addEventListener("change", function () {
+          const completionDropdown = document.getElementById(
+            "completion-dropdown"
+          );
+          completionDropdown.style.display =
+            this.value === "yes" ? "block" : "none";
+        });
+    </script>
+  </body>
+</html>

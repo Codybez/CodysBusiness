@@ -46,10 +46,6 @@
       .job-details-container .icon {
         margin-left: 8px;
       }
-      .job-listing .icon {
-        margin-right: 15px;
-        /* Reduced margin for better spacing */
-      }
 
       .applicant-profile {
         position: relative;
@@ -114,6 +110,20 @@
         margin: 5px;
         text-decoration: none;
       }
+
+      /* View Profile button style */
+      .view-profile-button {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-block;
+
+        text-decoration: none;
+      }
+
       .info-container h1 {
         color: #555;
         font-size: small;
@@ -124,30 +134,13 @@
 
   <body>
     {% extends 'base_business.html' %} {% block title %}Active Jobs{% endblock
-    %} {% block content %}
-
-    <div class="info-container">
-      <h1>Active Jobs</h1>
-    </div>
-
-    {% for job in active_jobs|reverse %}
+    %} {% block content %} {% for job in active_jobs|reverse %}
     <div class="job-details-container">
       <h2>{{ job.job_name }}</h2>
       <p>
-        <i class="fas fa-map-marker-alt icon"></i>{{ job.job_category }} in {{
-        job.city }}, {{ job.suburb }}
+        <i class=></i>{{ job.job_category }} in {{ job.city
+        }}, {{ job.suburb }}
       </p>
-      <p>
-        <i class="fas fa-money-bill-alt icon"></i>Job Estimate: ${{
-        job.price_per_hour }}
-      </p>
-
-      <!-- Display the name of the business owner -->
-      <p>
-        <i class="fas fa-user icon"></i>Posted by: {{
-        job.business_profile.first_name }}
-      </p>
-      <!-- Add more job details as needed -->
 
       {% set selected_user = get_user_details(job.accepted_user_id) %} {% if
       selected_user and selected_user.labourer_profile %}
@@ -155,10 +148,12 @@
         {% if selected_user and selected_user.profile_image %}
         <!-- Display selected user details -->
         <h3>
-          {{ selected_user.labourer_profile.first_name }} {{
-          selected_user.labourer_profile.last_name }}
+          {{ selected_user.company_details.trading_name }} - {{
+          selected_user.labourer_profile.first_name }}
         </h3>
         <p>Phone: {{ selected_user.labourer_profile.phone_number }}</p>
+        <p>Email: {{ selected_user.user.email }}</p>
+
         <img
           src="{{ url_for('static', filename='profile_pics/' ~ selected_user.profile_image.filename) }}"
           alt="User Image"
@@ -168,12 +163,7 @@
         {% else %}
         <p>No profile image available.</p>
         {% endif %}
-        <!-- View and Chat buttons -->
-        <a
-          href="{{ url_for('business_display_jobs', job_id=job.id) }}"
-          class="view-job-link"
-          ><i class="fas fa-eye"></i> View</a
-        >
+        <!-- View, Chat, and Leave Review buttons -->
         <a
           href="{{ url_for('chat', job_id=job.id, user_id=job.accepted_user_id) }}"
           class="chat-link inline"
@@ -181,24 +171,28 @@
           data-user-id="{{ job.accepted_user_id }}"
           ><i class="fas fa-comments"></i> Chat</a
         >
+
+        <!-- New View Profile button -->
+        <a
+          href="{{ url_for('view_tradesman_profile', user_id=job.accepted_user_id) }}"
+          class="view-profile-button inline"
+          ><i class="fas fa-user"></i> Profile</a
+        >
         <a
           href="{{ url_for('tradesman_review', job_id=job.id)}}"
           class="close-review-button inline"
-          ><i class="fas fa-star fa-times"></i> Close & Review</a
+          ><i class="fas fa-star fa-times"></i> Review</a
         >
       </div>
       {% else %}
       <p>No user information available for this application.</p>
       {% endif %}
     </div>
-    <!-- Orange bar between job details -->
-
     {% endfor %}
 
     <br />
     <br />
     <br />
-
     {% endblock %}
   </body>
 </html>

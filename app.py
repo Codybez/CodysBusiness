@@ -670,14 +670,15 @@ def get_user_details(user_id):
     user = User.query.get(user_id)
     labourer_profile = LabourerProfile.query.filter_by(user_id=user_id).first()
     profile_image = UserProfileImage.query.filter_by(user_id=user_id).first()
+    company_details = CompanyDetails.query.filter_by(user_id=user_id).first()
     
     return {
         'user': user,
         'labourer_profile': labourer_profile,
-        'profile_image': profile_image
+        'profile_image': profile_image,
+         'company_details': company_details
+         
     }
-
-
 
 
 
@@ -688,10 +689,9 @@ def business_active_jobs():
     business_profile = current_user.business_profile
 
     if business_profile:
-        # Retrieve only booked status jobs created by the current business user
-        active_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='booked').all()
+        # Retrieve only 'booked' status jobs created by the current business user
+        active_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='closed').all()
 
-        # Ensure that the get_user_details function is available in the template context
         return render_template('business_active_jobs.html', active_jobs=active_jobs, get_user_details=get_user_details)
 
     flash("Business profile not found.", "error")
@@ -887,6 +887,20 @@ def edit_tradesman_profile():
 
 @app.route('/review/<int:job_id>', methods=['GET', 'POST'])
 def tradesman_review(job_id):
+    # Fetch the job details based on job_id
+    job = Job.query.get(job_id)
+    
+    if not job:
+        # If the job does not exist, return a 404 error
+        abort(404)
+    
+    # Fetch the tradesman/user associated with this job (assuming accepted_user_id points to the user)
+    selected_user = User.query.get(job.accepted_user_id)
+
+    if not selected_user:
+        # If no user is found for this job, return an error or a fallback
+        abort(404)
+
     if request.method == 'POST':
         # Process the submitted review form data
         professionalism = int(request.form['professionalism'])
@@ -895,13 +909,25 @@ def tradesman_review(job_id):
         communication = int(request.form['communication'])
         comments = request.form['comments']
 
-        # Save the review data to your database or perform any other necessary actions
+        # Save the review data to your database
+        # Assuming you have a Review model to store reviews
+        review = Review(
+            job_id=job_id,
+            user_id=selected_user.id,
+            professionalism=professionalism,
+            quality=quality,
+            cost=cost,
+            communication=communication,
+            comments=comments
+        )
+        db.session.add(review)
+        db.session.commit()
 
-        # Redirect to a page confirming the review submission
-        return redirect(url_for(''))
+        # Redirect to a confirmation page (e.g., a page showing the review was submitted)
+        return redirect(url_for('review_confirmation', job_id=job_id))
 
-    # Render the review form template
-    return render_template('labourer_review.html', job_id=job_id)
+    # Render the review form template with the job and selected_user data
+    return render_template('labourer_review.html', job_id=job_id, selected_user=selected_user)
 
 @app.route('/edit_social_links', methods=['GET', 'POST'])
 def edit_social_links():
@@ -1243,5 +1269,47 @@ def create_job_application_notification(receiver_id, job_id, applicant_name, tra
         print(f"Error creating job application notification: {e}")
         db.session.rollback()
         return False
+    
 
+@app.route('/close_job/<int:job_id>', methods=['GET', 'POST'])
+def close_job(job_id):
+    job = Job.query.get(job_id)
 
+    if request.method == 'POST':
+        job_filled = request.form.get('job_filled')
+        if job_filled == 'yes':
+            # Select the chosen applicant if the job is filled
+            completion_choice = request.form.get('completion_choice')
+            selected_applicant = next(
+                (app for app in job.applicants if f"{app.user.first_name} from {app.user.company_details.trading_name}" == completion_choice),
+                None
+            )
+            if selected_applicant:
+                name = selected_applicant.user.first_name
+                trading_name = selected_applicant.user.company_details.trading_name
+                job.accepted_user_id = selected_applicant.user.id  # Mark the applicant as accepted
+        else:
+            job.accepted_user_id = None  # In case the job wasn't filled
+
+        job.status = 'closed'  # Set the job status to closed
+        db.session.commit()  # Save changes to the database
+
+        flash("The job has been closed.", "success")
+        return redirect(url_for('business_active_jobs'))  # Redirect to the completed jobs page
+
+    return render_template('close_job.html', job=job)
+
+@app.route('/business_completed_jobs')
+@login_required
+def business_completed_jobs():
+    # Retrieve the business profile of the current user
+    business_profile = current_user.business_profile
+
+    if business_profile:
+        # Retrieve only 'closed' status jobs created by the current business user
+        completed_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='closed').all()
+
+        return render_template('business_active_jobs.html', completed_jobs=completed_jobs, get_user_details=get_user_details)
+
+    flash("Business profile not found.", "error")
+    return redirect(url_for('business_dashboard'))

@@ -1,135 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tradesman Review</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tradesman Review</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+      }
 
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+      .container {
+        max-width: 600px;
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-    }
+        padding: 20px;
+        background-color: #fff;
+      }
 
-    .rating > input {
-      display: none; /* Hide the radio buttons */
-    }
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
 
-    .rating {
-     display: flex;
-     flex-direction: row-reverse; /* Reverse the order of flex items */
-     justify-content: flex-end; /* Align items to the right */
-}
+      .rating > input {
+        display: none; /* Hide the radio buttons */
+      }
 
-    .rating > label {
-      font-size: 30px; /* Adjust size of stars */
-      color: #ddd; /* Default star color */
-      cursor: pointer;
-      display: inline;
-    }
+      .rating {
+        display: flex;
+        flex-direction: row-reverse; /* Reverse the order of flex items */
+        justify-content: flex-end; /* Align items to the right */
+      }
 
-    .rating > input:checked ~ label {
-      color: #f5b301; /* Highlighted star color */
-    }
+      .rating > label {
+        font-size: 30px; /* Adjust size of stars */
+        color: #ddd; /* Default star color */
+        cursor: pointer;
+        display: inline;
+      }
 
-    .rating > label:hover,
-    .rating > label:hover ~ label {
-      color: #f5b301; /* Color on hover */
-    }
+      .rating > input:checked ~ label {
+        color: #f5b301; /* Highlighted star color */
+      }
 
-    button {
-      background-color: #333;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+      .rating > label:hover,
+      .rating > label:hover ~ label {
+        color: #f5b301; /* Color on hover */
+      }
 
-    button:hover {
-      background-color: #555;
-    }
+      button {
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
 
-    .contaier .review-form {
-      margin-top: 30px;
-    }
-  </style>
-</head>
-<body>
-    {% extends 'base_business.html' %}
+      button:hover {
+        background-color: #555;
+      }
 
-  {% block title %}Active Jobs{% endblock %}
+      .contaier .review-form {
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_business.html' %} {% block title %}Active Jobs{% endblock
+    %} {% block content %}
+    <div class="container">
+      <h1>
+        Review {{ selected_user.labourer_profile.first_name }} from {{
+        selected_user.company_details.trading_name }}
+      </h1>
 
-  {% block content %}
-  <div class="container">
-    <h1>Review your Openworker!</h1>
-    <form id="review-form">
-      <!-- Professionalism Rating -->
-      <label>Professionalism:</label>
-      <div class="rating">
-        <input type="radio" id="pro-5" name="professionalism" value="5"><label for="pro-5">☆</label>
-        <input type="radio" id="pro-4" name="professionalism" value="4"><label for="pro-4">☆</label>
-        <input type="radio" id="pro-3" name="professionalism" value="3"><label for="pro-3">☆</label>
-        <input type="radio" id="pro-2" name="professionalism" value="2"><label for="pro-2">☆</label>
-        <input type="radio" id="pro-1" name="professionalism" value="1"><label for="pro-1">☆</label>
-      </div>
-            <!-- Quality of Work Rating -->
-      <label>Quality of Work:</label>
-      <div class="rating">
-        <!-- Quality Stars -->
-        <input type="radio" id="quality-5" name="quality" value="5"><label for="quality-5">☆</label>
-        <input type="radio" id="quality-4" name="quality" value="4"><label for="quality-4">☆</label>
-        <input type="radio" id="quality-3" name="quality" value="3"><label for="quality-3">☆</label>
-        <input type="radio" id="quality-2" name="quality" value="2"><label for="quality-2">☆</label>
-        <input type="radio" id="quality-1" name="quality" value="1"><label for="quality-1">☆</label>
-      </div>
+      <form id="review-form">
+        <!-- Professionalism Rating -->
+        <label>Professionalism:</label>
+        <div class="rating">
+          <input
+            type="radio"
+            id="pro-5"
+            name="professionalism"
+            value="5"
+          /><label for="pro-5">☆</label>
+          <input
+            type="radio"
+            id="pro-4"
+            name="professionalism"
+            value="4"
+          /><label for="pro-4">☆</label>
+          <input
+            type="radio"
+            id="pro-3"
+            name="professionalism"
+            value="3"
+          /><label for="pro-3">☆</label>
+          <input
+            type="radio"
+            id="pro-2"
+            name="professionalism"
+            value="2"
+          /><label for="pro-2">☆</label>
+          <input
+            type="radio"
+            id="pro-1"
+            name="professionalism"
+            value="1"
+          /><label for="pro-1">☆</label>
+        </div>
+        <!-- Quality of Work Rating -->
+        <label>Quality of Work:</label>
+        <div class="rating">
+          <!-- Quality Stars -->
+          <input type="radio" id="quality-5" name="quality" value="5" /><label
+            for="quality-5"
+            >☆</label
+          >
+          <input type="radio" id="quality-4" name="quality" value="4" /><label
+            for="quality-4"
+            >☆</label
+          >
+          <input type="radio" id="quality-3" name="quality" value="3" /><label
+            for="quality-3"
+            >☆</label
+          >
+          <input type="radio" id="quality-2" name="quality" value="2" /><label
+            for="quality-2"
+            >☆</label
+          >
+          <input type="radio" id="quality-1" name="quality" value="1" /><label
+            for="quality-1"
+            >☆</label
+          >
+        </div>
 
-      <!-- Reliability Rating -->
-      <label>Reliability:</label>
-      <div class="rating">
-        <!-- Reliability Stars -->
-        <input type="radio" id="reliability-5" name="reliability" value="5"><label for="reliability-5">☆</label>
-        <input type="radio" id="reliability-4" name="reliability" value="4"><label for="reliability-4">☆</label>
-        <input type="radio" id="reliability-3" name="reliability" value="3"><label for="reliability-3">☆</label>
-        <input type="radio" id="reliability-2" name="reliability" value="2"><label for="reliability-2">☆</label>
-        <input type="radio" id="reliability-1" name="reliability" value="1"><label for="reliability-1">☆</label>
-      </div>
+        <!-- Reliability Rating -->
+        <label>Reliability:</label>
+        <div class="rating">
+          <!-- Reliability Stars -->
+          <input
+            type="radio"
+            id="reliability-5"
+            name="reliability"
+            value="5"
+          /><label for="reliability-5">☆</label>
+          <input
+            type="radio"
+            id="reliability-4"
+            name="reliability"
+            value="4"
+          /><label for="reliability-4">☆</label>
+          <input
+            type="radio"
+            id="reliability-3"
+            name="reliability"
+            value="3"
+          /><label for="reliability-3">☆</label>
+          <input
+            type="radio"
+            id="reliability-2"
+            name="reliability"
+            value="2"
+          /><label for="reliability-2">☆</label>
+          <input
+            type="radio"
+            id="reliability-1"
+            name="reliability"
+            value="1"
+          /><label for="reliability-1">☆</label>
+        </div>
 
-      <!-- Communication Rating -->
-      <label>Communication:</label>
-      <div class="rating">
-        <!-- Communication Stars -->
-        <input type="radio" id="communication-5" name="communication" value="5"><label for="communication-5">☆</label>
-        <input type="radio" id="communication-4" name="communication" value="4"><label for="communication-4">☆</label>
-        <input type="radio" id="communication-3" name="communication" value="3"><label for="communication-3">☆</label>
-        <input type="radio" id="communication-2" name="communication" value="2"><label for="communication-2">☆</label>
-        <input type="radio" id="communication-1" name="communication" value="1"><label for="communication-1">☆</label>
-      </div>
+        <!-- Communication Rating -->
+        <label>Communication:</label>
+        <div class="rating">
+          <!-- Communication Stars -->
+          <input
+            type="radio"
+            id="communication-5"
+            name="communication"
+            value="5"
+          /><label for="communication-5">☆</label>
+          <input
+            type="radio"
+            id="communication-4"
+            name="communication"
+            value="4"
+          /><label for="communication-4">☆</label>
+          <input
+            type="radio"
+            id="communication-3"
+            name="communication"
+            value="3"
+          /><label for="communication-3">☆</label>
+          <input
+            type="radio"
+            id="communication-2"
+            name="communication"
+            value="2"
+          /><label for="communication-2">☆</label>
+          <input
+            type="radio"
+            id="communication-1"
+            name="communication"
+            value="1"
+          /><label for="communication-1">☆</label>
+        </div>
 
-      <!-- Repeat for Quality, Reliability, Communication -->
+        <!-- Repeat for Quality, Reliability, Communication -->
 
-      <label for="comments">Additional Comments:</label>
-      <textarea id="comments" name="comments" rows="4" cols="26"></textarea>
-      <div>
-        <button type="submit">Submit Review</button>
-      </div>
-    </form>
-  </div>
-  {% endblock %}
-</body>
+        <label for="comments">Additional Comments:</label>
+        <textarea id="comments" name="comments" rows="4" cols="26"></textarea>
+        <div>
+          <button type="submit">Submit Review</button>
+        </div>
+      </form>
+    </div>
+    {% endblock %}
+  </body>
 </html>
