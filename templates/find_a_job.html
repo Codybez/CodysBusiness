@@ -148,7 +148,7 @@
 
     <div id="job-listings">
       {% for job in job_data|reverse %} {% if current_user.id not in
-      job.applicants|map(attribute='user_id') and job.status != 'booked' %}
+      job.applicants|map(attribute='user_id') and job.status != 'closed' %}
       <a
         href="{{ url_for('display_jobs', job_id=job.id) }}"
         class="job-listing"

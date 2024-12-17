@@ -18,6 +18,7 @@
         background-color: #ffffff;
         margin: 0;
         padding: 0;
+        margin-top: 25px;
       }
       .job-listing:last-of-type {
         margin-bottom: 80px;
@@ -58,14 +59,14 @@
       .chat-link {
         flex: 1;
         padding: 10px 0;
-        text-align: left; /* Text on the left */
+        text-align: left;
         border-radius: 5px;
         font-size: 16px;
         text-decoration: none;
         color: white;
         display: flex;
-        justify-content: space-between; /* Text and icon at opposite ends */
-        align-items: center; /* Center items vertically */
+        justify-content: space-between;
+        align-items: center;
         padding-left: 10px;
         padding-right: 10px;
       }
@@ -78,25 +79,23 @@
         background-color: #ff7148;
       }
 
-      .job-listing {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        padding: 25px;
-        margin: 5px auto;
-        margin-top: 20px;
-        max-width: 600px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        position: relative;
-        text-decoration: none;
-        color: inherit;
+      /* Job image in the top-right corner */
+      .job-image {
+        position: absolute;
+        top: 20px; /* Adjusted for consistent padding */
+        right: 20px; /* Adjusted for consistent padding */
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
       }
 
+      /* Remove Job Button below the image */
       .remove-job-btn {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 80px; /* Positioned below the image */
+        right: 10px;
         background-color: #ffffff;
-
         color: #000000;
         padding: 8px;
         border-radius: 5px;
@@ -123,9 +122,19 @@
     <div class="job-listing" id="job_{{ job.id }}">
       <h1>{{ job.job_name }}</h1>
       <p class="job-location">
-        <strong style="color: #777">{{ job.location }}</strong>
+        <strong>{{ job.location }}</strong>
       </p>
 
+      <!-- Job Image -->
+      {% if job.image_list and job.image_list[0] %}
+      <img
+        src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
+        alt="Job Image"
+        class="job-image"
+      />
+      {% endif %}
+
+      <!-- Remove Job Button -->
       <a
         href="{{ url_for('remove_application', job_id=job.id) }}"
         class="remove-job-btn"

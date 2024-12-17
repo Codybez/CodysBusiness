@@ -22,6 +22,8 @@
         background-color: #fff;
         border-radius: 20px;
         padding: 20px;
+        margin: auto;
+        max-width: 600px;
         border: 1px solid #ccc;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
@@ -35,12 +37,14 @@
 
       .sign-out-button {
         background-color: #ff7148;
+        margin-top: 30px;
         color: white;
         border: none;
         padding: 10px 15px;
         cursor: pointer;
         border-radius: 10px;
         font-size: 16px;
+        margin: auto;
       }
 
       .sign-out-button:hover {
@@ -65,11 +69,6 @@
       <p>{{ current_user.email }}</p>
       <p>Jobs Completed: 0</p>
 
-      <!-- Add more user information here -->
-      <div></div>
-    </div>
-
-    <div>
       <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
     </div>
 

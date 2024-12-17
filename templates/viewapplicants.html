@@ -40,9 +40,9 @@
       }
 
       .profile-pic {
-        border-radius: 50%;
-        width: 65px;
-        height: 65px;
+        border-radius: 10%;
+        width: 70px;
+        height: 70px;
         object-fit: cover;
         position: absolute;
         top: 20px;
@@ -134,7 +134,7 @@
           <a
             href="{{ url_for('chat', job_id=application.job_id, user_id=application.user_id) }}"
           >
-            <span>Messages</span>
+            <span>Send Message</span>
             <i class="fas fa-arrow-right"></i
           ></a>
           <a

@@ -20,6 +20,8 @@
         font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
           "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
         margin-bottom: 50px;
+        margin: auto;
+        max-width: 600px;
       }
 
       .sign-out-button {
@@ -52,7 +54,7 @@
 
       <p>Jobs Completed: {{ current_user.jobs_completed }}</p>
       <!-- Add more user information here -->
-    </div>
+    
 
     <div>
       <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>

@@ -555,9 +555,12 @@ def applied_jobs():
         .all()
     )
 
+    # Ensure 'image_list' contains the correct list of images for each job
+    for job in applied_jobs:
+        job.image_list = job.image_paths.split(',') if job.image_paths else []
+
     # Pass the current user as 'applicant' to the template
     return render_template('applied_jobs.html', applied_jobs=applied_jobs, applicant=current_user)
-
 @app.route('/business_created_jobs')
 @login_required
 def business_created_jobs():
@@ -568,10 +571,15 @@ def business_created_jobs():
         # Retrieve only open status jobs created by the current business user
         created_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='open').all()
 
+        # Ensure 'image_list' contains the correct list of images for each job
+        for job in created_jobs:
+            job.image_list = job.image_paths.split(',') if job.image_paths else []
+
         return render_template('business_open_jobs.html', created_jobs=created_jobs)
 
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
+
 
 
 @app.route('/business_display_jobs/<int:job_id>')
