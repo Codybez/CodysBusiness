@@ -108,13 +108,7 @@
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Applied Jobs{% endblock %}
-    {% block content %}
-
-    <div class="info-container">
-      <h6>Active Jobs</h6>
-    </div>
-
-    {% for job in active_jobs|reverse %}
+    {% block content %} {% for job in active_jobs|reverse %}
     <div class="active-job-listing">
       <h3>{{ job.job_name }}</h3>
       <p></p>

@@ -24,19 +24,7 @@
       .applicant-container {
         margin-top: 40px; /* Make space for the back button */
         padding-bottom: 30px; /* Optional: Add some space at the bottom */
-      }
-
-      .applicant-profile {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        padding: 20px;
-        margin: 10px auto;
-        max-width: 600px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        position: relative;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: inherit;
+        border-radius: 10px;
       }
 
       .profile-pic {
@@ -65,29 +53,54 @@
 
       .button-container {
         display: flex;
-        justify-content: space-between;
-        gap: 10px;
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 10px; /* Space between buttons */
         margin-top: 15px;
+        width: 100%; /* Ensure buttons respect the container's width */
+        box-sizing: border-box; /* Include padding and border in width */
       }
 
       .button-container a {
-        background-color: #ff7148;
-        color: white;
-        border: none;
-        padding: 10px 20px;
+        padding: 10px 20px; /* Balanced padding */
         cursor: pointer;
         border-radius: 5px;
-        width: 48%; /* Equal width for buttons */
+        width: 100%; /* Full width relative to container */
         text-decoration: none;
         text-align: center;
         font-size: 16px;
-        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+
+        display: inline-flex;
+        justify-content: center;
         align-items: center;
-        justify-content: space-between;
+        box-sizing: border-box; /* Prevent overflow due to padding */
       }
 
-      .button-container a i {
-        margin-left: 10px;
+      /* Orange Button */
+      .button-container .orange-button {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+      }
+
+      /* White Button with Orange Border */
+      .button-container .white-button {
+        background-color: white;
+        color: #ff7148;
+        border: 1px solid #ff7148;
+      }
+
+      /* Ensure applicant profile respects container width */
+      .applicant-profile {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 10px auto;
+        max-width: 600px; /* Prevent container from expanding */
+        box-sizing: border-box; /* Include padding in width */
+        position: relative;
+        transition: all 0.3s ease;
+        border-radius: 10px;
       }
 
       @media (max-width: 600px) {
@@ -129,21 +142,21 @@
         <p>{{ application.user.email }}</p>
         <p>{{ application.user.labourer_profile.phone_number }}</p>
 
-        <!-- Buttons -->
         <div class="button-container">
           <a
             href="{{ url_for('chat', job_id=application.job_id, user_id=application.user_id) }}"
+            class="orange-button"
           >
             <span>Send Message</span>
-            <i class="fas fa-arrow-right"></i
-          ></a>
+          </a>
           <a
             href="{{ url_for('view_tradesman_profile', user_id=application.user.id) }}"
+            class="white-button"
           >
             <span>View Profile</span>
-            <i class="fas fa-arrow-right"></i>
           </a>
         </div>
+
         {% else %}
         <p>No user information available for this application.</p>
         {% endif %}

@@ -8,35 +8,121 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='business_home.css') }}"
     />
+    <style>
+      /* Basic reset */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-top: 30px;
+      }
+
+      .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        color: #333;
+        background-color: #f8f8f8;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #e85c3b;
+      }
+
+      .completion-dropdown-container {
+        margin-top: 20px;
+        display: none;
+      }
+
+      .completion-dropdown-container label {
+        margin-bottom: 8px;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 600px) {
+        .form-container {
+          padding: 15px;
+        }
+
+        button {
+          font-size: 14px;
+        }
+      }
+    </style>
   </head>
+
+  {% extends 'base_business.html' %} {% block title %}Close Job{% endblock %} {%
+  block content %}
   <body>
     <h1>Close Job: {{ job.job_name }}</h1>
 
-    <form method="POST">
-      <label for="job_filled">Have you filled this job?</label>
-      <select name="job_filled" id="job_filled">
-        <option value="">Select</option>
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
-      </select>
-
-      <div id="completion-dropdown" style="display: none">
-        <label for="completion_choice">Who was chosen for the job?</label>
-        <select name="completion_choice" id="completion_choice">
+    <div class="form-container">
+      <form method="POST">
+        <!-- Job Filled Selection -->
+        <label for="job_filled">Have you filled this job?</label>
+        <select name="job_filled" id="job_filled">
           <option value="">Select</option>
-          {% for application in job.applicants %}
-          <option
-            value="{{ application.user.first_name }} from {{ application.user.company_details.trading_name }}"
-          >
-            {{ application.user.first_name }} from {{
-            application.user.company_details.trading_name }}
-          </option>
-          {% endfor %}
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
         </select>
-      </div>
 
-      <button type="submit">Submit</button>
-    </form>
+        <!-- Completion Dropdown (hidden by default) -->
+        <div id="completion-dropdown" class="completion-dropdown-container">
+          <label for="completion_choice">Who was chosen for the job?</label>
+          <select name="completion_choice" id="completion_choice">
+            <option value="">Select</option>
+            {% for application in job.applicants %}
+            <option
+              value="{{ application.user.first_name }} from {{ application.user.company_details.trading_name }}"
+            >
+              {{ application.user.first_name }} from {{
+              application.user.company_details.trading_name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+      </form>
+    </div>
 
     <script>
       document
@@ -50,4 +136,5 @@
         });
     </script>
   </body>
+  {% endblock %}
 </html>

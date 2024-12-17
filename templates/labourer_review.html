@@ -10,11 +10,12 @@
         background-color: #ffffff;
         margin: 0;
         padding: 0;
+        margin-bottom: 50px;
       }
 
       .container {
         max-width: 600px;
-
+        margin: auto;
         padding: 20px;
         background-color: #fff;
       }
@@ -51,6 +52,7 @@
       }
 
       button {
+        margin-top: 15px;
         background-color: #333;
         color: #fff;
         padding: 10px 20px;
@@ -58,10 +60,6 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 16px;
-      }
-
-      button:hover {
-        background-color: #555;
       }
 
       .contaier .review-form {
@@ -214,7 +212,13 @@
         <!-- Repeat for Quality, Reliability, Communication -->
 
         <label for="comments">Additional Comments:</label>
-        <textarea id="comments" name="comments" rows="4" cols="26"></textarea>
+        <textarea
+          id="comments"
+          name="comments"
+          rows="6"
+          style="width: 95%; max-width: 95%"
+        ></textarea>
+
         <div>
           <button type="submit">Submit Review</button>
         </div>

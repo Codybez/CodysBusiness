@@ -319,7 +319,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out.', 'success')
+   
     return redirect(url_for('login'))  # Redirect to the login page after logout
 
 @app.route('/labourer/dashboard')
@@ -487,9 +487,14 @@ def edit_labourer_profile():
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from datetime import datetime
 
-
 @app.route('/find_a_job')
+@login_required
 def find_a_job():
+    # Check if the current user is a labourer and if their profile and company details are filled out
+    if not current_user.labourer_profile or not current_user.company_details:
+        flash("Please complete your Profile and Company Details to access this section.", 'warning')
+        return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
+
     job_data = Job.query.all()
 
     # Ensure image_list is a list of paths
@@ -530,7 +535,7 @@ def apply_for_job(job_id):
         application = JobApplication(user_id=current_user.id, job_id=job.id, status='paid')
         db.session.add(application)
         db.session.commit()
-        flash("Application submitted and marked as paid!", "success")
+        flash("Payment Succesful! Contact details are now available.", "success")
 
                 # Notify the job poster
         create_job_application_notification(
@@ -561,6 +566,7 @@ def applied_jobs():
 
     # Pass the current user as 'applicant' to the template
     return render_template('applied_jobs.html', applied_jobs=applied_jobs, applicant=current_user)
+
 @app.route('/business_created_jobs')
 @login_required
 def business_created_jobs():

@@ -15,12 +15,14 @@
         color: #333;
         margin: 0;
         padding: 0;
+        margin-bottom: 35px;
       }
 
       .container {
-        max-width: 800px;
+        max-width: 600px;
         margin: 0 auto;
         padding: 20px;
+        margin-top: 10px;
       }
 
       /* Job Card */
@@ -108,6 +110,19 @@
         text-decoration: none;
       }
 
+      .button-profile {
+        display: inline-block;
+        background-color: #ffffff;
+        color: #ff7148;
+        border: 1px solid #ff7148;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        text-align: center;
+        transition: background 0.2s ease;
+        text-decoration: none;
+      }
+
       @media (max-width: 600px) {
         .button-group {
           flex-direction: column;
@@ -159,7 +174,7 @@
           >
           <a
             href="{{ url_for('view_tradesman_profile', user_id=job.accepted_user_id) }}"
-            class="button"
+            class="button-profile"
             ><i class="fas fa-user"></i> Profile</a
           >
           <a

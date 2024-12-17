@@ -36,6 +36,7 @@
         text-decoration: none;
         color: inherit;
         font-family: Arial, Helvetica, sans-serif;
+        border-radius: 10px;
       }
 
       .job-listing h3 {
@@ -62,28 +63,48 @@
       /* Flex container for buttons */
       .button-container {
         display: flex;
+        flex-direction: column;
         gap: 10px; /* space between buttons */
         justify-content: flex-start;
         margin-top: 15px;
       }
 
-      .view-job-link,
       .chat-link {
-        background-color: #ff7148;
-        color: white;
-        border: none;
-        padding: 10px 20px; /* Reduced padding for a more balanced look */
+        background-color: #ffffff;
+        color: #ff7148;
+        border: 1px solid #ff7148;
+        padding: 10px; /* Padding inside the button */
         cursor: pointer;
         border-radius: 5px;
         display: inline-flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        width: auto; /* Adjust width to auto to fit text content */
-        white-space: nowrap; /* Ensure text stays on one line */
-        text-decoration: none;
+        width: 100%; /* Fit within the container */
+        max-width: 100%; /* Prevent overflow */
+        box-sizing: border-box; /* Include padding and borders in width */
         text-align: center;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px; /* Adjusted font size for better readability */
+        font-size: 14px;
+        text-decoration: none;
+      }
+
+      .view-job-link {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        padding: 10px; /* Padding inside the button */
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* Fit within the container */
+        max-width: 100%; /* Prevent overflow */
+        box-sizing: border-box; /* Include padding and borders in width */
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        text-decoration: none;
       }
 
       /* Add arrow to the right */
@@ -94,23 +115,6 @@
         font-weight: bold;
       }
 
-      /* Style for the Close Job Link */
-      .close-job-link {
-        background-color: #ff4747;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 5px;
-        text-decoration: none;
-        display: inline-flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 10px;
-        font-size: 14px;
-        width: auto;
-      }
-
       @media (max-width: 600px) {
         .view-job-link,
         .chat-link {
@@ -119,14 +123,13 @@
       }
 
       .close-job-text {
-        font-size: 14px;
-        color: #555;
         margin-top: 20px;
-        font-family: Arial, Helvetica, sans-serif;
       }
 
-      .close-job-text span {
-        font-weight: bold;
+      .close-job-text a {
+        color: #ff4747; /* Red color for the link */
+        text-decoration: underline; /* Remove default underline */
+        font-weight: bold; /* Make the link stand out */
       }
 
       /* Job image in the top-right corner */
@@ -184,18 +187,15 @@
 
       <div class="close-job-text">
         <p>
-          <span>If you've found a user or wish to remove the job,</span> you can
-          finalize it by closing the job below.
+          <span>If you've found a user or wish to remove the job,</span>
+          you can finalize it by
+          <a
+            href="{{ url_for('close_job', job_id=job.id) }}"
+            class="close-job-link"
+            >closing the job here</a
+          >
         </p>
       </div>
-
-      <!-- Close Job Link below the buttons -->
-      <a
-        href="{{ url_for('close_job', job_id=job.id) }}"
-        class="close-job-link"
-      >
-        Close Job
-      </a>
     </div>
     {% endfor %} {% endblock %}
   </body>

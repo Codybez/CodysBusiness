@@ -179,6 +179,31 @@
       .hide-back .header-title {
         margin-left: 10px; /* Adjust to desired left position */
       }
+
+      .notification-box {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ff7148;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        display: inline-block;
+        animation: slideDown 3s forwards;
+      }
+
+      @keyframes slideDown {
+        from {
+          top: -60px;
+        }
+        to {
+          top: 20px;
+        }
+      }
     </style>
   </head>
   <header class="{% if is_dashboard_page %}hide-back{% endif %}">
@@ -216,6 +241,19 @@
   </header>
 
   <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="notification-box">
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% if session.get('notification') %}
+    <div class="notification-box">{{ session.pop('notification') }}</div>
+    {% endif %}
+
+    <!-- Your page content follows -->
+
     <br />
     <br />
 
