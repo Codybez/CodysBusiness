@@ -13,7 +13,7 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-        padding: 0;
+        padding: 5px;
       }
 
       .job-listing:first-of-type {
@@ -21,7 +21,7 @@
       }
 
       .job-listing:last-of-type {
-        margin-bottom: 80px;
+        margin-bottom: 100px;
       }
 
       .job-listing {
@@ -73,6 +73,7 @@
         background-color: #ffffff;
         color: #ff7148;
         border: 1px solid #ff7148;
+        font-weight: bold;
         padding: 10px; /* Padding inside the button */
         cursor: pointer;
         border-radius: 5px;
@@ -92,6 +93,7 @@
         background-color: #ff7148;
         color: white;
         border: none;
+        font-weight: bold;
         padding: 10px; /* Padding inside the button */
         cursor: pointer;
         border-radius: 5px;
@@ -107,14 +109,6 @@
         text-decoration: none;
       }
 
-      /* Add arrow to the right */
-      .view-job-link::after,
-      .chat-link::after {
-        content: " →";
-        margin-left: 10px;
-        font-weight: bold;
-      }
-
       @media (max-width: 600px) {
         .view-job-link,
         .chat-link {
@@ -124,12 +118,14 @@
 
       .close-job-text {
         margin-top: 20px;
+        font-size: 16px;
       }
 
       .close-job-text a {
-        color: #ff4747; /* Red color for the link */
-        text-decoration: underline; /* Remove default underline */
+        text-decoration: none; /* Remove default underline */
         font-weight: bold; /* Make the link stand out */
+        color: #ff7148;
+        font-size: 16px;
       }
 
       /* Job image in the top-right corner */
@@ -187,16 +183,17 @@
 
       <div class="close-job-text">
         <p>
-          <span>If you've found a user or wish to remove the job,</span>
-          you can finalize it by
+          <span>Have you found a user or wish to remove the job?</span>
+
           <a
             href="{{ url_for('close_job', job_id=job.id) }}"
             class="close-job-link"
-            >closing the job here</a
+            >Close the job</a
           >
         </p>
       </div>
     </div>
+
     {% endfor %} {% endblock %}
   </body>
 </html>

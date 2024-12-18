@@ -1,25 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}My Website{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
-</head>
-<header class="header">
-   
-    </header>
-    <h1 class="logo">O<span class="letter-o">penwork</span></h1>
-<body>
-  
-
-
-     <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    
-
-  
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}My Website{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='base.css') }}"
+    />
+  </head>
+  <header class="header"></header>
+  <h1 class="logo">O<span class="letter-o">penwork</span></h1>
+  <body>
+    <main>{% block content %}{% endblock %}</main>
+  </body>
 </html>

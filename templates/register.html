@@ -1,36 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
-</head>
-{% extends 'base.html' %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='register.css') }}"
+    />
+    <style>
+      /* Container styling */
+      .registration-container {
+        background-color: #ffffff;
+        padding: 20px;
+        margin: 20px auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px;
+        max-width: 400px;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        box-sizing: border-box; /* Ensures padding doesn't push content */
+      }
 
-{% block title %}Registration Form{% endblock %}
+      /* Form title */
+      .registration-container h1.form-title {
+        font-size: 24px;
+        color: #333333;
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
-{% block content %}
-<body>
+      /* Label styling */
+      .registration-container label {
+        font-size: 14px;
+        color: #555555;
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: block;
+      }
 
-  <div class="registration-container">
-    <div>  <h1 class="form-title">Register</h1></div>
- 
-    <form action="{{ url_for('register') }}" method="post">
-         <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name" required><br><br>
+      /* Input fields and dropdowns styling */
+      .registration-container input[type="text"],
+      .registration-container input[type="email"],
+      .registration-container input[type="password"],
+      .registration-container select {
+        width: 100%; /* Ensures full width */
+        box-sizing: border-box; /* Prevents padding from overflowing */
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #333333;
+        outline: none;
+        transition: border 0.2s ease-in-out;
+      }
 
-        <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" required><br><br>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        
-        <label for="location">Location:</label>
-        <select id="location" name="location">
+      /* Input focus effect */
+      .registration-container input:focus,
+      .registration-container select:focus {
+        border-color: #ff7148;
+        box-shadow: 0 0 5px rgba(255, 113, 72, 0.3);
+      }
+
+      /* Dropdown styling */
+      .registration-container select {
+        appearance: none;
+        background: url('data:image/svg+xml;utf8,<svg fill="%23555555" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')
+          no-repeat right 10px center;
+        background-size: 20px;
+        padding-right: 35px;
+      }
+
+      /* Button styling */
+      .registration-container button {
+        background-color: #ff7148;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        padding: 10px;
+        width: 100%; /* Full width button */
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+      }
+
+      .registration-container button:hover {
+        background-color: #ff5e33;
+      }
+
+      /* Link styling */
+      .registration-container p {
+        text-align: center;
+        font-size: 14px;
+        color: #555555;
+        margin-top: 20px;
+      }
+
+      .registration-container a {
+        color: #ff7148;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.2s ease-in-out;
+      }
+
+      .registration-container a:hover {
+        color: #ff5e33;
+      }
+    </style>
+    {% extends 'base.html' %} {% block title %}Registration Form{% endblock %}
+    {% block content %}
+    <div class="registration-container">
+      <div>
+        <h1 class="form-title">Sign Up</h1>
+      </div>
+
+      <form action="{{ url_for('register') }}" method="post">
+        <!-- First Name -->
+        <div>
+          <label for="first_name"></label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            required
+            placeholder="First Name"
+          />
+        </div>
+
+        <!-- Last Name -->
+        <div>
+          <label for="last_name"></label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            required
+            placeholder="Last Name"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email"></label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="Email"
+          />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password"></label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            placeholder="Password"
+          />
+        </div>
+
+        <!-- Location Dropdown -->
+        <div>
+          <label for="location"></label>
+          <select id="location" name="location" required>
+            <option value="" disabled selected>Choose Your Location</option>
             <option value="Northland">Northland</option>
             <option value="Auckland">Auckland</option>
             <option value="Waikato">Waikato</option>
@@ -47,24 +187,29 @@
             <option value="Canterbury">Canterbury</option>
             <option value="Otago">Otago</option>
             <option value="Southland">Southland</option>
-        </select><br><br>
-        
-        <label for="userType">I Want to:</label>
-        <select id="userType" name="userType">
+          </select>
+        </div>
+
+        <!-- User Type Dropdown -->
+        <div>
+          <label for="userType"></label>
+          <select id="userType" name="userType" required>
+            <option value="" disabled selected>I Want to...</option>
             <option value="Labourer">Find a Job</option>
-            <option value="Business">Post a Job
-            </option>
-        </select><br><br>
-        
-        <input type="submit" value="Register">
-        
-    </form>
-    <br>
-    
-    <p>Already registered? <a href="{{ url_for('login') }}"> Login</a></p>
+            <option value="Business">Post a Job</option>
+          </select>
+        </div>
 
+        <!-- Submit Button -->
+        <div>
+          <button type="submit" id="register-button">Register</button>
+        </div>
+      </form>
 
-
-</body>
-{% endblock %}
+      <div>
+        <p>Already registered? <a href="{{ url_for('login') }}">Login</a></p>
+      </div>
+    </div>
+    {% endblock %}
+  </head>
 </html>

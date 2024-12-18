@@ -21,7 +21,7 @@
       .container {
         max-width: 600px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 5px;
         margin-top: 10px;
       }
 
@@ -110,6 +110,19 @@
         text-decoration: none;
       }
 
+      .button-review {
+        display: inline-block;
+        background-color: #ffffff;
+        color: #555;
+        border: 1px solid #555;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        text-align: center;
+        transition: background 0.2s ease;
+        text-decoration: none;
+      }
+
       .button-profile {
         display: inline-block;
         background-color: #ffffff;
@@ -170,17 +183,17 @@
           <a
             href="{{ url_for('chat', job_id=job.id, user_id=job.accepted_user_id) }}"
             class="button"
-            ><i class="fas fa-comments"></i> Chat</a
+            ><i class=""></i> Chat</a
           >
           <a
             href="{{ url_for('view_tradesman_profile', user_id=job.accepted_user_id) }}"
             class="button-profile"
-            ><i class="fas fa-user"></i> Profile</a
+            ><i class=""></i> Profile</a
           >
           <a
             href="{{ url_for('tradesman_review', job_id=job.id) }}"
-            class="button"
-            ><i class="fas fa-star"></i> Review</a
+            class="button-review"
+            ><i class=""></i> Review</a
           >
         </div>
         {% else %}

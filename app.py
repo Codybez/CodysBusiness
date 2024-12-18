@@ -794,17 +794,24 @@ def search_jobs():
 @app.route('/active_jobs')
 @login_required
 def active_jobs():
-    # Assuming you have a relationship between User and JobApplication
+    # Retrieve jobs where the current user has been accepted
     active_jobs = (
         Job.query
         .join(Job.applicants)
-        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status == 'accepted'))
+        .filter(
+            and_(
+                JobApplication.user_id == current_user.id,
+                JobApplication.status == 'accepted'
+            )
+        )
+        .options(joinedload(Job.user))  # Eager load the job poster's details
         .all()
     )
+        # Ensure 'image_list' contains the correct list of images for each job
+    for job in active_jobs:
+        job.image_list = job.image_paths.split(',') if job.image_paths else []
 
-    # Pass the current user as 'applicant' to the template
     return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user)
-
 
 
 @app.route('/remove_application/<int:job_id>')
@@ -1284,28 +1291,34 @@ def create_job_application_notification(receiver_id, job_id, applicant_name, tra
         db.session.rollback()
         return False
     
-
 @app.route('/close_job/<int:job_id>', methods=['GET', 'POST'])
 def close_job(job_id):
     job = Job.query.get(job_id)
 
     if request.method == 'POST':
         job_filled = request.form.get('job_filled')
+        
         if job_filled == 'yes':
-            # Select the chosen applicant if the job is filled
+            # Get the selected applicant's name and company to match
             completion_choice = request.form.get('completion_choice')
+            
             selected_applicant = next(
                 (app for app in job.applicants if f"{app.user.first_name} from {app.user.company_details.trading_name}" == completion_choice),
                 None
             )
-            if selected_applicant:
-                name = selected_applicant.user.first_name
-                trading_name = selected_applicant.user.company_details.trading_name
-                job.accepted_user_id = selected_applicant.user.id  # Mark the applicant as accepted
-        else:
-            job.accepted_user_id = None  # In case the job wasn't filled
 
-        job.status = 'closed'  # Set the job status to closed
+            if selected_applicant:
+                # Mark the selected applicant as accepted
+                selected_applicant.status = 'accepted'  # Set the status to 'accepted'
+                
+                # Set the accepted user on the job
+                job.accepted_user_id = selected_applicant.user.id  # Mark the applicant as accepted in Job
+        else:
+            # If the job wasn't filled, reset accepted_user_id
+            job.accepted_user_id = None
+
+        # Set the job status to closed
+        job.status = 'closed'
         db.session.commit()  # Save changes to the database
 
         flash("The job has been closed.", "success")

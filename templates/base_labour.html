@@ -10,6 +10,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='base_business.css') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+/>
+
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 
@@ -283,7 +288,7 @@
 
     <a href="{{ url_for('active_jobs') }}" class="footers-button">
       <i class="fas fa-arrow-right"></i>
-      <p>Active Jobs</p>
+      <p>Won Jobs</p>
     </a>
     {% if current_user.is_authenticated %}
     <a href="{{ url_for('labourer_profile') }}" class="footers-button">
