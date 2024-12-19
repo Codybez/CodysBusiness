@@ -144,6 +144,25 @@
         color: #ff7148;
         margin-top: 40px;
       }
+
+      .post-job-button {
+        display: inline-block;
+        background-color: #ff7148;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .post-job-button:hover {
+        background-color: #e8633d;
+      }
     </style>
   </head>
   <body>
@@ -151,7 +170,11 @@
     %} {% block content %} {% if not created_jobs %}
     <div class="no-open-jobs-message">
       <p>You have no open jobs.</p>
+      <a href="{{ url_for('create_job') }}" class="post-job-button"
+        >Create a Job</a
+      >
     </div>
+
     {% else %} {% for job in created_jobs | reverse %}
     <div class="job-listing">
       <h3>{{ job.job_name }}</h3>

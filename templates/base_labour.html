@@ -202,6 +202,50 @@
         animation: slideDown 3s forwards;
       }
 
+        .hamburger-menu {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  /* Hamburger icon */
+  #menu-icon {
+    font-size: 24px;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  /* Dropdown menu */
+  .dropdown-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px 0;
+    z-index: 1000;
+  }
+
+  /* Links inside dropdown */
+  .dropdown-menu a {
+    display: block;
+    color: #333;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  /* Hover effect for links */
+  .dropdown-menu a:hover {
+    background-color: #ff7148;
+    color: white;
+  }
+
+      
+
       @keyframes slideDown {
         from {
           top: -60px;
@@ -245,10 +289,17 @@
 
 
 
-      <!-- Home Button -->
-      <a href="{{ url_for('labourer_dashboard') }}" class="header-button">
-        <i class="fas fa-home"></i>
-      </a>
+<!-- Hamburger Menu -->
+<div class="hamburger-menu">
+  <i class="fas fa-bars" id="menu-icon"></i>
+  <div class="dropdown-menu" id="dropdown-menu">
+    <a href="{{ url_for('labourer_profile') }}">Your Profile</a>
+    <a href="">Notification Settings</a>
+    <a href="">Contact Openwork</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</div>
+
     </div>
   </header>
 
@@ -297,4 +348,24 @@
       {% endif %}
     </a>
   </footer>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuIcon = document.getElementById("menu-icon");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+
+    menuIcon.addEventListener("click", function () {
+      // Toggle the dropdown menu
+      dropdownMenu.style.display =
+        dropdownMenu.style.display === "block" ? "none" : "block";
+    });
+
+    // Hide the dropdown when clicking outside
+    document.addEventListener("click", function (e) {
+      if (!menuIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.style.display = "none";
+      }
+    });
+  });
+</script>
+
 </html>

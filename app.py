@@ -306,7 +306,7 @@ def login():
             login_user(user)
             if user.user_type == 'Business':
                 print("Redirecting to business_dashboard")
-                return redirect(url_for('create_job'))
+                return redirect(url_for('business_created_jobs'))
             else:
                 print("Redirecting to labourer_dashboard")
                 return redirect(url_for('find_a_job'))
