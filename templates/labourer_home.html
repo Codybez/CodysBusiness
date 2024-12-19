@@ -47,15 +47,6 @@
     {% extends 'base_labour.html' %} {% block title %}Labour{% endblock %} {%
     block content %}
 
-    <div class="section-button-container">
-      <h2>User Information</h2>
-      <p>User: {{ current_user.email }}</p>
-      <p>Location: {{ current_user.location }}</p>
-
-      <p>Jobs Completed: {{ current_user.jobs_completed }}</p>
-      <!-- Add more user information here -->
-    
-
     <div>
       <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
     </div>

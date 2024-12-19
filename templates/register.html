@@ -9,14 +9,29 @@
       href="{{ url_for('static', filename='register.css') }}"
     />
     <style>
+      /* Center the entire body content */
+      body {
+        display: flex;
+        justify-content: center; /* Horizontally center */
+        align-items: center; /* Vertically center */
+        height: 100vh; /* Take full height of the viewport */
+        margin: 0; /* Remove default margin */
+        background-color: #ffffff; /* Optional, for better visibility */
+        min-height: 100vh; /* Ensure that the body is at least 100% of the viewport height */
+      }
+
       /* Container styling */
       .registration-container {
         background-color: #ffffff;
-        padding: 20px;
+
+        padding-right: 20px;
+        padding-left: 20px;
+        padding-bottom: 20px;
         margin: 20px auto;
         border: 1px solid #e0e0e0;
         border-radius: 15px;
-        max-width: 400px;
+        max-width: 600px;
+        width: 100%;
         font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
           "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
@@ -202,7 +217,7 @@
 
         <!-- Submit Button -->
         <div>
-          <button type="submit" id="register-button">Register</button>
+          <button type="submit" id="register-button">Sign Up</button>
         </div>
       </form>
 

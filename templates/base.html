@@ -8,10 +8,173 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='base.css') }}"
     />
+    <style>
+      .notification-box {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ff7148;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        display: inline-block;
+        animation: slideDown 3s forwards;
+      }
+
+      @keyframes slideDown {
+        from {
+          top: -60px;
+        }
+        to {
+          top: 20px;
+        }
+      }
+
+      header {
+        background-color: #cccccca3;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 4vh;
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+      }
+
+      .header-title {
+        font-size: 24px;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #fff;
+        font-weight: normal;
+        line-height: 24px;
+        display: inline-block;
+      }
+
+      .orange-letter {
+        color: #ff7148;
+      }
+
+      .header-button {
+        margin: 0 10px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 20px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -10px;
+        background: red;
+        color: white;
+        font-size: 12px;
+        border-radius: 50%;
+        padding: 3px 6px;
+      }
+
+      .back-arrow {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        font-size: 20px;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      /* Footer styling */
+      footer {
+        background-color: #fff;
+        color: #ccc;
+        text-align: center;
+        padding: 10px;
+        height: 6vh;
+        position: fixed;
+        border-top: 2px solid #95959555;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+    </style>
   </head>
-  <header class="header"></header>
-  <h1 class="logo">O<span class="letter-o">penwork</span></h1>
   <body>
+    <header class="{% if is_dashboard_page %}hide-back{% endif %}">
+      <!-- Back Arrow -->
+      {% if not is_dashboard_page %}
+      <a href="javascript:history.back()" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      {% endif %}
+
+      <!-- Logo -->
+      <div class="logo-container">
+        <span class="header-title">
+          <span class="orange-letter">o</span>penwork
+        </span>
+      </div>
+
+      <!-- Navigation -->
+      <nav>
+        <!-- Notifications Icon with Badge -->
+        <a
+          href="{{ url_for('notifications') }}"
+          class="header-button"
+          style="position: relative"
+        >
+          <i class="fas fa-bell"></i>
+          {% if unread_notifications_count > 0 %}
+          <span class="notification-badge"
+            >{{ unread_notifications_count }}</span
+          >
+          {% endif %}
+        </a>
+
+        <!-- Home Button -->
+        <a href="{{ url_for('business_dashboard') }}" class="header-button">
+          <i class="fas fa-home"></i>
+        </a>
+      </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="notification-box">
+      {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% if session.get('notification') %}
+    <div class="notification-box">{{ session.pop('notification') }}</div>
+    {% endif %}
+
     <main>{% block content %}{% endblock %}</main>
   </body>
 </html>

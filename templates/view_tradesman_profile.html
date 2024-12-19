@@ -75,7 +75,6 @@
         color: #333;
       }
 
-      /* Social Links Container */
       .user-social-links {
         display: flex;
         justify-content: space-around;
@@ -86,7 +85,6 @@
         border-radius: 10px;
       }
 
-      /* Social Icon */
       .social-icon {
         text-decoration: none;
         font-size: 24px;
@@ -97,36 +95,31 @@
         margin: 0 10px;
       }
 
-      /* Facebook Icon Color */
       .social-icon.facebook {
-        color: #3b5998; /* Facebook blue */
+        color: #3b5998;
       }
 
-      /* Instagram Icon Color */
       .social-icon.instagram {
-        color: #e4405f; /* Instagram pinkish-red */
+        color: #e4405f;
       }
 
-      /* Website Icon Color */
       .social-icon.website {
-        color: #4e73df; /* Standard blue for website link */
+        color: #4e73df;
       }
 
-      /* Hover Effect for Social Links */
-      .social-icon:hover {
-        transform: scale(1.1); /* Slightly grow the icon */
-        color: #ff7148; /* A more neutral color on hover */
-      }
-
-      /* Google Icon Color */
       .social-icon.google {
-        color: #db4437; /* Google Red */
+        color: #db4437;
+      }
+
+      .social-icon:hover {
+        transform: scale(1.1);
+        color: #ff7148;
       }
     </style>
   </head>
   <body>
-    {% extends 'base_business.html' %} {% block title %}Labourer{% endblock %}
-    {% block content %}
+    {% extends 'base_business.html' %} {% block title %}Labourer Profile
+    Viewer{% endblock %} {% block content %}
 
     <div class="profile-container">
       <!-- Profile Header -->
@@ -146,7 +139,7 @@
         </p>
       </div>
 
-      <!-- Social Links (Below Location) -->
+      <!-- Social Links -->
       <div class="user-social-links">
         {% if user.social_links.facebook %}
         <a
@@ -183,27 +176,32 @@
         {% endif %}
       </div>
 
-      <!-- User Information -->
+      <!-- About Us -->
       <div class="section-container">
         <div class="section-title">About Us</div>
         <p class="info-item">{{ user.labourer_profile.user_blurb }}</p>
       </div>
 
+      <!-- Contact Details -->
+      <div class="section-container">
+        <div class="section-title">Contact Details</div>
+        <p class="info-item">
+          <strong>Contact Number:</strong> {{ user.labourer_profile.phone_number
+          }}
+        </p>
+        <p class="info-item"><strong>Email:</strong> {{ user.email }}</p>
+      </div>
+
       <!-- Company Details -->
       <div class="section-container">
         <div class="section-title">Company Details</div>
-
-        <!-- Trading Name -->
         <p class="info-item">
           <strong>Trading Name:</strong> {{ user.company_details.trading_name }}
         </p>
-        <!-- In Business Since (Add later) -->
         <p class="info-item">
           <strong>Established:</strong> {{ user.company_details.established |
           default('Not Available') }}
         </p>
-
-        <!-- NZBN -->
         <p class="info-item">
           <strong>NZBN:</strong> {{ user.company_details.nzbn }}
         </p>

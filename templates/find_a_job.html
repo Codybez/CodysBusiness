@@ -12,7 +12,7 @@
       body {
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 0;
+        padding: 5px;
         background-color: #ffffff;
       }
 
@@ -40,17 +40,17 @@
       /* Mobile-Friendly Adjustments */
       @media (max-width: 600px) {
         .sort-options {
-          flex-direction: row; /* Keep them side by side */
-          justify-content: space-between; /* Ensure they have space between them */
+          flex-direction: row;
+          justify-content: space-between;
           gap: 10px;
-          padding: 10px; /* Add padding around the sort options container */
+          padding: 10px;
         }
 
         .sort-dropdown {
-          width: 48%; /* Set the dropdowns to take up 48% of the container */
-          max-width: 48%; /* Prevent it from expanding too much */
-          box-sizing: border-box; /* Include padding in width calculation */
-          padding: 8px; /* Add padding inside the dropdown for better touch interaction */
+          width: 48%;
+          max-width: 48%;
+          box-sizing: border-box;
+          padding: 8px;
         }
       }
 
@@ -63,19 +63,20 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         position: relative;
         transition: all 0.3s ease;
-        text-decoration: none; /* Remove underline from the link */
-        color: inherit; /* Inherit text color from parent */
+        text-decoration: none;
+        color: inherit;
+        border-radius: 5px;
       }
 
       .job-listing h3 {
-        color: #555;
+        color: #333;
         margin: 0;
-        font-size: 20px;
+        font-size: 22px;
         font-family: Arial, Helvetica, sans-serif;
       }
 
       .job-listing p {
-        color: #555;
+        color: #777;
         margin: 10px 0;
       }
 
@@ -87,15 +88,42 @@
         color: #777;
       }
 
-      /* Make sure the <a> tag covers the entire card */
       .job-listing a {
         display: block;
         width: 100%;
         height: 100%;
         text-decoration: none;
       }
+
       .job-listing:last-child {
-        margin-bottom: 70px; /* Adjust the value as needed */
+        margin-bottom: 70px;
+      }
+
+      .location-category {
+        margin-top: -5px;
+        margin-bottom: 15px;
+      }
+
+      .job-details {
+        margin-top: 10px;
+      }
+
+      .job-details p {
+        color: #555;
+        margin: 10px 0;
+      }
+
+      .no-image {
+        color: #888;
+        font-size: 14px;
+        margin-left: 10px;
+      }
+
+      .no-jobs {
+        text-align: center;
+        font-size: 18px;
+        color: #ff7148;
+        margin-top: 20px;
       }
     </style>
   </head>
@@ -147,8 +175,9 @@
     </div>
 
     <div id="job-listings">
-      {% for job in job_data|reverse %} {% if current_user.id not in
-      job.applicants|map(attribute='user_id') and job.status != 'closed' %}
+      {% set job_count = 0 %} {% for job in job_data|reverse %} {% if
+      current_user.id not in job.applicants|map(attribute='user_id') and
+      job.status != 'closed' %} {% set job_count = job_count + 1 %}
       <a
         href="{{ url_for('display_jobs', job_id=job.id) }}"
         class="job-listing"
@@ -164,22 +193,29 @@
         >
           <div>
             <h3>{{ job.job_name }}</h3>
-            <p><strong style="color: #777">{{ job.location }}</strong></p>
-            <p>{{ job.job_category }} in {{ job.city }}, {{ job.suburb }}</p>
-            <p>Job posted: {{ job.date_created|time_ago }}</p>
-            <p>
-              Applicants: {{ job.applicants|length }}
-            </p> 
-            <p>
-            {% if
-              job.applicants|length == 0 %}
-                            <span style="color: #ff7148;"
-                >Be the first to make contact!</span
-              >
-              {% endif %}
-            </p>
-            </p>
+
+            <!-- Separate Location and Job Category -->
+            <div class="location-category">
+              <p>
+                <strong>{{ job.location }}</strong> | {{ job.job_category }}
+              </p>
+            </div>
+
+            <!-- Separate Text below -->
+            <div class="job-details">
+              <p>{{ job.city }}, {{ job.suburb }}</p>
+              <p>Job posted: {{ job.date_created|time_ago }}</p>
+              <p>Applicants: {{ job.applicants|length }}</p>
+              <p>
+                {% if job.applicants|length == 0 %}
+                <span style="color: #ff7148"
+                  >Be the first to make contact!</span
+                >
+                {% endif %}
+              </p>
+            </div>
           </div>
+
           {% if job.image_list and job.image_list[0] %}
           <img
             src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
@@ -192,10 +228,14 @@
               margin-left: 10px;
             "
           />
+          {% else %}
+          <span class="no-image">No Image Available</span>
           {% endif %}
         </div>
       </a>
-      {% endif %} {% endfor %}
+      {% endif %} {% endfor %} {% if job_count == 0 %}
+      <div class="no-jobs">No jobs available based on your filters.</div>
+      {% endif %}
     </div>
 
     <script>
@@ -210,6 +250,7 @@
         const selectedCategory = document.getElementById("sort-category").value;
         const selectedLocation = document.getElementById("sort-location").value;
         const jobListings = document.querySelectorAll(".job-listing");
+        let jobCount = 0;
 
         jobListings.forEach((job) => {
           const jobCategory = job.getAttribute("data-category");
@@ -220,8 +261,19 @@
           const locationMatch =
             selectedLocation === "all" || jobLocation === selectedLocation;
 
-          job.style.display = categoryMatch && locationMatch ? "block" : "none";
+          if (categoryMatch && locationMatch) {
+            job.style.display = "block";
+            jobCount++;
+          } else {
+            job.style.display = "none";
+          }
         });
+
+        if (jobCount === 0) {
+          document.querySelector(".no-jobs").style.display = "block";
+        } else {
+          document.querySelector(".no-jobs").style.display = "none";
+        }
       }
 
       // Initialize with all jobs visible

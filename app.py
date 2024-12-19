@@ -288,7 +288,7 @@ def register():
             db.session.add(business_profile)
             db.session.commit()
 
-        flash('Registration successful!', 'success')
+        flash('Registration successful! Please Login to begin', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -306,10 +306,10 @@ def login():
             login_user(user)
             if user.user_type == 'Business':
                 print("Redirecting to business_dashboard")
-                return redirect(url_for('business_dashboard'))
+                return redirect(url_for('create_job'))
             else:
                 print("Redirecting to labourer_dashboard")
-                return redirect(url_for('labourer_dashboard'))
+                return redirect(url_for('find_a_job'))
 
 
     return render_template('login.html')  # Create a corresponding HTML template
@@ -386,7 +386,7 @@ def labourer_image():
         db.session.add(current_user.profile_image)
         db.session.commit()
 
-    return render_template('labourer_profile.html')
+    return render_template('labourer_profile.html',is_dashboard_page=True)
 
 @app.route('/profile/business')
 @login_required
@@ -397,7 +397,7 @@ def business_profile():
     # Assuming you have a user's business profile information
     business_profile = user.business_profile
 
-    return render_template('business_profile.html', user=user, business_profile=business_profile, form=UploadProfileImageForm())
+    return render_template('business_profile.html', user=user, is_dashboard_page=True, business_profile=business_profile, form=UploadProfileImageForm())
 
 
 
@@ -474,7 +474,7 @@ def edit_labourer_profile():
         current_user.labourer_profile.date_of_birth = form.date_of_birth.data
 
         db.session.commit()
-        flash('Profile updated successfully', 'success')
+        flash('User info updated successfully', 'success')
         return redirect(url_for('labourer_profile'))
 
     # Pre-fill the form with existing laborer profile data
@@ -492,7 +492,7 @@ from datetime import datetime
 def find_a_job():
     # Check if the current user is a labourer and if their profile and company details are filled out
     if not current_user.labourer_profile or not current_user.company_details:
-        flash("Please complete your Profile and Company Details to access this section.", 'warning')
+        flash("Please complete your Profile and Company Details.", 'warning')
         return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
 
     job_data = Job.query.all()
@@ -504,12 +504,12 @@ def find_a_job():
         else:
             job.image_list = []
 
-    return render_template('find_a_job.html', job_data=job_data)
+    return render_template('find_a_job.html', job_data=job_data, is_dashboard_page=True)
 
 @app.route('/create_job', methods=['GET'])
 def create_job():
     # This will render the create job form
-    return render_template('create_a_job.html', user=current_user)
+    return render_template('create_a_job.html', user=current_user, is_dashboard_page=True)
 
 
 
@@ -556,7 +556,7 @@ def applied_jobs():
     applied_jobs = (
         Job.query
         .join(Job.applicants)
-        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status != 'accepted'))
+        .filter(and_(JobApplication.user_id == current_user.id, JobApplication.status == 'paid'))
         .all()
     )
 
@@ -565,7 +565,7 @@ def applied_jobs():
         job.image_list = job.image_paths.split(',') if job.image_paths else []
 
     # Pass the current user as 'applicant' to the template
-    return render_template('applied_jobs.html', applied_jobs=applied_jobs, applicant=current_user)
+    return render_template('applied_jobs.html', applied_jobs=applied_jobs, applicant=current_user, is_dashboard_page=True)
 
 @app.route('/business_created_jobs')
 @login_required
@@ -581,7 +581,7 @@ def business_created_jobs():
         for job in created_jobs:
             job.image_list = job.image_paths.split(',') if job.image_paths else []
 
-        return render_template('business_open_jobs.html', created_jobs=created_jobs)
+        return render_template('business_open_jobs.html', created_jobs=created_jobs, is_dashboard_page=True)
 
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
@@ -706,7 +706,7 @@ def business_active_jobs():
         # Retrieve only 'booked' status jobs created by the current business user
         active_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='closed').all()
 
-        return render_template('business_active_jobs.html', active_jobs=active_jobs, get_user_details=get_user_details)
+        return render_template('business_active_jobs.html', active_jobs=active_jobs,get_user_details=get_user_details, is_dashboard_page=True)
 
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
@@ -811,8 +811,7 @@ def active_jobs():
     for job in active_jobs:
         job.image_list = job.image_paths.split(',') if job.image_paths else []
 
-    return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user)
-
+    return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user, is_dashboard_page=True)
 
 @app.route('/remove_application/<int:job_id>')
 @login_required
@@ -822,13 +821,12 @@ def remove_application(job_id):
     if job:
         application = JobApplication.query.filter_by(user_id=current_user.id, job_id=job_id).first()
         if application:
-            # Toggle visibility instead of deleting
-            application.is_visible = False
+            # Set application status to 'removed' instead of toggling visibility
+            application.status = 'removed'
             db.session.commit()
 
     # Redirect back to the applied_jobs page
     return redirect(url_for('applied_jobs'))
-
 
 
 @app.route('/delete_job/<int:job_id>', methods=['GET', 'POST'])
@@ -899,6 +897,8 @@ def edit_tradesman_profile():
 
         # Commit the changes to the database
         db.session.commit()
+
+        flash("Company details updated succesfully")
 
         return redirect(url_for('labourer_profile'))
 
@@ -1249,7 +1249,7 @@ def notifications():
     notifications = Notification.query.filter_by(user_id=current_user.id).all()
 
     # Render the notifications page template with the notifications data
-    return render_template('notifications.html', notifications=notifications)
+    return render_template('notifications.html', notifications=notifications, is_dashboard_page=True)
 
 
 @app.context_processor

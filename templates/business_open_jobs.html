@@ -13,7 +13,6 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-        padding: 5px;
       }
 
       .job-listing:first-of-type {
@@ -40,14 +39,14 @@
       }
 
       .job-listing h3 {
-        color: #555;
+        color: #333;
         font-size: 18px;
         margin: 0;
         font-family: Arial, Helvetica, sans-serif;
       }
 
       .job-listing p {
-        color: #555;
+        color: #777;
         font-size: 1rem;
         margin-top: 10px;
       }
@@ -138,11 +137,22 @@
         object-fit: cover;
         border-radius: 8px;
       }
+
+      .no-open-jobs-message {
+        text-align: center;
+        font-size: 18px;
+        color: #ff7148;
+        margin-top: 40px;
+      }
     </style>
   </head>
   <body>
     {% extends 'base_business.html' %} {% block title %}Created Jobs{% endblock
-    %} {% block content %} {% for job in created_jobs | reverse %}
+    %} {% block content %} {% if not created_jobs %}
+    <div class="no-open-jobs-message">
+      <p>You have no open jobs.</p>
+    </div>
+    {% else %} {% for job in created_jobs | reverse %}
     <div class="job-listing">
       <h3>{{ job.job_name }}</h3>
       <p class="job-location">
@@ -184,7 +194,6 @@
       <div class="close-job-text">
         <p>
           <span>Have you found a user or wish to remove the job?</span>
-
           <a
             href="{{ url_for('close_job', job_id=job.id) }}"
             class="close-job-link"
@@ -193,7 +202,6 @@
         </p>
       </div>
     </div>
-
-    {% endfor %} {% endblock %}
+    {% endfor %} {% endif %} {% endblock %}
   </body>
 </html>

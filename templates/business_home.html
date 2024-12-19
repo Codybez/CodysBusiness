@@ -60,14 +60,7 @@
     {% extends 'base_business.html' %} {% block title %}Business{% endblock %}
     {% block content %}
 
-    <div class="info-container">
-      <h1>Business Dashboard</h1>
-    </div>
-    <div class="section-button-container">
-      <h2>User Information</h2>
-      <p>{{ current_user.location }}</p>
-      <p>{{ current_user.email }}</p>
-      <p>Jobs Completed: 0</p>
+
 
       <a href="{{ url_for('logout') }}" class="sign-out-button">Sign Out</a>
     </div>

@@ -118,15 +118,24 @@
       }
 
       .not-accepted-msg {
-        color: #ff4747;
+        color: #ff7148;
         font-weight: bold;
         margin-top: 10px;
+      }
+
+      .no-jobs-msg {
+        text-align: center;
+        font-size: 18px;
+        color: #ff7148;
+        margin-top: 20px;
       }
     </style>
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Business{% endblock %} {%
-    block content %} {% for job in applied_jobs | reverse %} {% if job.status !=
+    block content %} {% if applied_jobs | length == 0 %}
+    <p class="no-jobs-msg">You have no applied jobs.</p>
+    {% else %} {% for job in applied_jobs | reverse %} {% if job.status !=
     'closed' %} {% if job.applicants | selectattr("user_id", "equalto",
     current_user.id) | selectattr("is_visible", "equalto", true) | list %}
     <div class="job-listing" id="job_{{ job.id }}">
@@ -223,6 +232,6 @@
       </div>
       {% endif %}
     </div>
-    {% endif %} {% endif %} {% endfor %} {% endblock %}
+    {% endif %} {% endif %} {% endfor %} {% endif %} {% endblock %}
   </body>
 </html>

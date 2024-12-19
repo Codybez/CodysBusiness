@@ -141,6 +141,13 @@
         color: #ffffff;
       }
 
+      .no-jobs-msg {
+        text-align: center;
+        font-size: 18px;
+        color: #ff7148;
+        margin-top: 20px;
+      }
+
       @media (max-width: 600px) {
         .button-group {
           flex-direction: column;
@@ -163,7 +170,9 @@
   <body>
     {% extends 'base_labour.html' %} {% block content %}
     <div class="container">
-      {% for job in active_jobs %}
+      {% if not active_jobs %}
+      <p class="no-jobs-msg">You have not won any jobs yet.</p>
+      {% else %} {% for job in active_jobs %}
       <div class="job-card">
         <!-- Job Image -->
         <img
@@ -202,7 +211,7 @@
           </a>
         </div>
       </div>
-      {% endfor %}
+      {% endfor %} {% endif %}
     </div>
     {% endblock %}
   </body>
