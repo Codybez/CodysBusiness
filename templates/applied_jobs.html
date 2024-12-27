@@ -17,7 +17,7 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-        padding: 5px;
+
         margin-top: 25px;
       }
       .job-listing:last-of-type {
@@ -30,21 +30,20 @@
         padding: 25px;
         margin: 5px auto;
         max-width: 600px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: relative;
         text-decoration: none;
         color: inherit;
-        border-radius: 5px;
       }
 
       .job-listing h1 {
         color: #333;
         font-size: 22px;
         margin: 0;
+        margin-bottom: -5px;
       }
 
       .job-listing p {
-        color: #777;
+        color: #333;
         font-size: 1rem;
         margin-top: 10px;
       }
@@ -173,13 +172,13 @@
           href="{{ url_for('display_jobs', job_id=job.id) }}"
           class="view-job-link"
         >
-          <span>Job Details</span>
+          <span>View</span>
         </a>
         <a
           href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
           class="chat-link"
         >
-          <span>Message</span>
+          <span>Chat</span>
         </a>
       </div>
       {% endif %}

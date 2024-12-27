@@ -186,26 +186,41 @@
         margin-left: 10px; /* Adjust to desired left position */
       }
 
-            .notification-box {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #ff7148;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 16px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        z-index: 9999;
-        display: inline-block;
-        animation: slideDown 3s forwards;
-      }
+.notification-box {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff7148;
+  color: white;
+  padding: 10px; /* Reduced padding for a more compact look */
+  border-radius: 5px;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  cursor: pointer;
+  display: inline-block; /* Prevents extra space from being added */
+  max-width: 40%; /* Ensures the box doesn't overflow the screen */
+  text-align: center; /* Centers the text */
+
+  overflow: hidden; /* Truncates overflow if needed */
+  text-overflow: ellipsis; /* Adds ellipsis if the text is too long */
+  animation: slideDown 1.5s ease-in-out forwards;
+}
+
+.flash {
+  margin-bottom: 5px; /* Reduce spacing between flash messages */
+}
+
+.notification-box:empty {
+  display: none; /* Hides the box when it's empty */
+}
+
 
         .hamburger-menu {
     position: relative;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 5px;
   }
 
   /* Hamburger icon */
@@ -293,7 +308,8 @@
 <div class="hamburger-menu">
   <i class="fas fa-bars" id="menu-icon"></i>
   <div class="dropdown-menu" id="dropdown-menu">
-    <a href="{{ url_for('labourer_profile') }}">Your Profile</a>
+<a href="">View Profile</a>
+
     <a href="">Notification Settings</a>
     <a href="">Contact Openwork</a>
     <a href="{{ url_for('logout') }}">Logout</a>
@@ -304,17 +320,36 @@
   </header>
 
   <body>
-     <!-- Notification Box -->
 <!-- Notification Box -->
- {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="notification-box">
-            {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages or session.get('notification') %}
+    <div class="notification-box" id="notificationBox" onclick="this.remove(); checkNotifications()">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+      {% if session.get('notification') %}
+        {{ session.pop('notification') }}
+      {% endif %}
+    </div>
+  {% endif %}
 {% endwith %}
+
+
+
+{% if session.get('notification') %}
+  <div class="notification-box" id="notificationBox" onclick="this.remove(); checkNotifications()">
+    {{ session.pop('notification') }}
+  </div>
+{% endif %}
+
+
+
+{% if session.get('notification') %}
+  <div class="notification-box" onclick="this.style.display='none'">
+    {{ session.pop('notification') }}
+  </div>
+{% endif %}
+
 
 {% if session.get('notification') %}
     <div class="notification-box">{{ session.pop('notification') }}</div>
@@ -366,6 +401,15 @@
       }
     });
   });
+
+function checkNotifications() {
+  const notificationBox = document.getElementById('notificationBox');
+  if (notificationBox && notificationBox.childElementCount === 0) {
+    notificationBox.style.display = 'none';
+    notificationBox.style.padding = '0'; // Remove padding if no notifications
+  }
+}
+
 </script>
 
 </html>

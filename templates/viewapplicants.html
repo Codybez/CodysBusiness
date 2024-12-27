@@ -17,14 +17,12 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-        padding: 5px;
       }
 
       /* Container for Applicant Profiles */
       .applicant-container {
         margin-top: 40px; /* Make space for the back button */
         padding-bottom: 30px; /* Optional: Add some space at the bottom */
-        border-radius: 10px;
       }
 
       .profile-pic {
@@ -41,8 +39,9 @@
         color: #555;
         font-family: Arial, Helvetica, sans-serif;
         margin-top: 15px;
-        margin-bottom: 10px;
+        margin-bottom: -10px;
         margin-left: 5px;
+        font-size: 21px;
       }
 
       .applicant-profile p {
@@ -94,14 +93,13 @@
       /* Ensure applicant profile respects container width */
       .applicant-profile {
         background-color: #fff;
-        border: 1px solid #ddd;
         padding: 20px;
         margin: 10px auto;
         max-width: 600px; /* Prevent container from expanding */
         box-sizing: border-box; /* Include padding in width */
         position: relative;
         transition: all 0.3s ease;
-        border-radius: 10px;
+        border-bottom: #ff7148 2px solid;
       }
 
       @media (max-width: 600px) {
@@ -135,10 +133,8 @@
         <h3>{{ application.user.company_details.trading_name }}</h3>
 
         <p>
-          <span
-            >{{ application.user.first_name }} {{ application.user.last_name }}
-            | {{ application.user.location }}</span
-          >
+          {{ application.user.first_name }} {{ application.user.last_name }} |
+          {{ application.user.location }}
         </p>
         <p>{{ application.user.email }}</p>
         <p>{{ application.user.labourer_profile.phone_number }}</p>
