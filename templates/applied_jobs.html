@@ -17,11 +17,7 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-
         margin-top: 25px;
-      }
-      .job-listing:last-of-type {
-        margin-bottom: 80px;
       }
 
       .job-listing {
@@ -30,9 +26,15 @@
         padding: 25px;
         margin: 5px auto;
         max-width: 600px;
-        position: relative;
+        position: relative; /* This makes the position of the trash can relative to the card */
         text-decoration: none;
         color: inherit;
+        cursor: pointer;
+      }
+
+      .job-listing.open {
+        background-color: #f9f9f9;
+        border-color: #ff7148;
       }
 
       .job-listing h1 {
@@ -40,35 +42,52 @@
         font-size: 22px;
         margin: 0;
         margin-bottom: -5px;
+        padding-right: 70px;
       }
 
       .job-listing p {
         color: #333;
         font-size: 1rem;
         margin-top: 10px;
+        padding-right: 70px;
+      }
+
+      .job-image {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .hidden-details {
+        display: none;
+        margin-top: 15px;
       }
 
       .button-container {
         display: flex;
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 15px; /* Gap between buttons */
+        flex-direction: column;
+        gap: 15px;
         margin-top: 10px;
         justify-content: center;
-        align-items: center; /* Ensure buttons are centered horizontally */
+        align-items: center;
       }
 
       .view-job-link,
       .chat-link {
         padding: 10px 0;
-        text-align: center; /* Center text inside the button */
+        text-align: center;
         border-radius: 5px;
         font-size: 16px;
         text-decoration: none;
         color: white;
         display: flex;
-        justify-content: center; /* Center content horizontally */
-        align-items: center; /* Center content vertically */
-        width: 100%; /* Make the button take the full width */
+        justify-content: center;
+        align-items: center;
+        width: 100%;
         padding-left: 10px;
         padding-right: 10px;
       }
@@ -83,43 +102,15 @@
         border: 1px solid #ff7148;
       }
 
-      /* Job image in the top-right corner */
-      .job-image {
-        position: absolute;
-        top: 20px; /* Adjusted for consistent padding */
-        right: 20px; /* Adjusted for consistent padding */
-        width: 70px;
-        height: 70px;
-        object-fit: cover;
-        border-radius: 8px;
-      }
-
-      /* Remove Job Button below the image */
-      .remove-job-btn {
-        position: absolute;
-        top: 80px; /* Positioned below the image */
-        right: 10px;
-        background-color: #ffffff;
-        color: #000000;
-        padding: 8px;
-        border-radius: 5px;
-        font-size: 16px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
+      .remove-job-icon {
         text-decoration: none;
-        transition: background-color 0.3s ease;
-      }
-
-      .remove-job-btn i {
-        font-size: 18px;
-      }
-
-      .not-accepted-msg {
-        color: #ff7148;
-        font-weight: bold;
+        color: #333;
         margin-top: 10px;
+      }
+
+      .remove-job-icon i {
+        margin-left: 5px;
+        color: #333;
       }
 
       .no-jobs-msg {
@@ -129,21 +120,60 @@
         margin-top: 20px;
       }
     </style>
+    <script>
+      // Function to toggle the details and store the open state in localStorage
+      function toggleDetails(jobId) {
+        const details = document.getElementById(`details_${jobId}`);
+        const listing = document.getElementById(`job_${jobId}`);
+
+        if (details.style.display === "none" || !details.style.display) {
+          details.style.display = "block";
+          listing.classList.add("open");
+          localStorage.setItem(`job_${jobId}_open`, "true");
+        } else {
+          details.style.display = "none";
+          listing.classList.remove("open");
+          localStorage.setItem(`job_${jobId}_open`, "false");
+        }
+      }
+
+      // Check localStorage on page load to keep the open state
+      window.onload = function () {
+        const jobListings = document.querySelectorAll(".job-listing");
+        jobListings.forEach((listing) => {
+          const jobId = listing.id.replace("job_", "");
+          const isOpen = localStorage.getItem(`job_${jobId}_open`);
+
+          if (isOpen === "true") {
+            const details = document.getElementById(`details_${jobId}`);
+            const listingElem = document.getElementById(`job_${jobId}`);
+            details.style.display = "block";
+            listingElem.classList.add("open");
+          }
+        });
+      };
+
+      // Prevent the card toggle when the button is clicked
+      function preventToggle(event) {
+        event.stopPropagation(); // Stops the click event from bubbling up
+      }
+    </script>
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Business{% endblock %} {%
     block content %} {% if applied_jobs | length == 0 %}
     <p class="no-jobs-msg">You have no applied jobs.</p>
-    {% else %} {% for job in applied_jobs | reverse %} {% if job.status !=
-    'closed' %} {% if job.applicants | selectattr("user_id", "equalto",
-    current_user.id) | selectattr("is_visible", "equalto", true) | list %}
-    <div class="job-listing" id="job_{{ job.id }}">
+    {% else %} {% for job in applied_jobs | reverse %}
+    <div
+      class="job-listing"
+      id="job_{{ job.id }}"
+      onclick="toggleDetails({{ job.id }})"
+    >
       <h1>{{ job.job_name }}</h1>
       <p class="job-location">
         <strong>{{ job.location }}</strong> | {{ job.job_category }}
       </p>
 
-      <!-- Job Image -->
       {% if job.image_list and job.image_list[0] %}
       <img
         src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
@@ -152,85 +182,39 @@
       />
       {% endif %}
 
-      <!-- Remove Job Button -->
-      <a
-        href="{{ url_for('remove_application', job_id=job.id) }}"
-        class="remove-job-btn"
-      >
-        <i class="fas fa-trash-alt"></i>
-      </a>
+      <div id="details_{{ job.id }}" class="hidden-details">
+        <p>Posted by: {{ job.user.first_name }}</p>
+        <p>Email: {{ job.user.email }}</p>
+        <p>Phone: {{ job.contact_number }}</p>
 
-      {% for application in job.applicants %} {% if application.user_id ==
-      current_user.id %} {% if application.status == 'paid' %}
-      <p>Posted by: {{ job.user.first_name }}</p>
-      <p>Email: {{ job.user.email }}</p>
-      <p>Phone: {{ job.contact_number }}</p>
-      {% endif %} {% endif %} {% endfor %} {% if current_user.is_authenticated
-      and current_user.id in job.applicants | map(attribute='user_id') %}
-      <div class="button-container">
-        <a
-          href="{{ url_for('display_jobs', job_id=job.id) }}"
-          class="view-job-link"
-        >
-          <span>View</span>
-        </a>
-        <a
-          href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
-          class="chat-link"
-        >
-          <span>Chat</span>
-        </a>
+        <div class="button-container">
+          <a
+            href="{{ url_for('display_jobs', job_id=job.id) }}"
+            class="view-job-link"
+            onclick="preventToggle(event)"
+          >
+            View Job
+          </a>
+          <a
+            href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
+            class="chat-link"
+            onclick="preventToggle(event)"
+          >
+            Chat
+          </a>
+          <!-- Remove Job Icon -->
+          <a
+            href="{{ url_for('remove_application', job_id=job.id) }}"
+            class="remove-job-icon"
+            onclick="event.stopPropagation();"
+          >
+            Remove Job
+
+            <i class="fas fa-trash-alt"></i>
+          </a>
+        </div>
       </div>
-      {% endif %}
     </div>
-    {% endif %} {% else %} {% if job.applicants | selectattr("user_id",
-    "equalto", current_user.id) | selectattr("is_visible", "equalto", true) |
-    list %}
-    <div class="job-listing" id="job_{{ job.id }}">
-      <h1>{{ job.job_name }}</h1>
-      <p class="job-location">
-        <strong>{{ job.location }} </strong>
-      </p>
-
-      <!-- Job Image -->
-      {% if job.image_list and job.image_list[0] %}
-      <img
-        src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
-        alt="Job Image"
-        class="job-image"
-      />
-      {% endif %}
-
-      <!-- Remove Job Button -->
-      <a
-        href="{{ url_for('remove_application', job_id=job.id) }}"
-        class="remove-job-btn"
-      >
-        <i class="fas fa-trash-alt"></i>
-      </a>
-
-      {% for application in job.applicants %} {% if application.user_id ==
-      current_user.id %} {% if application.status != 'accepted' %}
-      <!-- Message for unaccepted users when the job is closed -->
-      <p class="not-accepted-msg">You were not accepted for this job.</p>
-      {% endif %} {% endif %} {% endfor %} {% if current_user.is_authenticated
-      and current_user.id in job.applicants | map(attribute='user_id') %}
-      <div class="button-container">
-        <a
-          href="{{ url_for('display_jobs', job_id=job.id) }}"
-          class="view-job-link"
-        >
-          <span>Job Details</span>
-        </a>
-        <a
-          href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
-          class="chat-link"
-        >
-          <span>Message</span>
-        </a>
-      </div>
-      {% endif %}
-    </div>
-    {% endif %} {% endif %} {% endfor %} {% endif %} {% endblock %}
+    {% endfor %} {% endif %} {% endblock %}
   </body>
 </html>
