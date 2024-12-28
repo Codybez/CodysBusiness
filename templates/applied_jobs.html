@@ -18,23 +18,23 @@
         background-color: #ffffff;
         margin: 0;
         margin-top: 25px;
+        margin-bottom: 60px;
       }
 
       .job-listing {
         background-color: #fff;
         border: 1px solid #ddd;
-        padding: 25px;
+        padding: 20px;
         margin: 5px auto;
         max-width: 600px;
-        position: relative; /* This makes the position of the trash can relative to the card */
+        position: relative;
         text-decoration: none;
         color: inherit;
         cursor: pointer;
       }
 
       .job-listing.open {
-        background-color: #f9f9f9;
-        border-color: #ff7148;
+        background-color: #ffffff;
       }
 
       .job-listing h1 {
@@ -56,8 +56,8 @@
         position: absolute;
         top: 20px;
         right: 20px;
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         object-fit: cover;
         border-radius: 8px;
       }
@@ -119,39 +119,79 @@
         color: #ff7148;
         margin-top: 20px;
       }
+      /* Arrow styles */
+      .arrow-left {
+        margin-top: -20px; /* Move the arrow higher */
+        margin-left: auto; /* Push it to the right */
+        margin-right: 0px; /* Optional: Add some space from the right edge */
+        display: block;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #ff7148; /* Arrow color */
+        transition: transform 0.3s ease;
+        text-align: center;
+      }
+
+      .job-listing.open .arrow-left {
+        transform: rotate(
+          180deg
+        ); /* Rotate the arrow when the card is opened */
+      }
+
+      .applicant-count {
+        font-size: 0.9rem; /* Slightly smaller font size */
+        color: #ff7148; /* Orange color */
+        margin-top: 5px; /* Space between location and applicants count */
+      }
+
+      .applicant-count span {
+        font-weight: bold; /* Make the number bold */
+        color: #ff7148;
+        font-size: 15px;
+      }
+
+      .job-location {
+        margin-bottom: -5px;
+      }
     </style>
     <script>
-      // Function to toggle the details and store the open state in localStorage
+      // Function to toggle the details of a job listing
       function toggleDetails(jobId) {
         const details = document.getElementById(`details_${jobId}`);
         const listing = document.getElementById(`job_${jobId}`);
+        const arrow = document.getElementById(`arrow_${jobId}`);
 
         if (details.style.display === "none" || !details.style.display) {
           details.style.display = "block";
           listing.classList.add("open");
-          localStorage.setItem(`job_${jobId}_open`, "true");
+          arrow.classList.add("open");
         } else {
           details.style.display = "none";
           listing.classList.remove("open");
-          localStorage.setItem(`job_${jobId}_open`, "false");
+          arrow.classList.remove("open");
         }
       }
 
-      // Check localStorage on page load to keep the open state
-      window.onload = function () {
+      // Function to reset all job details on page load
+      function resetJobStates() {
         const jobListings = document.querySelectorAll(".job-listing");
+
         jobListings.forEach((listing) => {
           const jobId = listing.id.replace("job_", "");
-          const isOpen = localStorage.getItem(`job_${jobId}_open`);
-
-          if (isOpen === "true") {
-            const details = document.getElementById(`details_${jobId}`);
-            const listingElem = document.getElementById(`job_${jobId}`);
-            details.style.display = "block";
-            listingElem.classList.add("open");
-          }
+          const details = document.getElementById(`details_${jobId}`);
+          const arrow = document.getElementById(`arrow_${jobId}`);
+          details.style.display = "none"; // Hide details
+          listing.classList.remove("open"); // Remove "open" class from listing
+          arrow.classList.remove("open"); // Reset arrow state
         });
-      };
+      }
+
+      // Run reset logic on DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", function () {
+        resetJobStates();
+      });
 
       // Prevent the card toggle when the button is clicked
       function preventToggle(event) {
@@ -173,6 +213,9 @@
       <p class="job-location">
         <strong>{{ job.location }}</strong> | {{ job.job_category }}
       </p>
+      <p class="applicant-count">
+        <span>{{ job.applicants | length }} Contact</span>
+      </p>
 
       {% if job.image_list and job.image_list[0] %}
       <img
@@ -182,7 +225,11 @@
       />
       {% endif %}
 
+      <!-- Arrow -->
+      <div id="arrow_{{ job.id }}" class="arrow-left"></div>
+
       <div id="details_{{ job.id }}" class="hidden-details">
+        <br />
         <p>Posted by: {{ job.user.first_name }}</p>
         <p>Email: {{ job.user.email }}</p>
         <p>Phone: {{ job.contact_number }}</p>
@@ -209,7 +256,6 @@
             onclick="event.stopPropagation();"
           >
             Remove Job
-
             <i class="fas fa-trash-alt"></i>
           </a>
         </div>

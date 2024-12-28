@@ -23,7 +23,7 @@
       .job-listing {
         background-color: #fff;
         border: 1px solid #ddd;
-        padding: 25px;
+        padding: 20px;
         margin: 5px auto;
         max-width: 600px;
         position: relative;
@@ -119,39 +119,60 @@
         color: #ff7148;
         margin-top: 20px;
       }
+
+      /* Arrow styles */
+      .arrow {
+        margin-top: 10px;
+        display: block;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #ff7148; /* Color of the arrow */
+        transition: transform 0.3s ease;
+        text-align: center;
+      }
+
+      .arrow-up {
+        transform: rotate(180deg); /* Rotates the arrow */
+      }
     </style>
     <script>
-      // Function to toggle the details and store the open state in localStorage
+      // Function to toggle the details of a job listing
       function toggleDetails(jobId) {
         const details = document.getElementById(`details_${jobId}`);
         const listing = document.getElementById(`job_${jobId}`);
+        const arrow = document.getElementById(`arrow_${jobId}`);
 
         if (details.style.display === "none" || !details.style.display) {
           details.style.display = "block";
           listing.classList.add("open");
-          localStorage.setItem(`job_${jobId}_open`, "true");
+          arrow.classList.add("arrow-up");
         } else {
           details.style.display = "none";
           listing.classList.remove("open");
-          localStorage.setItem(`job_${jobId}_open`, "false");
+          arrow.classList.remove("arrow-up");
         }
       }
 
-      // Check localStorage on page load to keep the open state
-      window.onload = function () {
+      // Function to reset all job details on page load
+      function resetJobStates() {
         const jobListings = document.querySelectorAll(".job-listing");
+
         jobListings.forEach((listing) => {
           const jobId = listing.id.replace("job_", "");
-          const isOpen = localStorage.getItem(`job_${jobId}_open`);
-
-          if (isOpen === "true") {
-            const details = document.getElementById(`details_${jobId}`);
-            const listingElem = document.getElementById(`job_${jobId}`);
-            details.style.display = "block";
-            listingElem.classList.add("open");
-          }
+          const details = document.getElementById(`details_${jobId}`);
+          const arrow = document.getElementById(`arrow_${jobId}`);
+          details.style.display = "none"; // Hide details
+          listing.classList.remove("open"); // Remove "open" class from listing
+          arrow.classList.remove("arrow-up"); // Reset arrow state
         });
-      };
+      }
+
+      // Run reset logic on DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", function () {
+        resetJobStates();
+      });
 
       // Prevent the card toggle when the button is clicked
       function preventToggle(event) {
@@ -181,6 +202,9 @@
         class="job-image"
       />
       {% endif %}
+
+      <!-- Arrow -->
+      <div id="arrow_{{ job.id }}" class="arrow"></div>
 
       <div id="details_{{ job.id }}" class="hidden-details">
         <p>Posted by: {{ job.user.first_name }}</p>

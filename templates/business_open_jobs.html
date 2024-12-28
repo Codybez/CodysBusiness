@@ -25,16 +25,16 @@
 
       .job-listing {
         background-color: #fff;
-        border-bottom: #ff7148 2px solid;
+        border: 1px solid #ddd;
         padding: 20px;
         margin: 5px auto;
         max-width: 600px;
-
         position: relative;
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
         font-family: Arial, Helvetica, sans-serif;
+        cursor: pointer;
       }
 
       .job-listing h3 {
@@ -43,20 +43,14 @@
         margin: 0;
         font-family: Arial, Helvetica, sans-serif;
         margin-bottom: -5px;
+        padding-right: 70px;
       }
 
       .job-listing p {
         color: #777;
         font-size: 1rem;
         margin-top: 10px;
-      }
-
-      .job-listing .icon {
-        margin-right: 10px;
-      }
-
-      .job-listing p i {
-        margin-right: 10px;
+        margin-bottom: -5px;
       }
 
       .job-location h6 {
@@ -72,9 +66,10 @@
       .button-container {
         display: flex;
         flex-direction: column;
-        gap: 10px; /* space between buttons */
+        gap: 10px;
         justify-content: flex-start;
         margin-top: 15px;
+        margin-right: 20px;
       }
 
       .chat-link {
@@ -82,15 +77,13 @@
         color: #ff7148;
         border: 1px solid #ff7148;
         font-weight: bold;
-        padding: 10px; /* Padding inside the button */
+        padding: 10px;
         cursor: pointer;
         border-radius: 5px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        width: 100%; /* Fit within the container */
-        max-width: 100%; /* Prevent overflow */
-        box-sizing: border-box; /* Include padding and borders in width */
+        width: 100%;
         text-align: center;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 14px;
@@ -102,15 +95,13 @@
         color: white;
         border: none;
         font-weight: bold;
-        padding: 10px; /* Padding inside the button */
+        padding: 10px;
         cursor: pointer;
         border-radius: 5px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        width: 100%; /* Fit within the container */
-        max-width: 100%; /* Prevent overflow */
-        box-sizing: border-box; /* Include padding and borders in width */
+        width: 100%;
         text-align: center;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 14px;
@@ -132,8 +123,8 @@
       }
 
       .close-job-text a {
-        text-decoration: none; /* Remove default underline */
-        font-weight: bold; /* Make the link stand out */
+        text-decoration: none;
+        font-weight: bold;
         color: #ff7148;
         font-size: 16px;
         text-align: center;
@@ -142,12 +133,31 @@
       /* Job image in the top-right corner */
       .job-image {
         position: absolute;
-        top: 20px; /* Adjusted for consistent padding */
-        right: 20px; /* Adjusted for consistent padding */
-        width: 70px;
-        height: 70px;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
         object-fit: cover;
         border-radius: 8px;
+      }
+
+      /* The arrow, inside the job listing */
+      .arrow {
+        margin-top: 0px;
+        margin-left: auto; /* Align the arrow to the right */
+        margin-right: 0px; /* Optional: Add some space from the right edge */
+        display: block;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #ff7148; /* Color of the arrow */
+        transition: transform 0.3s ease;
+        text-align: center;
+      }
+
+      .arrow-up {
+        transform: rotate(180deg);
       }
 
       .no-open-jobs-message {
@@ -175,7 +185,71 @@
       .post-job-button:hover {
         background-color: #e8633d;
       }
+
+      /* Initially hidden details */
+      .hidden-details {
+        display: none;
+        margin-top: 15px;
+      }
+
+      .open .hidden-details {
+        display: block;
+      }
+
+      .applicant-count {
+        font-size: 0.9rem; /* Slightly smaller font size */
+        color: #ff7148; /* Orange color */
+        margin-top: 5px; /* Space between location and applicants count */
+      }
+
+      .applicant-count span {
+        font-weight: bold; /* Make the number bold */
+        color: #ff7148;
+        font-size: 15px;
+      }
     </style>
+    <script>
+      // Function to toggle the details of a job listing
+      function toggleDetails(jobId) {
+        const details = document.getElementById(`details_${jobId}`);
+        const listing = document.getElementById(`job_${jobId}`);
+        const arrow = document.getElementById(`arrow_${jobId}`);
+
+        if (details.style.display === "none" || !details.style.display) {
+          details.style.display = "block";
+          listing.classList.add("open");
+          arrow.classList.add("arrow-up");
+        } else {
+          details.style.display = "none";
+          listing.classList.remove("open");
+          arrow.classList.remove("arrow-up");
+        }
+      }
+
+      // Function to reset all job details on page load
+      function resetJobStates() {
+        const jobListings = document.querySelectorAll(".job-listing");
+
+        jobListings.forEach((listing) => {
+          const jobId = listing.id.replace("job_", "");
+          const details = document.getElementById(`details_${jobId}`);
+          const arrow = document.getElementById(`arrow_${jobId}`);
+          details.style.display = "none"; // Hide details
+          listing.classList.remove("open"); // Remove "open" class from listing
+          arrow.classList.remove("arrow-up"); // Reset arrow state
+        });
+      }
+
+      // Run reset logic on DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", function () {
+        resetJobStates();
+      });
+
+      // Prevent the card toggle when the button is clicked
+      function preventToggle(event) {
+        event.stopPropagation(); // Stops the click event from bubbling up
+      }
+    </script>
   </head>
   <body>
     {% extends 'base_business.html' %} {% block title %}Created Jobs{% endblock
@@ -186,19 +260,18 @@
         >Create a Job</a
       >
     </div>
-
     {% else %} {% for job in created_jobs | reverse %}
-    <div class="job-listing">
+    <div
+      class="job-listing"
+      id="job_{{ job.id }}"
+      onclick="toggleDetails({{ job.id }})"
+    >
       <h3>{{ job.job_name }}</h3>
       <p class="job-location">{{ job.location }} | {{ job.job_category }}</p>
+      <p class="applicant-count">
+        <span>{{ job.applicants | length }} Applicants</span>
+      </p>
 
-      <p>{{ job.city }}, {{ job.suburb }}</p>
-
-      <p>Posted: {{ job.date_created | time_ago }}</p>
-
-      <p>Applicants: {{ job.applicants | length }}</p>
-
-      <!-- Job Image -->
       {% if job.image_list and job.image_list[0] %}
       <img
         src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
@@ -207,33 +280,39 @@
       />
       {% endif %}
 
-      <!-- Add container for buttons -->
-      <div class="button-container">
-        <a
-          href="{{ url_for('business_display_jobs', job_id=job.id) }}"
-          class="view-job-link"
-        >
-          View Job
-        </a>
+      <!-- Arrow inside the job listing -->
+      <div id="arrow_{{ job.id }}" class="arrow"></div>
 
-        <a
-          href="{{ url_for('view_applicants', job_id=job.id) }}"
-          class="chat-link"
-        >
-          View Applicants
-        </a>
-      </div>
+      <!-- Hidden Details -->
+      <div id="details_{{ job.id }}" class="hidden-details">
+        <p>Posted: {{ job.date_created | time_ago }}</p>
 
-      <div class="close-job-text">
-        <p>
-          <span>Have you found a tradesman or wish to remove the job?</span>
-          <br /><br />
+        <div class="button-container">
           <a
-            href="{{ url_for('close_job', job_id=job.id) }}"
-            class="close-job-link"
-            >Close the job</a
+            href="{{ url_for('business_display_jobs', job_id=job.id) }}"
+            class="view-job-link"
+            onclick="preventToggle(event)"
+            >View Job</a
           >
-        </p>
+          <a
+            href="{{ url_for('view_applicants', job_id=job.id) }}"
+            class="chat-link"
+            onclick="preventToggle(event)"
+            >View Applicants</a
+          >
+        </div>
+
+        <div class="close-job-text">
+          <p>
+            <span>Have you found a tradesman or wish to remove the job?</span>
+            <br /><br />
+            <a
+              href="{{ url_for('close_job', job_id=job.id) }}"
+              class="close-job-link"
+              >Close the job</a
+            >
+          </p>
+        </div>
       </div>
     </div>
     {% endfor %} {% endif %} {% endblock %}
