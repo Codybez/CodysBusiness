@@ -88,8 +88,8 @@
         justify-content: center;
         align-items: center;
         width: 100%;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: -25px;
+        padding-right: -25px;
       }
 
       .view-job-link {
@@ -121,9 +121,9 @@
       }
       /* Arrow styles */
       .arrow-left {
-        margin-top: -20px; /* Move the arrow higher */
-        margin-left: auto; /* Push it to the right */
-        margin-right: 0px; /* Optional: Add some space from the right edge */
+        margin-top: 20px; /* Move the arrow higher */
+
+        margin-right: auto; /* Optional: Add some space from the right edge */
         display: block;
         width: 0;
         height: 0;
@@ -143,7 +143,8 @@
       .applicant-count {
         font-size: 0.9rem; /* Slightly smaller font size */
         color: #ff7148; /* Orange color */
-        margin-top: 5px; /* Space between location and applicants count */
+
+        right: 20px;
       }
 
       .applicant-count span {
@@ -154,6 +155,15 @@
 
       .job-location {
         margin-bottom: -5px;
+      }
+
+      .job-closed {
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        color: #ff7148;
+        font-size: 15px;
+        font-weight: bold;
       }
     </style>
     <script>
@@ -213,11 +223,9 @@
       <p class="job-location">
         <strong>{{ job.location }}</strong> | {{ job.job_category }}
       </p>
-      <p class="applicant-count">
-        <span>{{ job.applicants | length }} Contact</span>
-      </p>
-
-      {% if job.image_list and job.image_list[0] %}
+      {% if job.status == 'closed' %}
+      <span class="job-closed">Job Closed</span>
+      {% endif %} {% if job.image_list and job.image_list[0] %}
       <img
         src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
         alt="Job Image"
@@ -229,19 +237,14 @@
       <div id="arrow_{{ job.id }}" class="arrow-left"></div>
 
       <div id="details_{{ job.id }}" class="hidden-details">
-        <br />
+        <p class="applicant-count">
+          <span>{{ job.applicants | length }} Contact</span>
+        </p>
         <p>Posted by: {{ job.user.first_name }}</p>
         <p>Email: {{ job.user.email }}</p>
         <p>Phone: {{ job.contact_number }}</p>
 
         <div class="button-container">
-          <a
-            href="{{ url_for('display_jobs', job_id=job.id) }}"
-            class="view-job-link"
-            onclick="preventToggle(event)"
-          >
-            View Job
-          </a>
           <a
             href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
             class="chat-link"
@@ -249,6 +252,15 @@
           >
             Chat
           </a>
+
+          <a
+            href="{{ url_for('display_jobs', job_id=job.id) }}"
+            class="view-job-link"
+            onclick="preventToggle(event)"
+          >
+            View Job
+          </a>
+
           <!-- Remove Job Icon -->
           <a
             href="{{ url_for('remove_application', job_id=job.id) }}"

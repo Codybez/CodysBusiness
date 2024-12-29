@@ -118,9 +118,9 @@
     </style>
   </head>
   <body>
-    {% extends 'base_business.html' %} {% block title %}Labourer Profile
-    Viewer{% endblock %} {% block content %}
-
+    {% if current_user.business_profile %} {% extends 'base_business.html' %} {%
+    else %} {% extends 'base_labour.html' %} {% endif %} {% block title
+    %}Contact Form{% endblock %} {% block content %}
     <div class="profile-container">
       <!-- Profile Header -->
       <div class="profile-header">

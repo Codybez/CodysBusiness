@@ -48,18 +48,9 @@
 
       .job-listing p {
         color: #777;
-        font-size: 1rem;
+        font-size: 17px;
         margin-top: 10px;
         margin-bottom: -5px;
-      }
-
-      .job-location h6 {
-        display: flex;
-        align-items: flex-start;
-        color: #777;
-        font-family: Arial, Helvetica, sans-serif;
-        margin: 10px 0;
-        font-size: 17px;
       }
 
       /* Flex container for buttons */
@@ -88,6 +79,8 @@
         font-family: Arial, Helvetica, sans-serif;
         font-size: 14px;
         text-decoration: none;
+        padding-left: -25px;
+        padding-right: -25px;
       }
 
       .view-job-link {
@@ -107,6 +100,8 @@
         font-size: 14px;
         text-decoration: none;
         margin-top: 10px;
+        padding-left: -25px;
+        padding-right: -25px;
       }
 
       @media (max-width: 600px) {
@@ -143,9 +138,8 @@
 
       /* The arrow, inside the job listing */
       .arrow {
-        margin-top: 0px;
-        margin-left: auto; /* Align the arrow to the right */
-        margin-right: 0px; /* Optional: Add some space from the right edge */
+        margin-top: 20px;
+        margin-right: auto; /* Align the arrow to the right */
         display: block;
         width: 0;
         height: 0;
@@ -199,13 +193,18 @@
       .applicant-count {
         font-size: 0.9rem; /* Slightly smaller font size */
         color: #ff7148; /* Orange color */
-        margin-top: 5px; /* Space between location and applicants count */
+        margin-top: 10px; /* Space between location and applicants count */
       }
 
       .applicant-count span {
         font-weight: bold; /* Make the number bold */
         color: #ff7148;
         font-size: 15px;
+        margin-top: 10px;
+      }
+
+      .job-location {
+        color: #333;
       }
     </style>
     <script>
@@ -267,7 +266,9 @@
       onclick="toggleDetails({{ job.id }})"
     >
       <h3>{{ job.job_name }}</h3>
-      <p class="job-location">{{ job.location }} | {{ job.job_category }}</p>
+      <p class="job-location" color="#333">
+        {{ job.location }} | {{ job.job_category }}
+      </p>
       <p class="applicant-count">
         <span>{{ job.applicants | length }} Applicants</span>
       </p>

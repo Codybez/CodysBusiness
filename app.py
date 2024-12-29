@@ -703,10 +703,14 @@ def business_active_jobs():
     business_profile = current_user.business_profile
 
     if business_profile:
-        # Retrieve only 'booked' status jobs created by the current business user
+        # Retrieve only 'closed' status jobs created by the current business user
         active_jobs = Job.query.filter_by(business_profile_id=business_profile.id, status='closed').all()
 
-        return render_template('business_active_jobs.html', active_jobs=active_jobs,get_user_details=get_user_details, is_dashboard_page=True)
+        # Ensure 'image_list' contains the correct list of images for each job
+        for job in active_jobs:
+            job.image_list = job.image_paths.split(',') if job.image_paths else []
+
+        return render_template('business_active_jobs.html', active_jobs=active_jobs, get_user_details=get_user_details, is_dashboard_page=True)
 
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
@@ -1340,3 +1344,24 @@ def business_completed_jobs():
 
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
+
+# Contact route
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        # Get form data
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
+
+        # Process the form data (e.g., save to database, send email, etc.)
+        # For now, just print to console
+        print(f"Message from {name} ({email}): {message}")
+
+        # Flash a success message
+        flash('Your message has been sent successfully!', 'success')
+
+        # Optionally, clear the form after submission
+        return redirect(url_for('contact'))
+
+    return render_template('contact_us.html')

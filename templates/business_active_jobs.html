@@ -15,8 +15,8 @@
         color: #333;
         margin: 0;
         padding: 0;
+        padding-top: 40px;
         margin-bottom: 35px;
-        margin-top: 25px;
       }
 
       .container {
@@ -24,42 +24,75 @@
         margin: 0 auto;
       }
 
-      /* Job Card */
       .job-card {
         background-color: #fff;
         padding: 20px;
         margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
         border: 1px solid #ddd;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .job-card:hover {
+        background-color: #f9f9f9;
       }
 
       /* Job Header */
-      .job-header {
-        margin-bottom: 15px;
-      }
-
       .job-header h2 {
-        font-size: 1.5rem;
-        margin-bottom: -10px;
+        font-size: 21px;
+        margin: 0px;
         color: #333;
+        padding-right: 70px;
       }
 
       .job-header p {
-        font-size: 0.9rem;
+        font-size: 17px;
         color: #777;
         margin-bottom: 15px;
+        margin-top: 0px;
       }
 
-      /* User Details Section */
+      /* Hidden Details */
+      .hidden-details {
+        display: none;
+        margin-top: 15px;
+        position: relative;
+      }
+
+      .show-details {
+        display: block;
+      }
+
+      /* Arrow */
+      .arrow {
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #ff7148;
+        position: absolute;
+        top: 20px;
+        right: 10px;
+        transition: transform 0.3s ease;
+      }
+
+      .arrow-up {
+        transform: rotate(180deg);
+      }
+
+      /* User Details */
       .user-details {
-        text-align: center;
-        margin-bottom: 15px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        position: relative;
       }
 
       .user-info {
-        margin-top: 10px;
+        flex: 1;
+        padding-right: 60px; /* Ensure space for the image */
+        margin-left: 20px;
       }
 
       .user-info h3 {
@@ -75,75 +108,105 @@
       }
 
       .user-image {
-        width: 80px;
-        height: 80px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         object-fit: cover;
         background-color: #eee;
-        margin-bottom: 10px;
+        position: absolute;
+        right: 20px;
+        top: 0;
       }
 
-      /* Buttons Section */
       .button-group {
         display: flex;
-        gap: 10px;
+        gap: 10px; /* Space between buttons */
         margin-top: 10px;
-        justify-content: center;
+        justify-content: space-evenly; /* Spread buttons evenly across the screen */
+        margin-top: 20px;
       }
 
       .button {
         display: inline-block;
         background-color: #ff7148;
         color: #fff;
-        padding: 8px 12px;
+        padding: 10px 30px; /* Increased padding to make buttons wider */
         border-radius: 5px;
         font-size: 0.9rem;
         text-align: center;
         transition: background 0.2s ease;
         text-decoration: none;
-      }
-
-      .button-review {
-        display: inline-block;
-        background-color: #ffffff;
-        color: #555;
-        border: 1px solid #555;
-        padding: 8px 12px;
-        border-radius: 5px;
-        font-size: 0.9rem;
-        text-align: center;
-        transition: background 0.2s ease;
-        text-decoration: none;
-      }
-
-      .button-profile {
-        display: inline-block;
-        background-color: #ffffff;
-        color: #ff7148;
-        border: 1px solid #ff7148;
-        padding: 8px 12px;
-        border-radius: 5px;
-        font-size: 0.9rem;
-        text-align: center;
-        transition: background 0.2s ease;
-        text-decoration: none;
+        width: 40%;
       }
 
       .no-open-jobs-message {
         text-align: center;
         font-size: 18px;
         color: #ff7148;
-        margin-top: 25px;
+        margin-top: -18px;
       }
+
       @media (max-width: 600px) {
-        .button-group {
-          flex-direction: column;
+        .user-details {
+          flex-wrap: nowrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+        }
+
+        .user-image {
+          position: absolute;
+          right: 20px;
+          top: 20px; /* Position the image at the top-right */
+        }
+
+        .user-info {
+          padding-right: 80px; /* Ensure space for the image */
         }
       }
     </style>
   </head>
 
   <body>
+    <script>
+      function toggleDetails(jobId) {
+        const details = document.getElementById(`details_${jobId}`);
+        const arrow = document.getElementById(`arrow_${jobId}`);
+        if (details) {
+          details.classList.toggle("show-details");
+        } else {
+          console.error("Details element not found for jobId:", jobId);
+        }
+        if (arrow) {
+          arrow.classList.toggle("arrow-up");
+        } else {
+          console.error("Arrow element not found for jobId:", jobId);
+        }
+      }
+
+      // Function to reset all job details on page load
+      function resetJobStates() {
+        const jobListings = document.querySelectorAll(".job-listing");
+
+        jobListings.forEach((listing) => {
+          const jobId = listing.id.replace("job_", "");
+          const details = document.getElementById(`details_${jobId}`);
+          const arrow = document.getElementById(`arrow_${jobId}`);
+          details.style.display = "none"; // Hide details
+          listing.classList.remove("open"); // Remove "open" class from listing
+          arrow.classList.remove("arrow-up"); // Reset arrow state
+        });
+      }
+
+      // Run reset logic on DOMContentLoaded
+      document.addEventListener("DOMContentLoaded", function () {
+        resetJobStates();
+      });
+
+      // Prevent the card toggle when the button is clicked
+      function preventToggle(event) {
+        event.stopPropagation(); // Stops the click event from bubbling up
+      }
+    </script>
     {% extends 'base_business.html' %} {% block title %}Business{% endblock %}
     {% block content %}
     <div class="container">
@@ -152,55 +215,64 @@
         <p>You have no closed jobs.</p>
       </div>
       {% else %} {% for job in active_jobs|reverse %}
-      <div class="job-card">
+      <div
+        class="job-card"
+        id="job_{{ job.id }}"
+        onclick="toggleDetails({{ job.id }})"
+      >
         <!-- Job Header -->
         <div class="job-header">
           <h2>{{ job.job_name }}</h2>
-          <p>{{ job.job_category }} | {{ job.city }}, {{ job.suburb }}</p>
+          <p>{{ job.job_category }} | {{ job.location }}</p>
         </div>
+
+        <!-- Arrow -->
+        <div id="arrow_{{ job.id }}" class="arrow"></div>
 
         {% set selected_user = get_user_details(job.accepted_user_id) %} {% if
         selected_user and selected_user.labourer_profile %}
-        <!-- User Details -->
-        <div class="user-details">
-          <!-- Profile Image Centered Above Text -->
-          {% if selected_user.profile_image %}
-          <img
-            src="{{ url_for('static', filename='profile_pics/' ~ selected_user.profile_image.filename) }}"
-            alt="Profile Picture"
-            class="user-image"
-          />
-          {% endif %}
-          <div class="user-info">
-            <h3>
-              {{ selected_user.company_details.trading_name }} - {{
-              selected_user.labourer_profile.first_name }}
-            </h3>
-            <p>{{ selected_user.labourer_profile.phone_number }}</p>
-            <p>{{ selected_user.user.email }}</p>
+        <!-- Hidden Details -->
+        <div id="details_{{ job.id }}" class="hidden-details">
+          <div class="user-details">
+            <div class="user-info">
+              <h3>
+                {{ selected_user.company_details.trading_name }} - {{
+                selected_user.labourer_profile.first_name }}
+              </h3>
+              <p>
+                Phone Number: {{ selected_user.labourer_profile.phone_number }}
+              </p>
+              <p>Email: {{ selected_user.user.email }}</p>
+            </div>
+            {% if selected_user.profile_image %}
+            <img
+              src="{{ url_for('static', filename='profile_pics/' ~ selected_user.profile_image.filename) }}"
+              alt="Profile Picture"
+              class="user-image"
+            />
+            {% endif %}
+          </div>
+
+          <!-- Buttons -->
+          <div class="button-group">
+            <a
+              href="{{ url_for('chat', job_id=job.id, user_id=job.accepted_user_id) }}"
+              onclick="preventToggle(event)"
+              class="button"
+              >Chat</a
+            >
+            <a
+              href="{{ url_for('view_tradesman_profile', user_id=job.accepted_user_id) }}"
+              onclick="preventToggle(event)"
+              class="button"
+              >Profile</a
+            >
           </div>
         </div>
-
-        <!-- Buttons -->
-        <div class="button-group">
-          <a
-            href="{{ url_for('chat', job_id=job.id, user_id=job.accepted_user_id) }}"
-            class="button"
-            >Chat</a
-          >
-          <a
-            href="{{ url_for('view_tradesman_profile', user_id=job.accepted_user_id) }}"
-            class="button-profile"
-            >Profile</a
-          >
-          <a
-            href="{{ url_for('tradesman_review', job_id=job.id) }}"
-            class="button-review"
-            >Review</a
-          >
-        </div>
         {% else %}
-        <p style="color: #777; margin-top: 10px">Job was not filled.</p>
+        <div id="details_{{ job.id }}" class="hidden-details">
+          <p style="color: #777">Job was not filled.</p>
+        </div>
         {% endif %}
       </div>
       {% endfor %} {% endif %}
