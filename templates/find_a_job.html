@@ -99,7 +99,7 @@
 
       .location-category {
         margin-top: -5px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
       }
 
       .job-details {
@@ -122,6 +122,10 @@
         font-size: 18px;
         color: #ff7148;
         margin-top: 20px;
+      }
+
+      .job-details .span {
+        color: #ff7148;
       }
     </style>
   </head>
@@ -201,11 +205,15 @@
 
             <!-- Separate Text below -->
             <div class="job-details">
-              <p>{{ job.city }}, {{ job.suburb }}</p>
-              <p>Job posted: {{ job.date_created|time_ago }}</p>
-              <p>Applicants: {{ job.applicants|length }}</p>
               <p>
-                {% if job.applicants|length == 0 %}
+                {{ job.city }} |
+                <span style="color: #ff7148"
+                  >{{ job.date_created|time_ago }}</span
+                >
+              </p>
+              <p>
+                Applicants: {{ job.applicants|length }} {% if
+                job.applicants|length == 0 %}
                 <span style="color: #ff7148"
                   >Be the first to make contact!</span
                 >
@@ -219,8 +227,8 @@
             src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
             alt="Job Image"
             style="
-              width: 70px;
-              height: 70px;
+              width: 50px;
+              height: 50px;
               object-fit: cover;
               border-radius: 5px;
               margin-left: 10px;

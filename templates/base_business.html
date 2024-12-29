@@ -250,6 +250,14 @@
         font-family: "Roboto", sans-serif;
       }
 
+      .footers-button.active i {
+        color: #ff7148; /* Highlight the icon in orange */
+      }
+
+      .footers-button.active p {
+        color: #ff7148; /* Highlight the text in orange */
+      }
+
       /* Hover effect for links */
       .dropdown-menu a:hover {
         background-color: #ff7148;
@@ -297,7 +305,7 @@
       <div class="hamburger-menu">
         <i class="fas fa-bars" id="menu-icon"></i>
         <div class="dropdown-menu" id="dropdown-menu">
-          <a href="contact">Contact Openwork</a>
+          <a href="{{ url_for('contact') }}">Contact Openwork</a>
           <a href="{{ url_for('logout') }}">Logout</a>
         </div>
       </div>
@@ -329,23 +337,35 @@
     {% block content %} {% endblock %}
   </body>
   <footer>
-    <a href="{{ url_for('create_job') }}" class="footers-button">
+    <a
+      href="{{ url_for('create_job') }}"
+      class="footers-button {% if request.endpoint == 'create_job' %}active{% endif %}"
+    >
       <i class="fas fa-search"></i>
       <p>Create a Job</p>
     </a>
 
-    <a href="{{ url_for('business_created_jobs') }}" class="footers-button">
+    <a
+      href="{{ url_for('business_created_jobs') }}"
+      class="footers-button {% if request.endpoint == 'business_created_jobs' %}active{% endif %}"
+    >
       <i class="fas fa-comment"></i>
       <p>Open Jobs</p>
     </a>
 
-    <a href="{{ url_for('business_active_jobs') }}" class="footers-button">
+    <a
+      href="{{ url_for('business_active_jobs') }}"
+      class="footers-button {% if request.endpoint == 'business_active_jobs' %}active{% endif %}"
+    >
       <i class="fas fa-arrow-right"></i>
       <p>Closed Jobs</p>
     </a>
 
     {% if current_user.is_authenticated %}
-    <a href="{{ url_for('business_profile') }}" class="footers-button">
+    <a
+      href="{{ url_for('business_profile') }}"
+      class="footers-button {% if request.endpoint == 'business_profile' %}active{% endif %}"
+    >
       <i class="fas fa-bars"></i>
       <p>Account</p>
     </a>

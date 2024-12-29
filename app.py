@@ -360,7 +360,7 @@ def profile():
 
     return render_template('business_profile.html')
 
-@app.route('/profile/labourer', methods=['GET', 'POST'])
+@app.route('/profile/labourer/image', methods=['GET', 'POST'])
 @login_required
 def labourer_image():
     if request.method == 'POST':
