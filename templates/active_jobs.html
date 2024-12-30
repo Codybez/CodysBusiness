@@ -17,7 +17,7 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-        margin-top: 25px;
+        margin-top: 20px;
         margin-bottom: 60px;
       }
 
@@ -136,6 +136,37 @@
       .arrow-up {
         transform: rotate(180deg); /* Rotates the arrow */
       }
+
+      .buttons-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+
+      .action-button {
+        background-color: #ffffff;
+        color: #333;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 5px 5px;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+      }
+
+      .action-button .arrowblack {
+        margin-left: 10px;
+      }
+
+      .action-button.active {
+        border-bottom: 3px solid #ff7148; /* Orange underline */
+        color: #ff7148; /* Optional: Change text color to orange */
+      }
     </style>
     <script>
       // Function to toggle the details of a job listing
@@ -184,7 +215,36 @@
     {% extends 'base_labour.html' %} {% block title %}Active Jobs{% endblock %}
     {% block content %} {% if active_jobs | length == 0 %}
     <p class="no-jobs-msg">You have no active jobs.</p>
-    {% else %} {% for job in active_jobs %}
+    {% else %}
+    <div class="buttons-container">
+      <form
+        action="{{ url_for('applied_jobs') }}"
+        method="get"
+        style="display: inline"
+      >
+        <button
+          type="submit"
+          class="action-button {{ 'active' if request.endpoint == 'applied_jobs' else '' }}"
+        >
+          Applied Jobs <span class="arrowblack">&#9662;</span>
+        </button>
+      </form>
+      <form
+        action="{{ url_for('active_jobs') }}"
+        method="get"
+        style="display: inline"
+      >
+        <button
+          type="submit"
+          class="action-button {{ 'active' if request.endpoint == 'active_jobs' else '' }}"
+        >
+          Won Jobs <span class="arrowblack">&#9662;</span>
+        </button>
+      </form>
+    </div>
+
+    {% for job in active_jobs %}
+
     <div
       class="job-listing"
       id="job_{{ job.id }}"

@@ -421,7 +421,7 @@ def labourer_profile():
     # Fetch company details if available
     company_details = user.company_details
 
-    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details)
+    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details,is_dashboard_page=True)
 
 
 
@@ -1365,3 +1365,30 @@ def contact():
         return redirect(url_for('contact'))
 
     return render_template('contact_us.html')
+
+# Sample route to show "Find Tradies" page
+@app.route('/find-tradies')
+def find_tradies():
+    # Here, you can pass active posts if you have them in the database
+    active_posts = get_active_posts()  # Assuming this function fetches active posts from the DB
+    return render_template('find_tradies.html', active_posts=active_posts,is_dashboard_page=True)
+
+# Function to get active posts (you can modify this based on your DB setup)
+def get_active_posts():
+    # Sample posts for demonstration, you should replace this with actual DB queries
+    return [
+        {
+            'id': 1,
+            'job_title': 'Looking for Electrician',
+            'location': 'New York',
+            'job_category': 'Construction',
+            'job_details': 'Need help with wiring in a new office space.'
+        },
+        {
+            'id': 2,
+            'job_title': 'Need a Plumber',
+            'location': 'Los Angeles',
+            'job_category': 'Construction',
+            'job_details': 'Looking for a plumber to fix a leaky pipe.'
+        },
+    ]

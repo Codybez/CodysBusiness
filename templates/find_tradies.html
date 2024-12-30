@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Tradies</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        margin-top: 20px;
+      }
+
+      .main-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .find-tradies-heading {
+        font-size: 28px;
+        color: #333;
+        text-align: center;
+        margin-bottom: 40px;
+        font-weight: bold;
+      }
+
+      .buttons-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .action-button {
+        background-color: #ffffff;
+        color: #333;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 5px 5px;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+      }
+
+      .action-button .arrow {
+        margin-left: 10px;
+      }
+
+      .create-post-section {
+        background-color: #ffffff;
+        padding: 20px;
+        margin: 10px auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px;
+        max-width: 60%;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        display: none;
+        margin-top: 20px;
+      }
+
+      .active-posts-section,
+      .my-posts-section,
+      .other-tab-section {
+        background-color: #fff;
+        padding: 20px;
+        margin-bottom: 40px;
+        font-family: Arial, Helvetica, sans-serif;
+        display: none; /* All sections are hidden by default */
+      }
+
+      .create-post-section h3,
+      .active-posts-section h3,
+      .my-posts-section h3,
+      .other-tab-section h3 {
+        color: #333;
+        font-size: 21px;
+        margin-bottom: -10px;
+      }
+
+      .create-post-form input,
+      .create-post-form select,
+      .create-post-form textarea {
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #333333;
+        outline: none;
+        transition: border 0.2s ease-in-out;
+      }
+
+      .create-post-form button {
+        background-color: #ff7148;
+        color: white;
+        font-weight: bold;
+        padding: 12px 20px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: none;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+      }
+
+      .create-post-form button:hover {
+        background-color: #e8633d;
+      }
+
+      .job-listing {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .job-listing:hover {
+        transform: translateY(-5px);
+      }
+
+      .job-listing h4 {
+        color: #333;
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      .job-listing p {
+        color: #777;
+        font-size: 16px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+      }
+
+      .view-post-button {
+        background-color: #ff7148;
+        color: white;
+        border: none;
+        font-weight: bold;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 6px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+      }
+
+      .view-post-button:hover {
+        background-color: #e8633d;
+      }
+
+      .no-posts-message {
+        text-align: center;
+        color: #ff7148;
+        font-size: 18px;
+        margin-top: 40px;
+      }
+
+      .sort-options {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 5px;
+      }
+
+      .sort-dropdown {
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      .action-button.active {
+        border-bottom: 3px solid #ff7148; /* Orange underline */
+        color: #ff7148; /* Optional: Change text color to orange */
+      }
+
+      @media (max-width: 768px) {
+        .create-post-section,
+        .active-posts-section,
+        .my-posts-section,
+        .other-tab-section {
+          padding: 15px;
+        }
+
+        .create-post-form input,
+        .create-post-form select,
+        .create-post-form textarea {
+          font-size: 14px;
+        }
+
+        .create-post-form button {
+          font-size: 14px;
+        }
+
+        .job-listing h4 {
+          font-size: 18px;
+        }
+
+        .view-post-button {
+          font-size: 12px;
+        }
+
+        .sort-dropdown {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Find Tradies{% endblock %}
+    {% block content %}
+    <div class="main-container">
+      <!-- Buttons at the top -->
+      <div class="buttons-container">
+        <button
+          class="action-button"
+          onclick="showSection('activePostsSection')"
+        >
+          Search <span class="arrow">&#9662;</span>
+        </button>
+        <button
+          class="action-button"
+          onclick="showSection('createPostSection')"
+        >
+          New Post <span class="arrow">&#9662;</span>
+        </button>
+
+        <button class="action-button" onclick="showSection('myPostsSection')">
+          My Posts <span class="arrow">&#9662;</span>
+        </button>
+        <button class="action-button" onclick="showSection('otherTabSection')">
+          Saved <span class="arrow">&#9662;</span>
+        </button>
+      </div>
+
+      <!-- Create Post Section -->
+      <div
+        class="create-post-section"
+        id="createPostSection"
+        style="display: none"
+      >
+        <h3>Make a new Post</h3>
+        <p>Find some help and get the job done!</p>
+        <form class="create-post-form" action="" method="POST">
+          <div class="form-group">
+            <input
+              type="text"
+              id="job_title"
+              name="job_title"
+              placeholder="Enter the job title"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <select id="job_category" name="job_category" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="General Labouring">General Labouring</option>
+              <option value="Construction">Construction</option>
+              <option value="Landscaping">Landscaping</option>
+              <option value="Cleaning">Cleaning</option>
+              <option value="Painting">Painting</option>
+              <option value="Plumbing">Plumbing</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Carpentry">Carpentry</option>
+              <option value="Roofing">Roofing</option>
+              <option value="HVAC">HVAC</option>
+              <option value="Moving">Moving</option>
+              <option value="Gardening">Gardening</option>
+              <option value="Handyman">Handyman</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select id="location" name="location" required>
+              <option value="" disabled selected>Select a location</option>
+              <option value="Northland">Northland</option>
+              <option value="Auckland">Auckland</option>
+              <option value="Waikato">Waikato</option>
+              <option value="Bay of Plenty">Bay of Plenty</option>
+              <option value="Gisborne">Gisborne</option>
+              <option value="Hawke's Bay">Hawke's Bay</option>
+              <option value="Taranaki">Taranaki</option>
+              <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+              <option value="Wellington">Wellington</option>
+              <option value="Tasman">Tasman</option>
+              <option value="Nelson">Nelson</option>
+              <option value="Marlborough">Marlborough</option>
+              <option value="West Coast">West Coast</option>
+              <option value="Canterbury">Canterbury</option>
+              <option value="Otago">Otago</option>
+              <option value="Southland">Southland</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <textarea
+              id="job_details"
+              name="job_details"
+              rows="5"
+              placeholder="Provide details about the job"
+              required
+            ></textarea>
+          </div>
+          <button type="submit">Post Job</button>
+        </form>
+      </div>
+
+      <!-- Active Jobs Section (This is under the Search Tab) -->
+      <div
+        class="active-posts-section"
+        id="activePostsSection"
+        style="display: block"
+      >
+        <!-- Sorting Options -->
+        <div class="sort-options">
+          <select id="sort-category" class="sort-dropdown">
+            <option value="all" selected>All Categories</option>
+          </select>
+          <select id="sort-location" class="sort-dropdown">
+            <option value="all" selected>All Locations</option>
+          </select>
+        </div>
+
+        {% if active_posts %} {% for post in active_posts %}
+        <div class="job-listing">
+          <h4>{{ post.job_title }}</h4>
+          <p><strong>Location:</strong> {{ post.location }}</p>
+          <p><strong>Category:</strong> {{ post.job_category }}</p>
+          <p><strong>Details:</strong> {{ post.job_details }}</p>
+          <a href="#" class="view-post-button">View Post</a>
+        </div>
+        {% endfor %} {% else %}
+        <p class="no-posts-message">No active posts available.</p>
+        {% endif %}
+      </div>
+
+      <!-- My Posts Section -->
+      <div class="my-posts-section" id="myPostsSection">
+        <!-- Add content for My Posts section later -->
+        <p>My Posts content will go here.</p>
+      </div>
+
+      <!-- Other Tab Section -->
+      <div class="other-tab-section" id="otherTabSection">
+        <!-- Add content for Other Tab section later -->
+        <p>Other Tab content will go here.</p>
+      </div>
+    </div>
+
+    <script>
+      // Function to show the selected section and hide others
+      function showSection(sectionId) {
+        const sections = [
+          "createPostSection",
+          "activePostsSection",
+          "myPostsSection",
+          "otherTabSection",
+        ];
+        const buttons = document.querySelectorAll(".action-button"); // Get all buttons
+
+        // Loop through the sections and hide them
+        sections.forEach((section) => {
+          const sectionElement = document.getElementById(section);
+          if (section === sectionId) {
+            sectionElement.style.display = "block"; // Show the selected section
+          } else {
+            sectionElement.style.display = "none"; // Hide the other sections
+          }
+        });
+
+        // Loop through the buttons and remove the 'active' class
+        buttons.forEach((button) => {
+          button.classList.remove("active");
+        });
+
+        // Add the 'active' class to the clicked button
+        const activeButton = document.querySelector(
+          `button[onclick="showSection('${sectionId}')"]`
+        );
+        activeButton.classList.add("active");
+      }
+
+      // Ensure the Search button is underlined on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        showSection("activePostsSection"); // This will show the Search tab by default and underline it
+      });
+    </script>
+
+    {% endblock %}
+  </body>
+</html>
