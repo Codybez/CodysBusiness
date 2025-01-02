@@ -137,7 +137,10 @@
     <div class="sort-options">
       <!-- Sort by Category -->
       <select id="sort-category" class="sort-dropdown">
-        <option value="all" selected>All Categories</option>
+        {% if my_categories %}
+        <option value="my_categories" selected>My Categories</option>
+        {% endif %}
+        <option value="all">All Categories</option>
         <option value="General Labouring">General Labouring</option>
         <option value="Construction">Construction</option>
         <option value="Landscaping">Landscaping</option>
@@ -156,7 +159,10 @@
 
       <!-- Sort by Location -->
       <select id="sort-location" class="sort-dropdown">
-        <option value="all" selected>All Locations</option>
+        {% if my_locations %}
+        <option value="my_locations" selected>My Locations</option>
+        {% endif %}
+        <option value="all">All Locations</option>
         <option value="Northland">Northland</option>
         <option value="Auckland">Auckland</option>
         <option value="Waikato">Waikato</option>
@@ -252,6 +258,9 @@
         .getElementById("sort-location")
         .addEventListener("change", filterJobs);
 
+      const myCategories = {{ my_categories | tojson }};
+      const myLocations = {{ my_locations | tojson }};
+
       function filterJobs() {
         const selectedCategory = document.getElementById("sort-category").value;
         const selectedLocation = document.getElementById("sort-location").value;
@@ -262,10 +271,18 @@
           const jobCategory = job.getAttribute("data-category");
           const jobLocation = job.getAttribute("data-location");
 
+          // Check for "My Categories" or "My Locations" options
           const categoryMatch =
-            selectedCategory === "all" || jobCategory === selectedCategory;
+            selectedCategory === "all" ||
+            (selectedCategory === "my_categories" &&
+              myCategories.includes(jobCategory)) ||
+            jobCategory === selectedCategory;
+
           const locationMatch =
-            selectedLocation === "all" || jobLocation === selectedLocation;
+            selectedLocation === "all" ||
+            (selectedLocation === "my_locations" &&
+              myLocations.includes(jobLocation)) ||
+            jobLocation === selectedLocation;
 
           if (categoryMatch && locationMatch) {
             job.style.display = "block";

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Job Categories & Locations</title>
+    <style>
+      /* Add relevant styles */
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f4f4f4;
+        margin-bottom: 70px;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .button-group button {
+        background-color: #e0e0e0;
+        border: 1px solid #ccc;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 14px;
+        border-radius: 25px;
+        margin-bottom: 10px;
+      }
+
+      .button-group button.selected {
+        background-color: #ff7148;
+        color: white;
+      }
+
+      .selected-items {
+        margin-top: 20px;
+        border-top: 2px solid #ccc;
+        padding-top: 10px;
+      }
+
+      .selected-items ul {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .selected-items li {
+        background-color: #f0f0f0;
+        padding: 8px;
+        margin: 5px 0;
+      }
+
+      .save-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Labourer{% endblock %} {%
+    block content %}
+    <div class="container">
+      <form method="POST">
+        <div class="button-group">
+          <div>
+            <h3>Job Categories</h3>
+            {% for category in categories %}
+            <button
+              type="button"
+              class="category-button"
+              data-category="{{ category }}"
+              {%
+              if
+              category
+              in
+              selected_categories
+              %}
+              class="selected"
+              {%
+              endif
+              %}
+            >
+              {{ category }}
+            </button>
+            {% endfor %}
+          </div>
+
+          <div>
+            <h3>Job Locations</h3>
+            {% for location in locations %}
+            <button
+              type="button"
+              class="location-button"
+              data-location="{{ location }}"
+              {%
+              if
+              location
+              in
+              selected_locations
+              %}
+              class="selected"
+              {%
+              endif
+              %}
+            >
+              {{ location }}
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Display selected categories and locations here -->
+        <div class="selected-items">
+          <ul id="selected-categories-list"></ul>
+
+          <ul id="selected-locations-list"></ul>
+        </div>
+
+        <!-- Hidden inputs to store selections -->
+        <input
+          type="hidden"
+          name="categories"
+          id="selected_categories"
+          value="{{ selected_categories | join(',') }}"
+        />
+        <input
+          type="hidden"
+          name="locations"
+          id="selected_locations"
+          value="{{ selected_locations | join(',') }}"
+        />
+
+        <button type="submit" class="save-button">Save Selections</button>
+      </form>
+    </div>
+
+    <script>
+      const categoryButtons = document.querySelectorAll(".category-button");
+      const locationButtons = document.querySelectorAll(".location-button");
+
+      // Elements where selected items will be displayed
+      const selectedCategoriesList = document.getElementById(
+        "selected-categories-list"
+      );
+      const selectedLocationsList = document.getElementById(
+        "selected-locations-list"
+      );
+
+      function updateSelections() {
+        const selectedCategories = [];
+        const selectedLocations = [];
+
+        // Clear the displayed lists
+        selectedCategoriesList.innerHTML = "";
+        selectedLocationsList.innerHTML = "";
+
+        // Gather selected categories and display them
+        categoryButtons.forEach((button) => {
+          if (button.classList.contains("selected")) {
+            selectedCategories.push(button.getAttribute("data-category"));
+            const listItem = document.createElement("li");
+            listItem.textContent = button.getAttribute("data-category");
+            selectedCategoriesList.appendChild(listItem);
+          }
+        });
+
+        // Gather selected locations and display them
+        locationButtons.forEach((button) => {
+          if (button.classList.contains("selected")) {
+            selectedLocations.push(button.getAttribute("data-location"));
+            const listItem = document.createElement("li");
+            listItem.textContent = button.getAttribute("data-location");
+            selectedLocationsList.appendChild(listItem);
+          }
+        });
+
+        // Update the hidden inputs with selected values
+        document.getElementById("selected_categories").value =
+          selectedCategories.join(",");
+        document.getElementById("selected_locations").value =
+          selectedLocations.join(",");
+      }
+
+      // Add event listeners for button click
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          button.classList.toggle("selected");
+          updateSelections();
+        });
+      });
+
+      locationButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          button.classList.toggle("selected");
+          updateSelections();
+        });
+      });
+
+      // Ensure to update selections on page load
+      updateSelections();
+    </script>
+  </body>
+  {% endblock %}
+</html>

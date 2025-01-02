@@ -157,6 +157,40 @@
         overflow: hidden; /* Hide the overflow */
         text-overflow: ellipsis; /* Add an ellipsis when the URL overflows */
       }
+
+      /* Job categories and locations section */
+      .categories-locations-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: -10px;
+
+        border: 1px solid #ddd;
+      }
+
+      .categories-locations-container h3 {
+        font-size: 20px;
+        color: #333;
+
+        font-family: Arial, Helvetica, sans-serif;
+        border-bottom: 2px solid #ff7148;
+        padding-bottom: 5px;
+      }
+
+      .categories-locations-list {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 10px;
+      }
+
+      .categories-locations-list li {
+        background-color: #ffffff;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+      }
     </style>
   </head>
   <body>
@@ -178,7 +212,7 @@
             enctype="multipart/form-data"
           >
             <label for="profile-image-upload" class="edit-pic-button"
-              >Choose Image</label
+              >Profile Pic</label
             >
             <input
               type="file"
@@ -195,10 +229,17 @@
       <div class="user-location">
         <p><i class="fas fa-map-marker-alt"></i> {{ current_user.location }}</p>
       </div>
+      <div class="social-links-info">
+        <p>
+          Step 1: Please complete your basic information before moving onto the
+          next sections of profile setup. Be sure to choose a picture of
+          yourself or company logo to display on your profile.
+        </p>
+      </div>
 
       <!-- User Information -->
       <div class="section-container">
-        <h2>Your Information</h2>
+        <h2>Basic Information*</h2>
         <div class="info-item">
           <strong>First Name:</strong>
           <span>{{ current_user.labourer_profile.first_name }}</span>
@@ -232,17 +273,56 @@
         </div>
       </div>
 
+      <div class="social-links-info">
+        <p>
+          Step 2: Select the Locations you operate in and the Job Categories you
+          are interested in being shown.
+        </p>
+      </div>
+
+      <!-- Categories and Locations Section -->
+      <div class="categories-locations-container">
+        <h3>Job Categories & Locations*</h3>
+        <div>
+          <strong>Selected Categories:</strong>
+          <ul class="categories-locations-list">
+            {% if current_user.labourer_profile.job_categories %} {% for
+            category in current_user.labourer_profile.job_categories.split(', ')
+            %}
+            <li>{{ category }}</li>
+            {% endfor %} {% else %}
+            <li>Please select job categories.</li>
+            {% endif %}
+          </ul>
+        </div>
+        <div>
+          <strong>Selected Locations:</strong>
+          <ul class="categories-locations-list">
+            {% if current_user.labourer_profile.job_locations %} {% for location
+            in current_user.labourer_profile.job_locations.split(', ') %}
+            <li>{{ location }}</li>
+            {% endfor %} {% else %}
+            <li>Please select job locations.</li>
+            {% endif %}
+          </ul>
+        </div>
+        <p>
+          <a href="{{ url_for('select_job_categories_and_locations') }}"
+            >Update Categories & Locations</a
+          >
+        </p>
+      </div>
+
       <div class="company-details-info">
         <p>
-          The address details you provide here will remain private and will not
-          be shown to other users. Only your trading name, NZBN and established
-          date will be publicly visible on your profile.
+          Step 3: Please complete your Business details. Only your trading name,
+          NZBN and established date will be publicly visible on your profile.
         </p>
       </div>
 
       <!-- Company Information -->
       <div class="section-container">
-        <h2>Company Details</h2>
+        <h2>Company Details*</h2>
         <div class="info-item">
           <strong>Business Type:</strong>
           <span>{{ current_user.company_details.business_type }}</span>
@@ -282,9 +362,9 @@
       </div>
       <div class="social-links-info">
         <p>
-          We recommend including links to your business's social pages or other
-          relevant online profiles to give users a better idea of who you are
-          and build trust.
+          Step 4: We recommend including links to your business's social pages
+          or other relevant online profiles to give users a better idea of who
+          you are and build trust.
         </p>
       </div>
 

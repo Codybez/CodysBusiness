@@ -81,6 +81,8 @@ class LabourerProfile(db.Model):
     date_of_birth = Column(Date)
     phone_number = db.Column(db.String(20), nullable=False)
     user_blurb = db.Column(db.String(250), nullable=False)
+    job_categories = db.Column(db.String(500), nullable=True)
+    job_locations = db.Column(db.String(500), nullable=True) 
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -492,8 +494,10 @@ from datetime import datetime
 def find_a_job():
     # Check if the current user is a labourer and if their profile and company details are filled out
     if not current_user.labourer_profile or not current_user.company_details:
-        flash("Please complete your Profile and Company Details.", 'warning')
+        flash("Please Complete your Profile.", 'warning')
         return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
+    my_categories = current_user.labourer_profile.job_categories.split(', ') if current_user.labourer_profile.job_categories else []
+    my_locations = current_user.labourer_profile.job_locations.split(', ') if current_user.labourer_profile.job_locations else []
 
     job_data = Job.query.all()
 
@@ -504,7 +508,7 @@ def find_a_job():
         else:
             job.image_list = []
 
-    return render_template('find_a_job.html', job_data=job_data, is_dashboard_page=True)
+    return render_template('find_a_job.html', job_data=job_data,my_categories=my_categories,my_locations=my_locations, is_dashboard_page=True)
 
 @app.route('/create_job', methods=['GET'])
 def create_job():
@@ -1369,6 +1373,11 @@ def contact():
 # Sample route to show "Find Tradies" page
 @app.route('/find-tradies')
 def find_tradies():
+
+        # Check if the current user is a labourer and if their profile and company details are filled out
+    if not current_user.labourer_profile or not current_user.company_details:
+        flash("Please complete your Profile.", 'warning')
+        return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
     # Here, you can pass active posts if you have them in the database
     active_posts = get_active_posts()  # Assuming this function fetches active posts from the DB
     return render_template('find_tradies.html', active_posts=active_posts,is_dashboard_page=True)
@@ -1392,3 +1401,45 @@ def get_active_posts():
             'job_details': 'Looking for a plumber to fix a leaky pipe.'
         },
     ]
+
+@app.route('/select_job_categories_and_locations', methods=['GET', 'POST'])
+@login_required
+def select_job_categories_and_locations():
+    # Predefined categories and locations
+    categories = [
+        'General Labouring', 'Construction', 'Landscaping', 'Cleaning', 'Painting', 
+        'Plumbing', 'Electrical', 'Carpentry', 'Roofing', 'HVAC', 'Moving', 'Gardening', 'Handyman', 'Other'
+    ]
+    locations = [
+        'Northland', 'Auckland', 'Waikato', 'Bay of Plenty', 'Gisborne', 'Hawke\'s Bay', 
+        'Taranaki', 'Manawatū-Whanganui', 'Wellington', 'Tasman', 'Nelson', 'Marlborough', 
+        'West Coast', 'Canterbury', 'Otago', 'Southland'
+    ]
+
+    # Ensure the labourer profile exists
+    if current_user.labourer_profile:
+        selected_categories = current_user.labourer_profile.job_categories.split(', ') if current_user.labourer_profile.job_categories else []
+        selected_locations = current_user.labourer_profile.job_locations.split(', ') if current_user.labourer_profile.job_locations else []
+    else:
+        selected_categories = []
+        selected_locations = []
+
+    if request.method == 'POST':
+        # Get selected categories and locations from the form submission
+        selected_categories = request.form.get('categories', '').split(',')
+        selected_locations = request.form.get('locations', '').split(',')
+
+        # Update the current user's profile with the selected categories and locations
+        if current_user.labourer_profile:
+            current_user.labourer_profile.job_categories = ', '.join(selected_categories)
+            current_user.labourer_profile.job_locations = ', '.join(selected_locations)
+            db.session.commit()
+
+        # Redirect to the profile page or any other page after saving the selections
+        return redirect(url_for('labourer_profile'))
+
+    return render_template('select_job_categories_and_locations.html', 
+                           categories=categories, 
+                           locations=locations,
+                           selected_categories=selected_categories,
+                           selected_locations=selected_locations)

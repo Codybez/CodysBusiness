@@ -114,12 +114,9 @@
     </style>
   </head>
   <body>
-    {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
-    elif current_user.business_profile %} {% extends 'base_business.html' %} {%
-    else %} {% extends 'base.html' %}
-
-    <p>Your account does not have a valid profile.</p>
-    {% endif %}{% block title %}Contact Form{% endblock %} {% block content %}
+    {% if current_user.business_profile %} {% extends 'base_business.html' %} {%
+    else %} {% extends 'base_labour.html' %} {% endif %} {% block title
+    %}Contact Form{% endblock %} {% block content %}
     <div class="contact-container">
       <form method="POST" action="{{ url_for('contact') }}">
         <div>

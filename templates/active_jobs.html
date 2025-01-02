@@ -213,9 +213,8 @@
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Active Jobs{% endblock %}
-    {% block content %} {% if active_jobs | length == 0 %}
-    <p class="no-jobs-msg">You have no active jobs.</p>
-    {% else %}
+    {% block content %}
+
     <div class="buttons-container">
       <form
         action="{{ url_for('applied_jobs') }}"
@@ -242,8 +241,9 @@
         </button>
       </form>
     </div>
-
-    {% for job in active_jobs %}
+    {% if active_jobs | length == 0 %}
+    <p class="no-jobs-msg">You have no won jobs.</p>
+    {% else %} {% for job in active_jobs %}
 
     <div
       class="job-listing"
