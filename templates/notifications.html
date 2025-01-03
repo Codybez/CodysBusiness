@@ -77,6 +77,7 @@
         const notificationId = notificationElement.dataset.notificationId;
         const chatUrl = notificationElement.dataset.chatUrl;
         const applicantUrl = notificationElement.dataset.applicantUrl;
+        const activeJobsUrl = notificationElement.dataset.activeJobsUrl;
 
         // Mark the notification as read
         fetch(`/notifications/${notificationId}`, {
@@ -92,6 +93,8 @@
                 window.location.href = chatUrl; // Redirect to the chat page
               } else if (applicantUrl) {
                 window.location.href = applicantUrl; // Redirect to the view applicants page
+              } else if (activeJobsUrl) {
+                window.location.href = activeJobsUrl; // Redirect to the active jobs page
               } else {
                 window.location.href = "/notifications"; // Go back to notifications page
               }
@@ -138,12 +141,14 @@
       <h1>Your Notifications</h1>
 
       {% if notifications %} {% for notification in notifications|reverse %}
+
       <div
         class="notification-item {% if not notification.read %}unread{% endif %}"
         data-notification-id="{{ notification.id }}"
         data-notification-type="{{ notification.notification_type }}"
         data-chat-url="{{ url_for('chat', job_id=notification.job_id, user_id=notification.job_application.user_id) if notification.job_application and notification.job_application.user_id else '' }}"
         data-applicant-url="{{ url_for('view_applicants', job_id=notification.job_id) if notification.notification_type == 'job_application' else '' }}"
+        data-active-jobs-url="{{ url_for('active_jobs') if notification.notification_type == 'job_closed' else '' }}"
         onclick="markAsReadAndRedirect(this, event)"
       >
         <div class="notification-message">

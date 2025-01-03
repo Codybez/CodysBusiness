@@ -1250,6 +1250,7 @@ def create_message_notification(receiver_id, message_content, job_application_id
         db.session.rollback()  # Rollback in case of error
     return notification
 
+
 @app.route('/notifications')
 @login_required
 def notifications():
@@ -1298,42 +1299,7 @@ def create_job_application_notification(receiver_id, job_id, applicant_name, tra
         print(f"Error creating job application notification: {e}")
         db.session.rollback()
         return False
-    
-@app.route('/close_job/<int:job_id>', methods=['GET', 'POST'])
-def close_job(job_id):
-    job = Job.query.get(job_id)
-
-    if request.method == 'POST':
-        job_filled = request.form.get('job_filled')
-        
-        if job_filled == 'yes':
-            # Get the selected applicant's name and company to match
-            completion_choice = request.form.get('completion_choice')
-            
-            selected_applicant = next(
-                (app for app in job.applicants if f"{app.user.first_name} from {app.user.company_details.trading_name}" == completion_choice),
-                None
-            )
-
-            if selected_applicant:
-                # Mark the selected applicant as accepted
-                selected_applicant.status = 'accepted'  # Set the status to 'accepted'
-                
-                # Set the accepted user on the job
-                job.accepted_user_id = selected_applicant.user.id  # Mark the applicant as accepted in Job
-        else:
-            # If the job wasn't filled, reset accepted_user_id
-            job.accepted_user_id = None
-
-        # Set the job status to closed
-        job.status = 'closed'
-        db.session.commit()  # Save changes to the database
-
-        flash("The job has been closed.", "success")
-        return redirect(url_for('business_active_jobs'))  # Redirect to the completed jobs page
-
-    return render_template('close_job.html', job=job)
-
+ 
 @app.route('/business_completed_jobs')
 @login_required
 def business_completed_jobs():
@@ -1443,3 +1409,75 @@ def select_job_categories_and_locations():
                            locations=locations,
                            selected_categories=selected_categories,
                            selected_locations=selected_locations)
+
+@app.route('/close_job/<int:job_id>', methods=['GET', 'POST'])
+def close_job(job_id):
+    job = Job.query.get(job_id)
+
+    if request.method == 'POST':
+        job_filled = request.form.get('job_filled')
+        
+        if job_filled == 'yes':
+            # Get the selected applicant's name and company to match
+            completion_choice = request.form.get('completion_choice')
+            
+            selected_applicant = next(
+                (app for app in job.applicants if f"{app.user.first_name} from {app.user.company_details.trading_name}" == completion_choice),
+                None
+            )
+
+            if selected_applicant:
+                # Mark the selected applicant as accepted
+                selected_applicant.status = 'accepted'  # Set the status to 'accepted'
+                
+                # Set the accepted user on the job
+                job.accepted_user_id = selected_applicant.user.id  # Mark the applicant as accepted in Job
+
+        else:
+            # If the job wasn't filled, reset accepted_user_id
+            job.accepted_user_id = None
+
+        # Set the job status to closed
+        job.status = 'closed'
+        
+        # Check if there is an accepted user and send the notification
+        if job.accepted_user_id:
+            create_job_acceptance_notification(
+                receiver_id=job.accepted_user_id,
+                job_name=job.job_name,
+                job_id=job.id,
+                employer_name=current_user.first_name  # Use first name of the employer
+            )
+
+        db.session.commit()  # Save changes to the database
+
+        flash("The job has been closed.", "success")
+        return redirect(url_for('business_active_jobs'))  # Redirect to the completed jobs page
+
+    return render_template('close_job.html', job=job)
+
+
+def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_name):
+    """
+    Create a notification for the accepted applicant when the job is closed.
+    """
+    try:
+        if not receiver_id or not job_id or not employer_name:
+            raise ValueError("Missing required parameters to create notification.")
+
+        notification = Notification(
+            user_id=receiver_id,
+            message=f"Congratulations! You have been selected for the job '{job_name}' posted by {employer_name}.",
+            read=False,
+            notification_type="job_closed",  # Type is 'job_closed' for this specific notification
+            timestamp=datetime.utcnow(),
+            job_id=job_id
+        )
+        db.session.add(notification)
+        db.session.commit()
+        print("Job closure notification created successfully.")
+        return notification
+    except Exception as e:
+        print(f"Error creating job closure notification: {e}")
+        db.session.rollback()
+        return None
