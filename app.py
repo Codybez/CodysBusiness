@@ -165,6 +165,20 @@ class SocialLinks(db.Model):
     google= db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+class Post(db.Model):
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    job_location_name = db.Column(db.String(100), nullable=False)  # Just storing the name
+    job_category_name = db.Column(db.String(100), nullable=False)  # Just storing the name
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('posts', lazy=True))
+
+    def __repr__(self):
+        return f"<Post {self.title}>"
 
 @app.route('/landing_page')
 def landing_page():
@@ -1336,37 +1350,6 @@ def contact():
 
     return render_template('contact_us.html')
 
-# Sample route to show "Find Tradies" page
-@app.route('/find-tradies')
-def find_tradies():
-
-        # Check if the current user is a labourer and if their profile and company details are filled out
-    if not current_user.labourer_profile or not current_user.company_details:
-        flash("Please complete your Profile.", 'warning')
-        return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
-    # Here, you can pass active posts if you have them in the database
-    active_posts = get_active_posts()  # Assuming this function fetches active posts from the DB
-    return render_template('find_tradies.html', active_posts=active_posts,is_dashboard_page=True)
-
-# Function to get active posts (you can modify this based on your DB setup)
-def get_active_posts():
-    # Sample posts for demonstration, you should replace this with actual DB queries
-    return [
-        {
-            'id': 1,
-            'job_title': 'Looking for Electrician',
-            'location': 'New York',
-            'job_category': 'Construction',
-            'job_details': 'Need help with wiring in a new office space.'
-        },
-        {
-            'id': 2,
-            'job_title': 'Need a Plumber',
-            'location': 'Los Angeles',
-            'job_category': 'Construction',
-            'job_details': 'Looking for a plumber to fix a leaky pipe.'
-        },
-    ]
 
 @app.route('/select_job_categories_and_locations', methods=['GET', 'POST'])
 @login_required
@@ -1481,3 +1464,87 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
         print(f"Error creating job closure notification: {e}")
         db.session.rollback()
         return None
+
+@app.route('/find-tradies', methods=['GET', 'POST'])
+@login_required
+def find_tradies():
+    # Ensure profile and company details are completed
+    if not current_user.labourer_profile or not current_user.company_details:
+        flash("Please Complete your Profile.", 'warning')
+        return redirect(url_for('labourer_profile'))
+
+    # Get the user's preferred categories and locations
+    my_categories = current_user.labourer_profile.job_categories.split(', ') if current_user.labourer_profile.job_categories else []
+    my_locations = current_user.labourer_profile.job_locations.split(', ') if current_user.labourer_profile.job_locations else []
+
+    # Fetch all posts initially
+    posts_query = Post.query
+
+    # Get filters from request args (if provided)
+    selected_category = request.args.get('category', 'all')
+    selected_location = request.args.get('location', 'all')
+
+    # Apply category filter
+    if selected_category != 'all' and selected_category != 'my_categories':
+        posts_query = posts_query.filter(Post.job_category_name == selected_category)
+    elif selected_category == 'my_categories' and my_categories:
+        posts_query = posts_query.filter(Post.job_category_name.in_(my_categories))
+
+    # Apply location filter
+    if selected_location != 'all' and selected_location != 'my_locations':
+        posts_query = posts_query.filter(Post.job_location_name == selected_location)
+    elif selected_location == 'my_locations' and my_locations:
+        posts_query = posts_query.filter(Post.job_location_name.in_(my_locations))
+
+    # Execute the query
+    active_posts = posts_query.all()
+
+    return render_template(
+        'find_tradies.html',
+        active_posts=active_posts,
+        my_categories=my_categories,
+        my_locations=my_locations,
+        selected_category=selected_category,
+        selected_location=selected_location,
+        is_dashboard_page=True
+    )
+
+@app.route('/create_tradie_post', methods=['GET', 'POST'])
+def create_tradie_post():
+    # Handle job posting
+    if request.method == 'POST':
+        job_title = request.form.get('job_title')
+        job_category_name = request.form.get('job_category')
+        job_location_name = request.form.get('job_location')
+        job_details = request.form.get('job_details')
+
+        # Validate input
+        if not job_category_name or not job_location_name:
+            flash("Invalid job category or location.", 'danger')
+            return redirect(url_for('create_tradie_post'))
+
+        # Create the new post
+        new_post = Post(
+            title=job_title,
+            description=job_details,
+            job_location_name=job_location_name,
+            job_category_name=job_category_name,
+            user_id=current_user.id
+        )
+        db.session.add(new_post)
+        db.session.commit()
+        flash('Your job post has been created!', 'success')
+        return redirect(url_for('tradies_my_posts'))  # Redirect to active posts page
+
+    return render_template('create_tradie_post.html',is_dashboard_page=True)
+
+
+@app.route('/tradies_my_posts')
+def tradies_my_posts():
+    user_id = current_user.id
+
+    # Query to get the posts created by the user
+    user_posts = Post.query.filter_by(user_id=user_id).all()
+    
+    return render_template('tradies_my_posts.html', posts=user_posts,is_dashboard_page=True
+                           )

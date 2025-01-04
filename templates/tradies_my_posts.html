@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Tradie Post</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        margin-top: 20px;
+      }
+
+      .main-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .buttons-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .action-button {
+        background-color: #ffffff;
+        color: #333;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 5px 5px;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+      }
+
+      .action-button .arrow {
+        margin-left: 10px;
+      }
+
+      /* Active Button Styling */
+      .action-button.active {
+        border-bottom: 3px solid #ff7148; /* Orange underline */
+        color: #ff7148; /* Change text color to orange */
+      }
+
+      .my-posts-container {
+        background-color: #ffffff;
+        padding-top: 10px;
+      }
+
+      .post-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .post-item {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+        background-color: #ffffff;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .post-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .post-category,
+      .post-location {
+        font-size: 14px;
+        color: #666;
+        margin-top: 5px;
+      }
+
+      .post-description {
+        font-size: 16px;
+        color: #333;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Create Tradie Post{%
+    endblock %} {% block content %}
+    <div class="main-container">
+      <!-- Buttons at the top -->
+      <div class="buttons-container">
+        <a
+          href="/find-tradies"
+          class="action-button {{ 'active' if request.endpoint == 'find_tradies' else '' }}"
+        >
+          All Posts <span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/create_tradie_post"
+          class="action-button {{ 'active' if request.endpoint == 'create_tradie_post' else '' }}"
+        >
+          New Post <span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/tradies_my_posts"
+          class="action-button {{ 'active' if request.endpoint == 'tradies_my_posts' else '' }}"
+        >
+          My Posts <span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/saved-posts"
+          class="action-button {{ 'active' if request.endpoint == 'saved_posts' else '' }}"
+        >
+          Saved <span class="arrow">&#9662;</span>
+        </a>
+      </div>
+
+      <!-- User's Posts -->
+      <div class="my-posts-container">
+        {% if posts %}
+        <ul class="post-list">
+          {% for post in posts |reverse%}
+          <li class="post-item">
+            <div class="post-title">{{ post.title }}</div>
+            <div class="post-category">
+              Category: {{ post.job_category_name }}
+            </div>
+            <div class="post-location">
+              Location: {{ post.job_location_name }}
+            </div>
+            <div class="post-description">{{ post.description }}</div>
+            <a href="/edit-post/{{ post.id }}" class="action-button">Edit</a>
+            <a href="/delete-post/{{ post.id }}" class="action-button"
+              >Delete</a
+            >
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>No posts created yet.</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endblock %}
+  </body>
+</html>

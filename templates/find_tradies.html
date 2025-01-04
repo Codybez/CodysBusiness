@@ -48,6 +48,7 @@
         display: flex;
         align-items: center;
         transition: background-color 0.3s ease;
+        text-decoration: none;
       }
 
       .action-button .arrow {
@@ -129,10 +130,6 @@
         transition: transform 0.3s ease;
       }
 
-      .job-listing:hover {
-        transform: translateY(-5px);
-      }
-
       .job-listing h4 {
         color: #333;
         font-size: 20px;
@@ -159,10 +156,6 @@
         font-size: 14px;
         display: inline-block;
         transition: background-color 0.3s ease;
-      }
-
-      .view-post-button:hover {
-        background-color: #e8633d;
       }
 
       .no-posts-message {
@@ -230,96 +223,30 @@
     <div class="main-container">
       <!-- Buttons at the top -->
       <div class="buttons-container">
-        <button
-          class="action-button"
-          onclick="showSection('activePostsSection')"
+        <a
+          href="/find-tradies"
+          class="action-button {{ 'active' if request.endpoint == 'find_tradies' else '' }}"
         >
           All Posts <span class="arrow">&#9662;</span>
-        </button>
-        <button
-          class="action-button"
-          onclick="showSection('createPostSection')"
+        </a>
+        <a
+          href="/create_tradie_post"
+          class="action-button {{ 'active' if request.endpoint == 'create_tradie_post' else '' }}"
         >
           New Post <span class="arrow">&#9662;</span>
-        </button>
-
-        <button class="action-button" onclick="showSection('myPostsSection')">
+        </a>
+        <a
+          href="/tradies_my_posts"
+          class="action-button {{ 'active' if request.endpoint == 'tradies_my_posts' else '' }}"
+        >
           My Posts <span class="arrow">&#9662;</span>
-        </button>
-        <button class="action-button" onclick="showSection('otherTabSection')">
+        </a>
+        <a
+          href="/saved-posts"
+          class="action-button {{ 'active' if request.endpoint == 'saved_posts' else '' }}"
+        >
           Saved <span class="arrow">&#9662;</span>
-        </button>
-      </div>
-
-      <!-- Create Post Section -->
-      <div
-        class="create-post-section"
-        id="createPostSection"
-        style="display: none"
-      >
-        <h3>Make a new Post</h3>
-        <p>Find some help and get the job done!</p>
-        <form class="create-post-form" action="" method="POST">
-          <div class="form-group">
-            <input
-              type="text"
-              id="job_title"
-              name="job_title"
-              placeholder="Enter the job title"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <select id="job_category" name="job_category" required>
-              <option value="" disabled selected>Select a category</option>
-              <option value="General Labouring">General Labouring</option>
-              <option value="Construction">Construction</option>
-              <option value="Landscaping">Landscaping</option>
-              <option value="Cleaning">Cleaning</option>
-              <option value="Painting">Painting</option>
-              <option value="Plumbing">Plumbing</option>
-              <option value="Electrical">Electrical</option>
-              <option value="Carpentry">Carpentry</option>
-              <option value="Roofing">Roofing</option>
-              <option value="HVAC">HVAC</option>
-              <option value="Moving">Moving</option>
-              <option value="Gardening">Gardening</option>
-              <option value="Handyman">Handyman</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <select id="location" name="location" required>
-              <option value="" disabled selected>Select a location</option>
-              <option value="Northland">Northland</option>
-              <option value="Auckland">Auckland</option>
-              <option value="Waikato">Waikato</option>
-              <option value="Bay of Plenty">Bay of Plenty</option>
-              <option value="Gisborne">Gisborne</option>
-              <option value="Hawke's Bay">Hawke's Bay</option>
-              <option value="Taranaki">Taranaki</option>
-              <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
-              <option value="Wellington">Wellington</option>
-              <option value="Tasman">Tasman</option>
-              <option value="Nelson">Nelson</option>
-              <option value="Marlborough">Marlborough</option>
-              <option value="West Coast">West Coast</option>
-              <option value="Canterbury">Canterbury</option>
-              <option value="Otago">Otago</option>
-              <option value="Southland">Southland</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <textarea
-              id="job_details"
-              name="job_details"
-              rows="5"
-              placeholder="Provide details about the job"
-              required
-            ></textarea>
-          </div>
-          <button type="submit">Post Job</button>
-        </form>
+        </a>
       </div>
 
       <!-- Active Jobs Section (This is under the Search Tab) -->
@@ -330,77 +257,132 @@
       >
         <!-- Sorting Options -->
         <div class="sort-options">
+          <!-- Sort by Category -->
           <select id="sort-category" class="sort-dropdown">
-            <option value="all" selected>All Categories</option>
+            {% if my_categories %}
+            <option value="my_categories" selected>My Categories</option>
+            {% endif %}
+            <option value="all">All Categories</option>
+            <option value="General Labouring">General Labouring</option>
+            <option value="Construction">Construction</option>
+            <option value="Landscaping">Landscaping</option>
+            <option value="Cleaning">Cleaning</option>
+            <option value="Painting">Painting</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Carpentry">Carpentry</option>
+            <option value="Roofing">Roofing</option>
+            <option value="HVAC">HVAC</option>
+            <option value="Moving">Moving</option>
+            <option value="Gardening">Gardening</option>
+            <option value="Handyman">Handyman</option>
+            <option value="Other">Other</option>
           </select>
+
+          <!-- Sort by Location -->
           <select id="sort-location" class="sort-dropdown">
-            <option value="all" selected>All Locations</option>
+            {% if my_locations %}
+            <option value="my_locations" selected>My Locations</option>
+            {% endif %}
+            <option value="all">All Locations</option>
+            <option value="Northland">Northland</option>
+            <option value="Auckland">Auckland</option>
+            <option value="Waikato">Waikato</option>
+            <option value="Bay of Plenty">Bay of Plenty</option>
+            <option value="Gisborne">Gisborne</option>
+            <option value="Hawke's Bay">Hawke's Bay</option>
+            <option value="Taranaki">Taranaki</option>
+            <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+            <option value="Wellington">Wellington</option>
+            <option value="Tasman">Tasman</option>
+            <option value="Nelson">Nelson</option>
+            <option value="Marlborough">Marlborough</option>
+            <option value="West Coast">West Coast</option>
+            <option value="Canterbury">Canterbury</option>
+            <option value="Otago">Otago</option>
+            <option value="Southland">Southland</option>
           </select>
         </div>
 
-        {% if active_posts %} {% for post in active_posts %}
-        <div class="job-listing">
-          <h4>{{ post.job_title }}</h4>
-          <p><strong>Location:</strong> {{ post.location }}</p>
-          <p><strong>Category:</strong> {{ post.job_category }}</p>
-          <p><strong>Details:</strong> {{ post.job_details }}</p>
-          <a href="#" class="view-post-button">View Post</a>
+        <div id="job-listings">
+          {% if active_posts %} {% for post in active_posts %}
+          <div
+            class="job-listing"
+            data-category="{{ post.job_category_name }}"
+            data-location="{{ post.job_location_name }}"
+          >
+            <h4>{{ post.title }}</h4>
+            <p class="post-location">
+              <strong>Location:</strong> {{ post.job_location_name }}
+            </p>
+            <p class="post-category">
+              <strong>Category:</strong> {{ post.job_category_name }}
+            </p>
+            <p><strong>Details:</strong> {{ post.description }}</p>
+            <a href="#" class="view-post-button">View Post</a>
+          </div>
+          {% endfor %} {% else %} {% endif %}
+
+          <p class="no-posts-message" style="display: none">
+            No posts available based on your filters.
+          </p>
         </div>
-        {% endfor %} {% else %}
-        <p class="no-posts-message">No active posts available.</p>
-        {% endif %}
-      </div>
-
-      <!-- My Posts Section -->
-      <div class="my-posts-section" id="myPostsSection">
-        <!-- Add content for My Posts section later -->
-        <p>My Posts content will go here.</p>
-      </div>
-
-      <!-- Other Tab Section -->
-      <div class="other-tab-section" id="otherTabSection">
-        <!-- Add content for Other Tab section later -->
-        <p>Other Tab content will go here.</p>
       </div>
     </div>
 
     <script>
-      // Function to show the selected section and hide others
-      function showSection(sectionId) {
-        const sections = [
-          "createPostSection",
-          "activePostsSection",
-          "myPostsSection",
-          "otherTabSection",
-        ];
-        const buttons = document.querySelectorAll(".action-button"); // Get all buttons
+      // Convert the "my_categories" and "my_locations" arrays to JavaScript
+      const myCategories = {{ my_categories | tojson }};
+      const myLocations = {{ my_locations | tojson }};
 
-        // Loop through the sections and hide them
-        sections.forEach((section) => {
-          const sectionElement = document.getElementById(section);
-          if (section === sectionId) {
-            sectionElement.style.display = "block"; // Show the selected section
+      const sortCategory = document.getElementById('sort-category');
+      const sortLocation = document.getElementById('sort-location');
+      const jobListings = document.querySelectorAll('.job-listing');
+      const noPostsMessage = document.querySelector('.no-posts-message');
+
+      function filterPosts() {
+        const category = sortCategory.value;
+        const location = sortLocation.value;
+        let postsVisible = false; // To track if any posts are visible
+
+        jobListings.forEach(post => {
+          const postCategory = post.getAttribute('data-category');
+          const postLocation = post.getAttribute('data-location');
+
+          let categoryMatch = (category === 'all' || postCategory === category);
+          let locationMatch = (location === 'all' || postLocation === location);
+
+          // Check if "My Categories" is selected
+          if (category === 'my_categories') {
+            categoryMatch = myCategories.includes(postCategory);
+          }
+
+          // Check if "My Locations" is selected
+          if (location === 'my_locations') {
+            locationMatch = myLocations.includes(postLocation);
+          }
+
+          if (categoryMatch && locationMatch) {
+            post.style.display = 'block';
+            postsVisible = true; // At least one post is visible
           } else {
-            sectionElement.style.display = "none"; // Hide the other sections
+            post.style.display = 'none';
           }
         });
 
-        // Loop through the buttons and remove the 'active' class
-        buttons.forEach((button) => {
-          button.classList.remove("active");
-        });
-
-        // Add the 'active' class to the clicked button
-        const activeButton = document.querySelector(
-          `button[onclick="showSection('${sectionId}')"]`
-        );
-        activeButton.classList.add("active");
+        // Show or hide the "No posts available" message based on whether posts are visible
+        if (postsVisible) {
+          noPostsMessage.style.display = 'none';
+        } else {
+          noPostsMessage.style.display = 'block';
+        }
       }
 
-      // Ensure the Search button is underlined on page load
-      document.addEventListener("DOMContentLoaded", function () {
-        showSection("activePostsSection"); // This will show the Search tab by default and underline it
-      });
+      sortCategory.addEventListener('change', filterPosts);
+      sortLocation.addEventListener('change', filterPosts);
+
+      // Call the filter function when the page loads to apply the filters based on the current selection
+      window.addEventListener('load', filterPosts);
     </script>
 
     {% endblock %}

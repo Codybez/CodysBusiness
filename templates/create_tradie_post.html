@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Tradie Post</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        margin-top: 20px;
+      }
+
+      .main-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .find-tradies-heading {
+        font-size: 28px;
+        color: #333;
+        text-align: center;
+        margin-bottom: 40px;
+        font-weight: bold;
+      }
+
+      .buttons-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .action-button {
+        background-color: #ffffff;
+        color: #333;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 5px 5px;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+      }
+
+      .action-button .arrow {
+        margin-left: 10px;
+      }
+
+      .create-post-section {
+        background-color: #ffffff;
+        padding: 20px;
+        margin: 10px auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px;
+        max-width: 60%;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        margin-top: 20px;
+      }
+
+      .create-post-section h3 {
+        color: #333;
+        font-size: 21px;
+        margin-bottom: -10px;
+      }
+
+      .create-post-form input,
+      .create-post-form select,
+      .create-post-form textarea {
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #333333;
+        outline: none;
+        transition: border 0.2s ease-in-out;
+      }
+
+      .create-post-form button {
+        background-color: #ff7148;
+        color: white;
+        font-weight: bold;
+        padding: 12px 20px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: none;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+      }
+
+      .create-post-form button:hover {
+        background-color: #e8633d;
+      }
+
+      .action-button.active {
+        border-bottom: 3px solid #ff7148; /* Orange underline */
+        color: #ff7148; /* Optional: Change text color to orange */
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Create Tradie Post{%
+    endblock %} {% block content %}
+    <div class="main-container">
+      <!-- Buttons at the top -->
+<div class="buttons-container">
+        <a
+          href="/find-tradies"
+          class="action-button {{ 'active' if request.endpoint == 'find_tradies' else '' }}"
+        >
+          All Posts <span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/create_tradie_post"
+          class="action-button {{ 'active' if request.endpoint == 'create_tradie_post' else '' }}"
+        >
+          New Post <span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/tradies_my_posts"
+          class="action-button {{ 'active' if request.endpoint == 'tradies_my_posts' else '' }}"
+        >
+          My Posts <span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/saved-posts"
+          class="action-button {{ 'active' if request.endpoint == 'saved_posts' else '' }}"
+        >
+          Saved <span class="arrow">&#9662;</span>
+        </a>
+      </div>
+
+    <!-- Create Post Section -->
+    <div class="create-post-section" id="createPostSection">
+      <h3>Make a New Post</h3>
+      <p>Find some help and get the job done!</p>
+      <form class="create-post-form" action="" method="POST">
+        <div class="form-group">
+          <input
+            type="text"
+            id="job_title"
+            name="job_title"
+            placeholder="Enter the job title"
+            required
+          />
+        </div>
+
+        <!-- Job Category (Hardcoded) -->
+        <div class="form-group">
+          <select id="job_category" name="job_category" required>
+            <option value="" disabled selected>Select a category</option>
+            <option value="General Labouring">General Labouring</option>
+            <option value="Construction">Construction</option>
+            <option value="Landscaping">Landscaping</option>
+            <option value="Cleaning">Cleaning</option>
+            <option value="Painting">Painting</option>
+            <option value="Plumbing">Plumbing</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Carpentry">Carpentry</option>
+            <option value="Roofing">Roofing</option>
+            <option value="HVAC">HVAC</option>
+            <option value="Moving">Moving</option>
+            <option value="Gardening">Gardening</option>
+            <option value="Handyman">Handyman</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Location (Hardcoded) -->
+        <div class="form-group">
+          <select id="job_location" name="job_location" required>
+            <option value="" disabled selected>Select a location</option>
+            <option value="Northland">Northland</option>
+            <option value="Auckland">Auckland</option>
+            <option value="Waikato">Waikato</option>
+            <option value="Bay of Plenty">Bay of Plenty</option>
+            <option value="Gisborne">Gisborne</option>
+            <option value="Hawke's Bay">Hawke's Bay</option>
+            <option value="Taranaki">Taranaki</option>
+            <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+            <option value="Wellington">Wellington</option>
+            <option value="Tasman">Tasman</option>
+            <option value="Nelson">Nelson</option>
+            <option value="Marlborough">Marlborough</option>
+            <option value="West Coast">West Coast</option>
+            <option value="Canterbury">Canterbury</option>
+            <option value="Otago">Otago</option>
+            <option value="Southland">Southland</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <textarea
+            id="job_details"
+            name="job_details"
+            rows="5"
+            placeholder="Provide details about the job"
+            required
+          ></textarea>
+        </div>
+        <button type="submit">Post Job</button>
+      </form>
+    </div>
+    {% endblock %}
+  </body>
+</html>
