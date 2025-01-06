@@ -180,6 +180,28 @@ class Post(db.Model):
     def __repr__(self):
         return f"<Post {self.title}>"
 
+
+class Chat(db.Model):
+    __tablename__ = 'chats'
+
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)  # Links to the Post
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Sender of the message
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Receiver of the message
+    content = db.Column(db.Text, nullable=False)  # The chat message content
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)  # When the message was sent
+    room = db.Column(db.String(255), nullable=False)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)  # Notification field for unread/read status
+
+    # Relationships
+    post = db.relationship('Post', backref=db.backref('chats', lazy=True))
+    sender = db.relationship('User', foreign_keys=[sender_id], backref=db.backref('sent_chats', lazy=True))
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref=db.backref('received_chats', lazy=True))
+
+    def __repr__(self):
+        return f"<Chat sender={self.sender_id}, receiver={self.receiver_id}, post_id={self.post_id}>"
+
+
 @app.route('/landing_page')
 def landing_page():
     return render_template('landing_page.html')
@@ -1127,6 +1149,12 @@ def messages():
             (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
         ).all()
 
+        unread_counts = db.session.query(Message.room, db.func.count(Message.id)).filter(
+        Message.receiver_id == current_user.id,
+        Message.is_read == False
+         ).group_by(Message.room).all()
+        unread_map = {room: count for room, count in unread_counts}
+
         conversations = []  # To store conversation data
         for message in messages:
             job_application = JobApplication.query.get(message.job_application_id)
@@ -1168,12 +1196,16 @@ def messages():
         users = User.query.filter(User.id.in_(user_ids)).all()
         user_map = {user.id: user.first_name for user in users}
 
-        # Update each conversation with the name of the other user
+        # Fetch the trading_name for the other users (job applicants or job posters)
+        company_details_map = {user.id: user.company_details.trading_name if user.company_details else "None" for user in users}
+
+        # Update each conversation with the name of the other user and their trading_name
         for conv in conversations:
             conv['other_user_name'] = user_map.get(conv['other_user_id'], "Unknown")
+            conv['other_user_trading_name'] = company_details_map.get(conv['other_user_id'], "None")
 
         # Render the template with the conversations
-        return render_template('messages.html', conversations=conversations)
+        return render_template('messages.html', conversations=conversations, unread_map=unread_map,is_dashboard_page=True)
 
     except Exception as e:
         print(f"Error in messages route: {e}")
@@ -1510,41 +1542,190 @@ def find_tradies():
     )
 
 @app.route('/create_tradie_post', methods=['GET', 'POST'])
+@login_required
 def create_tradie_post():
-    # Handle job posting
-    if request.method == 'POST':
-        job_title = request.form.get('job_title')
-        job_category_name = request.form.get('job_category')
-        job_location_name = request.form.get('job_location')
-        job_details = request.form.get('job_details')
+    try:
+        # Handle job posting
+        if request.method == 'POST':
+            # Fetch form data
+            job_title = request.form.get('job_title')
+            job_category_name = request.form.get('job_category')
+            job_location_name = request.form.get('job_location')
+            job_details = request.form.get('job_details')
 
-        # Validate input
-        if not job_category_name or not job_location_name:
-            flash("Invalid job category or location.", 'danger')
-            return redirect(url_for('create_tradie_post'))
+            # Debugging: Log the inputs
+            print(f"Job Title: {job_title}, Category: {job_category_name}, Location: {job_location_name}, Details: {job_details}")
 
-        # Create the new post
-        new_post = Post(
-            title=job_title,
-            description=job_details,
-            job_location_name=job_location_name,
-            job_category_name=job_category_name,
-            user_id=current_user.id
-        )
-        db.session.add(new_post)
-        db.session.commit()
-        flash('Your job post has been created!', 'success')
-        return redirect(url_for('tradies_my_posts'))  # Redirect to active posts page
+            # Validate input
+            if not job_title or not job_category_name or not job_location_name or not job_details:
+                flash("All fields are required.", 'danger')
+                return redirect(url_for('create_tradie_post'))
 
-    return render_template('create_tradie_post.html',is_dashboard_page=True)
+            # Create the new post
+            new_post = Post(
+                title=job_title,
+                description=job_details,
+                job_location_name=job_location_name,
+                job_category_name=job_category_name,
+                user_id=current_user.id
+            )
 
+            # Add and commit the post to the database
+            db.session.add(new_post)
+            db.session.commit()
 
-@app.route('/tradies_my_posts')
+            # Debugging: Log post ID after commit
+            print(f"New Post created with ID: {new_post.id}")
+
+            # Flash success and redirect
+            flash('Your job post has been created!', 'success')
+
+            # Pass the post.id to the redirect URL, assuming you want to redirect to the post details page
+            return redirect(url_for('tradies_my_posts', post_id=new_post.id))  # Use the actual route that shows the post details
+
+        # Render the form
+        return render_template('create_tradie_post.html', is_dashboard_page=True)
+
+    except Exception as e:
+        # Debugging: Log the error
+        print(f"Error in create_tradie_post: {e}")
+        flash("An unexpected error occurred. Please try again later.", 'danger')
+        return redirect(url_for('create_tradie_post'))
+
+@app.route('/tradies_my_posts', methods=['GET'])
+@login_required
 def tradies_my_posts():
-    user_id = current_user.id
+    # Fetch the current user's posts
+    posts = Post.query.filter_by(user_id=current_user.id).all()
 
-    # Query to get the posts created by the user
-    user_posts = Post.query.filter_by(user_id=user_id).all()
-    
-    return render_template('tradies_my_posts.html', posts=user_posts,is_dashboard_page=True
-                           )
+    # Prepare data for each post with users who have messaged
+    posts_with_messages = []
+    for post in posts:
+        # Fetch users who have messaged about the post
+        messages = (
+            Chat.query.filter_by(post_id=post.id)
+            .join(User, User.id == Chat.sender_id)
+            .join(CompanyDetails, CompanyDetails.user_id == User.id)
+            .add_columns(User.first_name, CompanyDetails.trading_name, User.id.label("user_id"))
+            .distinct(User.id)  # Ensure unique users who have messaged
+            .all()
+        )
+        posts_with_messages.append({'post': post, 'messages': messages})
+
+    return render_template('tradies_my_posts.html', posts_with_messages=posts_with_messages)
+
+
+@app.route('/post_chats/<int:post_id>', methods=['GET'])
+@login_required
+def view_post_chats(post_id):
+    try:
+        # Fetch the post
+        post = Post.query.get(post_id)
+        if not post:
+            flash("Post not found.", "danger")
+            return redirect(url_for('find_tradies'))
+
+        # Get receiver_id from query parameters
+        receiver_id = request.args.get('receiver_id', type=int)
+        if not receiver_id:
+            flash("Receiver not specified.", "danger")
+            return redirect(url_for('find_tradies'))
+
+        # Fetch all chats between the sender (current_user) and receiver
+        chats = Chat.query.filter(
+            ((Chat.sender_id == current_user.id) & (Chat.receiver_id == receiver_id)) |
+            ((Chat.sender_id == receiver_id) & (Chat.receiver_id == current_user.id))
+        ).order_by(Chat.timestamp.asc()).all()
+
+        # Fetch details for sender and receiver
+        sender_details = {
+            "first_name": current_user.labourer_profile.first_name,
+            "trading_name": current_user.company_details.trading_name if current_user.company_details else "N/A",
+            "user_id": current_user.id,
+            "sender_id": current_user.id
+        }
+
+        receiver = User.query.get(receiver_id)
+        receiver_details = {
+            "first_name": receiver.labourer_profile.first_name if receiver.labourer_profile else "N/A",
+            "trading_name": receiver.company_details.trading_name if receiver.company_details else "N/A",
+            "user_id": receiver.id,
+            "receiver_id": receiver.id
+        }
+
+        # Render chat page
+        return render_template(
+            'chat_tradesmen.html',
+            post=post,
+            chats=chats,
+            sender_details=sender_details,
+            receiver_details=receiver_details
+        )
+    except Exception as e:
+        print(f"Error in view_post_chats: {e}")
+        flash("An unexpected error occurred.", "danger")
+        return redirect(url_for('find_tradies'))
+
+@app.route('/send_message/<int:post_id>/<int:receiver_id>', methods=['POST'])
+@login_required
+def send_message(post_id, receiver_id):
+    try:
+        # Fetch the post
+        post = Post.query.get(post_id)
+        if not post:
+            flash("Post not found.", "danger")
+            return redirect(url_for('find_tradies'))
+
+        # Fetch the receiver (user to send the message to)
+        receiver = User.query.get(receiver_id)
+        if not receiver:
+            flash("Receiver not found.", "danger")
+            return redirect(url_for('find_tradies'))
+
+        # Get the message content from the form
+        message_content = request.form.get('message')
+        if not message_content:
+            flash("Message content is required.", "danger")
+            return redirect(url_for('view_post_chats', post_id=post_id, receiver_id=receiver_id))
+
+        # Generate a unique room identifier for the conversation
+        room = f"{min(current_user.id, receiver_id)}_{max(current_user.id, receiver_id)}_{post_id}"
+
+        # Check if a chat already exists with this room
+        chat = Chat.query.filter_by(room=room).first()
+
+        # If no chat exists, create one
+        if not chat:
+            chat = Chat(
+                post_id=post_id,
+                sender_id=current_user.id,
+                receiver_id=receiver_id,
+                content=message_content,
+                is_read=False,
+                room=room  # Store the room identifier for the conversation
+            )
+            db.session.add(chat)
+        else:
+            # If chat exists, just create a new message in the existing chat
+            new_message = Chat(
+                post_id=post_id,
+                sender_id=current_user.id,
+                receiver_id=receiver_id,
+                content=message_content,
+                is_read=False,
+                room=room
+            )
+            db.session.add(new_message)
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        flash("Message sent successfully!", "success")
+
+        # Redirect to the chat page to view the conversation
+        return redirect(url_for('view_post_chats', post_id=post_id, receiver_id=receiver_id))
+
+    except Exception as e:
+        print(f"Error in send_message: {e}")
+        flash("An unexpected error occurred while sending the message.", "danger")
+        return redirect(url_for('find_tradies'))

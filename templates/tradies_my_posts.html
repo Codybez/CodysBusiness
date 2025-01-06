@@ -47,10 +47,9 @@
         margin-left: 10px;
       }
 
-      /* Active Button Styling */
       .action-button.active {
-        border-bottom: 3px solid #ff7148; /* Orange underline */
-        color: #ff7148; /* Change text color to orange */
+        border-bottom: 3px solid #ff7148;
+        color: #ff7148;
       }
 
       .my-posts-container {
@@ -68,8 +67,6 @@
         border: 1px solid #e0e0e0;
         margin-bottom: 15px;
         background-color: #ffffff;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
 
       .post-title {
@@ -89,6 +86,26 @@
         font-size: 16px;
         color: #333;
         margin-top: 10px;
+      }
+
+      .conversation-card {
+        padding: 15px;
+        margin-top: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+      }
+
+      .conversation-card:hover {
+        background-color: #f0f0f0;
+      }
+
+      .conversation-card strong {
+        color: #333;
+      }
+
+      .conversation-card em {
+        color: #888;
       }
     </style>
   </head>
@@ -124,24 +141,40 @@
         </a>
       </div>
 
-      <!-- User's Posts -->
       <div class="my-posts-container">
-        {% if posts %}
+        {% if posts_with_messages %}
         <ul class="post-list">
-          {% for post in posts |reverse%}
+          {% for item in posts_with_messages %}
           <li class="post-item">
-            <div class="post-title">{{ post.title }}</div>
+            <!-- Post details -->
+            <div class="post-title">{{ item.post.title }}</div>
             <div class="post-category">
-              Category: {{ post.job_category_name }}
+              <strong>{{ item.post.job_category_name }}</strong> | {{
+              item.post.job_location_name }}
             </div>
-            <div class="post-location">
-              Location: {{ post.job_location_name }}
+            <div class="post-description">{{ item.post.description }}</div>
+
+            <!-- Group messages by room -->
+            <div class="messages">
+              {% if item.messages %}
+              <h4>Conversations:</h4>
+              {% set seen_rooms = [] %} {% for message in item.messages %}
+              <!-- Only show one card per room -->
+              {% if message.room not in seen_rooms %}
+              <div
+                class="conversation-card"
+                onclick="window.location='{{ url_for('view_post_chats', post_id=item.post.id, room=message.room) }}'"
+              >
+                <strong>{{ message.first_name }}</strong> from
+                <em>{{ message.trading_name }}</em>
+                <br />
+                <small>Click to view messages</small>
+              </div>
+              {% set seen_rooms = seen_rooms + [message.room] %} {% endif %} {%
+              endfor %} {% else %}
+              <p>No conversations yet.</p>
+              {% endif %}
             </div>
-            <div class="post-description">{{ post.description }}</div>
-            <a href="/edit-post/{{ post.id }}" class="action-button">Edit</a>
-            <a href="/delete-post/{{ post.id }}" class="action-button"
-              >Delete</a
-            >
           </li>
           {% endfor %}
         </ul>

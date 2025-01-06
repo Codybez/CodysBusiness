@@ -54,7 +54,7 @@
         color: #ffffff;
         cursor: pointer;
         position: relative; /* Maintain the relative positioning of the message icon */
-        margin-right: 30px;
+        margin-right: 10px;
       }
 
       /* Home button styling */
@@ -299,6 +299,14 @@
         {% if unread_notifications_count > 0 %}
         <span class="notification-badge">{{ unread_notifications_count }}</span>
         {% endif %}
+      </a>
+
+      <a
+        href="{{ url_for('messages') }}"
+        class="header-button"
+        style="position: relative; margin-right: 10px"
+      >
+        <i class="fas fa-envelope"></i>
       </a>
 
       <!-- Hamburger Menu -->

@@ -69,6 +69,13 @@
       .notification-item .close-btn:hover {
         color: red;
       }
+
+      .no_notifications {
+        text-align: center;
+        font-size: 18px;
+        color: #333;
+        margin-top: 20px;
+      }
     </style>
     <script>
       function markAsReadAndRedirect(notificationElement, event) {
@@ -169,7 +176,7 @@
           {% else %} {{ notification.message }} {% endif %}
         </div>
         <div class="notification-time">
-          {{ notification.timestamp.strftime('%I:%M %p') }}
+          {{ notification.timestamp.strftime('%b %d | %I:%M %p') }}
         </div>
         <span
           class="close-btn"
@@ -179,7 +186,7 @@
         </span>
       </div>
       {% endfor %} {% else %}
-      <p>No notifications available.</p>
+      <p class="no_notifications">No notifications available.</p>
       {% endif %}
     </div>
     {% endblock %}

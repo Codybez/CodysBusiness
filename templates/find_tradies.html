@@ -55,85 +55,25 @@
         margin-left: 10px;
       }
 
-      .create-post-section {
-        background-color: #ffffff;
-        padding: 20px;
-        margin: 10px auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 15px;
-        max-width: 60%;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-        display: none;
-        margin-top: 20px;
-      }
-
-      .active-posts-section,
-      .my-posts-section,
-      .other-tab-section {
-        background-color: #fff;
-        padding: 20px;
-        margin-bottom: 40px;
-        font-family: Arial, Helvetica, sans-serif;
-        display: none; /* All sections are hidden by default */
-      }
-
-      .create-post-section h3,
-      .active-posts-section h3,
-      .my-posts-section h3,
-      .other-tab-section h3 {
-        color: #333;
-        font-size: 21px;
-        margin-bottom: -10px;
-      }
-
-      .create-post-form input,
-      .create-post-form select,
-      .create-post-form textarea {
-        width: 100%;
-        font-family: Arial, Helvetica, sans-serif;
-        box-sizing: border-box;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #cccccc;
-        border-radius: 5px;
-        font-size: 14px;
-        color: #333333;
-        outline: none;
-        transition: border 0.2s ease-in-out;
-      }
-
-      .create-post-form button {
-        background-color: #ff7148;
-        color: white;
-        font-weight: bold;
-        padding: 12px 20px;
-        cursor: pointer;
-        border-radius: 6px;
-        border: none;
-        font-size: 16px;
-        width: 100%;
-        transition: background-color 0.3s ease;
-      }
-
-      .create-post-form button:hover {
-        background-color: #e8633d;
-      }
-
       .job-listing {
         background-color: #fff;
         border: 1px solid #ddd;
-        padding: 20px;
-        margin: 10px 0;
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding-left: 20px;
+        padding-bottom: 20px;
+        margin: 10px auto;
+        max-width: 600px;
+        position: relative;
+        text-decoration: none;
+        color: inherit;
         cursor: pointer;
-        transition: transform 0.3s ease;
+        border-radius: 10px;
       }
 
       .job-listing h4 {
         color: #333;
         font-size: 20px;
-        margin-bottom: 10px;
+        margin-bottom: 0px;
+        margin-top: 20px;
       }
 
       .job-listing p {
@@ -180,6 +120,11 @@
         border: 1px solid #ccc;
       }
 
+      .post-location {
+        font-size: 16px;
+        color: #333 !important ;
+      }
+
       .action-button.active {
         border-bottom: 3px solid #ff7148; /* Orange underline */
         color: #ff7148; /* Optional: Change text color to orange */
@@ -193,18 +138,12 @@
           padding: 15px;
         }
 
-        .create-post-form input,
-        .create-post-form select,
-        .create-post-form textarea {
-          font-size: 14px;
-        }
-
         .create-post-form button {
           font-size: 14px;
         }
 
         .job-listing h4 {
-          font-size: 18px;
+          font-size: 22px;
         }
 
         .view-post-button {
@@ -313,19 +252,26 @@
           >
             <h4>{{ post.title }}</h4>
             <p class="post-location">
-              <strong>Location:</strong> {{ post.job_location_name }}
+              <strong>{{ post.job_location_name }}</strong> | {{
+              post.job_category_name }}
             </p>
-            <p class="post-category">
-              <strong>Category:</strong> {{ post.job_category_name }}
+            <p class="post-user">
+              {{ post.user.company_details.trading_name }}
             </p>
-            <p><strong>Details:</strong> {{ post.description }}</p>
-            <a href="#" class="view-post-button">View Post</a>
-          </div>
-          {% endfor %} {% else %} {% endif %}
 
+            <p>{{ post.description }}</p>
+            <a
+              href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"
+              class="view-post-button"
+            >
+              View Profile
+            </a>
+          </div>
+          {% endfor %} {% else %}
           <p class="no-posts-message" style="display: none">
             No posts available based on your filters.
           </p>
+          {% endif %}
         </div>
       </div>
     </div>
