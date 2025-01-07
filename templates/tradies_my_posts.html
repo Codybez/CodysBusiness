@@ -160,18 +160,8 @@
               <h4>Conversations:</h4>
               {% set seen_rooms = [] %} {% for message in item.messages %}
               <!-- Only show one card per room -->
-              {% if message.room not in seen_rooms %}
-              <div
-                class="conversation-card"
-                onclick="window.location='{{ url_for('view_post_chats', post_id=item.post.id, room=message.room) }}'"
-              >
-                <strong>{{ message.first_name }}</strong> from
-                <em>{{ message.trading_name }}</em>
-                <br />
-                <small>Click to view messages</small>
-              </div>
-              {% set seen_rooms = seen_rooms + [message.room] %} {% endif %} {%
-              endfor %} {% else %}
+              {% if message.room not in seen_rooms %} {% set seen_rooms =
+              seen_rooms + [message.room] %} {% endif %} {% endfor %} {% else %}
               <p>No conversations yet.</p>
               {% endif %}
             </div>

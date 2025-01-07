@@ -175,6 +175,15 @@
         </a>
         {% endif %}
       </div>
+      <!-- On the Profile Page (profile.html) -->
+
+      <!-- Button to start chat -->
+      <a
+        href="{{ url_for('labourer_chat', user2_id=user.id) }}"
+        class="btn btn-primary"
+      >
+        Start Chat
+      </a>
 
       <!-- About Us -->
       <div class="section-container">

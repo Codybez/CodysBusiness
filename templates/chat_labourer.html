@@ -3,12 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat</title>
+    <title>Labourer Chat</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <style>
+      /* Reuse the existing styles */
       /* General Styles */
       body {
         font-family: Arial, sans-serif;
@@ -18,40 +19,70 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
+        max-width: 600px;
+        margin: auto;
       }
 
-      /* Chat Container */
       #messages-container {
+        display: flex;
+        flex-direction: column;
         padding: 10px;
+        padding-bottom: 35px;
         background-color: #fff;
         flex-grow: 1;
         overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 50px;
+        margin-bottom: 60px;
+        border-top: 2px solid #ccc;
+        border-bottom: 2px solid #ccc;
       }
 
-      /* Message Styles */
       .message {
         padding: 10px;
-        margin: 10px 0;
+        margin: 5px 0;
         border-radius: 20px;
-        max-width: 70%; /* Consistent max width */
-        min-width: 30%; /* Prevent very small bubbles */
+        min-width: 60%;
+        max-width: 80%;
         word-wrap: break-word;
-        display: inline-block; /* Ensure the bubble wraps correctly */
+        display: inline-block;
+        box-sizing: border-box;
+        position: relative;
+      }
+
+      .message.sent::after {
+        content: "";
+        position: absolute;
+        right: -5px;
+        bottom: 10px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 10px 0 10px 10px;
+        border-color: transparent transparent transparent #ff7148;
       }
 
       .message.sent {
-        background-color: #ff7148;
+        background-color: #ff7048f6;
         color: white;
         margin-left: auto;
-        text-align: right;
+        text-align: left;
+      }
+
+      .message.received::after {
+        content: "";
+        position: absolute;
+        left: -5px;
+        bottom: 10px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent #e5e5ea transparent transparent;
       }
 
       .message.received {
         background-color: #e5e5ea;
         color: black;
+        margin-right: auto;
         text-align: left;
       }
 
@@ -62,7 +93,6 @@
         font-family: Arial, sans-serif;
       }
 
-      /* Form Styles */
       form {
         display: flex;
         align-items: center;
@@ -71,11 +101,12 @@
         position: sticky;
         bottom: 10vh;
         z-index: 10;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        border-top: 2px solid #ccc;
       }
+
       textarea {
         width: 85%;
-        height: 50px;
+        height: 25px;
         padding: 10px;
         border-radius: 20px;
         border: 1px solid #ccc;
@@ -84,9 +115,10 @@
         font-family: Arial, Helvetica, sans-serif;
         margin-right: 10px;
       }
+
       .send-button {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         background-color: #ff7148;
         color: white;
         border: none;
@@ -97,15 +129,45 @@
         font-size: 24px;
         cursor: pointer;
       }
+
+      #user-info-container {
+        padding: 15px;
+        background-color: #ffffff;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        margin-top: 10px;
+        background-color: #ffffff;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .user-info strong {
+        font-size: 16px;
+        color: #333;
+      }
+
+      .user-info p {
+        margin: 5px 0 0;
+        color: #555;
+        font-weight: 600;
+        font-size: 16px;
+      }
     </style>
   </head>
   <body>
-    {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
-    elif current_user.business_profile %} {% extends 'base_business.html' %} {%
-    else %}
-    <h1>Error: Invalid profile type.</h1>
-    <p>Your account does not have a valid profile.</p>
-    {% endif %} {% block content %}
+    {% extends 'base_labour.html' %} {% block content %}
+    <!-- User Info Container -->
+    <div id="user-info-container">
+      <div class="user-info">
+        <strong>Chat with {{ other_user.first_name }}</strong>
+      </div>
+    </div>
+
     <div id="messages-container">
       {% for message in messages %}
       <div
@@ -121,7 +183,7 @@
     </div>
 
     <form
-      action="{{ url_for('chat', job_id=job_id, user_id=user_id) }}"
+      action="{{ url_for('labourer_chat', user2_id=other_user.id) }}"
       method="POST"
     >
       <textarea
@@ -135,13 +197,11 @@
     </form>
 
     <script>
-      // Keep the chat container at the bottom when the page loads
       window.onload = function () {
         const messagesContainer = document.getElementById("messages-container");
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       };
 
-      // Scroll to bottom after sending a message
       document.querySelector("form").addEventListener("submit", function () {
         setTimeout(() => {
           const messagesContainer =
@@ -151,5 +211,5 @@
       });
     </script>
   </body>
-  {%endblock%}
+  {% endblock %}
 </html>
