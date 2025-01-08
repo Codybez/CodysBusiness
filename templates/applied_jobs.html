@@ -69,48 +69,53 @@
 
       .button-container {
         display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin-top: 10px;
-        justify-content: center;
+        justify-content: space-between; /* Places the buttons side by side with space between */
         align-items: center;
+        gap: 20px; /* Space between buttons */
+        margin-top: 10px;
+        margin-bottom: 20px;
       }
 
-      .view-job-link,
-      .chat-link {
-        padding: 10px 0;
+      .chat-link,
+      .view-job-link {
+        padding: 10px 20px;
         text-align: center;
         border-radius: 5px;
         font-size: 16px;
         text-decoration: none;
         color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        padding-left: -25px;
-        padding-right: -25px;
-      }
-
-      .view-job-link {
-        background-color: #ff7148;
+        display: block;
+        width: 48%; /* Makes the buttons take up equal space side by side */
       }
 
       .chat-link {
+        background-color: #ff7148;
+      }
+
+      .view-job-link {
         background-color: #ffffff;
         color: #ff7148;
-        border: 1px solid #ff7148;
+        border: 2px solid #ff7148;
+      }
+
+      .remove-job-container {
+        display: flex;
+        justify-content: center; /* Centers the remove job button */
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 10px;
       }
 
       .remove-job-icon {
         text-decoration: none;
         color: #333;
-        margin-top: 10px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
       }
 
       .remove-job-icon i {
         margin-left: 5px;
-        color: #333;
       }
 
       .no-jobs-msg {
@@ -322,8 +327,10 @@
           >
             View Job
           </a>
+        </div>
 
-          <!-- Remove Job Icon -->
+        <!-- Remove Job Icon centered below -->
+        <div class="remove-job-container">
           <a
             href="{{ url_for('remove_application', job_id=job.id) }}"
             class="remove-job-icon"

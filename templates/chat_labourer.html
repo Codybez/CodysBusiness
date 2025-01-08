@@ -106,7 +106,7 @@
 
       textarea {
         width: 85%;
-        height: 25px;
+        height: 20px;
         padding: 10px;
         border-radius: 20px;
         border: 1px solid #ccc;
@@ -114,8 +114,8 @@
         resize: none;
         font-family: Arial, Helvetica, sans-serif;
         margin-right: 10px;
+        margin-top: 10px;
       }
-
       .send-button {
         width: 40px;
         height: 40px;
@@ -128,6 +128,7 @@
         align-items: center;
         font-size: 24px;
         cursor: pointer;
+        margin-top: 10px;
       }
 
       #user-info-container {
@@ -182,12 +183,12 @@
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block content %}
-    <!-- User Info Container -->
     <div id="user-info-container">
       <div class="user-info">
-        <!-- Profile Section: Centered Image and Name -->
         <div class="profile-section">
-          <a href="{{ url_for('labourer_profile', user_id=other_user.id) }}">
+          <a
+            href="{{ url_for('view_tradesman_profile', user_id=other_user.id) }}"
+          >
             <img
               src="{{ url_for('static', filename='profile_pics/' + (other_user.profile_image.filename if other_user.profile_image else 'orange.jpg')) }}"
               alt="{{ other_user.first_name }}"
