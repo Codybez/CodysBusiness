@@ -60,12 +60,12 @@
         border: 1px solid #ddd;
         padding-left: 20px;
         padding-bottom: 20px;
+        padding-right: 20px;
         margin: 10px auto;
         max-width: 600px;
         position: relative;
         text-decoration: none;
         color: inherit;
-        cursor: pointer;
         border-radius: 10px;
       }
 
@@ -83,19 +83,41 @@
         margin-bottom: 10px;
       }
 
-      .view-post-button {
-        background-color: #ff7148;
-        color: white;
-        border: none;
-        font-weight: bold;
+      /* Button container adjustments */
+      .button-container {
+        display: flex;
+        justify-content: space-between; /* Even spacing between the buttons */
+        gap: 10px; /* Add some space between the buttons if desired */
+        width: 100%; /* Ensure the container takes up full width */
+        padding-right: 10px; /* Ensure there is padding on the right */
+      }
+
+      /* Button styling */
+      .button {
+        width: 48%; /* Ensure the buttons take up nearly half of the container each (with some space in between) */
         padding: 10px 20px;
-        cursor: pointer;
-        border-radius: 6px;
         text-align: center;
+        border-radius: 6px;
+        cursor: pointer;
         text-decoration: none;
         font-size: 14px;
         display: inline-block;
-        transition: background-color 0.3s ease;
+      }
+
+      /* Optional: Set a max width for buttons in case they're too wide */
+      .button-container .button {
+        max-width: calc(50% - 10px); /* Allow space for gap */
+      }
+
+      .left-button {
+        background-color: #ff7148;
+        color: white;
+      }
+
+      .right-button {
+        background-color: #ffffff;
+        color: #ff7148;
+        border: solid 2px #ff7148;
       }
 
       .no-posts-message {
@@ -118,6 +140,7 @@
         font-size: 1rem;
         border-radius: 5px;
         border: 1px solid #ccc;
+        cursor: pointer;
       }
 
       .post-location {
@@ -260,12 +283,18 @@
             </p>
 
             <p>{{ post.description }}</p>
-            <a
-              href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"
-              class="view-post-button"
-            >
-              View Profile
-            </a>
+            <div class="button-container">
+              <a
+                href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"
+                class="button left-button"
+                >View Profile</a
+              >
+              <a
+                href="{{ url_for('labourer_chat',user2_id=post.user.id) }}"
+                class="button right-button"
+                >Chat</a
+              >
+            </div>
           </div>
           {% endfor %} {% else %}
           <p class="no-posts-message" style="display: none">

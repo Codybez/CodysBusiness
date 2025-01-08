@@ -459,7 +459,7 @@ def labourer_profile():
     # Fetch company details if available
     company_details = user.company_details
 
-    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details,is_dashboard_page=True)
+    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details)
 
 
 
@@ -1611,6 +1611,10 @@ def messages():
             conv['other_user_name'] = user_map.get(conv['other_user_id'], "Unknown")
             conv['other_user_trading_name'] = company_details_map.get(conv['other_user_id'], "None")
 
+        # Sort conversations so that unread ones appear first
+        conversations.sort(key=lambda conv: conv['timestamp'], reverse=True)
+
+
         # Render the template
         return render_template('messages.html', conversations=conversations, unread_map=unread_map, is_dashboard_page=True)
 
@@ -1678,6 +1682,21 @@ def labourer_chat(user2_id):
             db.session.add(message)
             db.session.commit()
 
+                        # Create a notification for the receiver
+            receiver = User.query.get(user2_id)
+            if receiver:
+                notification_message = f"{current_user.first_name} from {current_user.company_details.trading_name} sent you a message"
+                notification = Notification(
+                    user_id=user2_id,
+                    message=notification_message,
+                    read=False,
+                    notification_type="message",
+                    timestamp=datetime.utcnow(),
+                   
+                )
+                db.session.add(notification)
+                db.session.commit()
+
         # Fetch all messages in this room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
 
@@ -1685,11 +1704,12 @@ def labourer_chat(user2_id):
         Message.query.filter_by(room=room, receiver_id=current_user.id, is_read=False).update({"is_read": True})
         db.session.commit()
 
+
         # Render the chat template
         return render_template(
             'chat_labourer.html',
             messages=messages,
-            room=room,
+            room=room,  
             other_user=User.query.get(user2_id)  # Fetch the other user's details
         )
 
