@@ -1452,7 +1452,7 @@ def get_messages(job_application_id):
 @login_required
 def chat(job_id, user_id):
     try:
-        # Fetch the relevant JobApplication
+        # Fetch the relevant JobApplication (using applicant's user_id)
         job_application = JobApplication.query.filter_by(job_id=job_id, user_id=user_id).first()
         if not job_application:
             return jsonify({"error": "Job application not found"}), 404
@@ -1462,7 +1462,7 @@ def chat(job_id, user_id):
         if not job:
             return jsonify({"error": "Job not found"}), 404
 
-        room = f"job_{job_id}_user_{user_id}"
+        room = f"job_{job_id}_user_{user_id}"  # room is based on the job_id and applicant's user_id
 
         # Fetch the trading name of the applicant (labourer) from CompanyDetails
         labourer_trading_name = job_application.user.company_details.trading_name if job_application.user.company_details else None
@@ -1470,15 +1470,13 @@ def chat(job_id, user_id):
         # Fetch the first name of the job poster (business)
         job_poster_first_name = job.user.first_name
 
-        
-
         # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
             if not content:
                 return jsonify({"error": "Message content cannot be empty"}), 400
 
-            # Determine the receiver
+            # Determine the receiver (either the job poster or the applicant)
             if current_user.id == job_application.user_id:
                 receiver_id = job.user_id  # Receiver is the job poster
             else:
@@ -1495,12 +1493,12 @@ def chat(job_id, user_id):
             db.session.add(message)
             db.session.commit()
 
-                        # Create a notification for the receiver
+            # Create a notification for the receiver
             create_message_notification(
                 receiver_id=receiver_id,
                 message_content=f"New message from {current_user.first_name} regarding job '{job.job_name}'",
                 job_application_id=job_application.id,
-                job_id=job.id  # optional, if you want to associate the notification with a job
+                job_id=job.id
             )
 
         # Fetch all messages for this JobApplication
@@ -1522,15 +1520,15 @@ def chat(job_id, user_id):
             job_name=job.job_name,
             applicant_name=f"{job_application.user.first_name} {job_application.user.last_name}",
             labourer_trading_name=labourer_trading_name,
-            job_poster_first_name=job_poster_first_name,              job_location=job.location,
+            job_poster_first_name=job_poster_first_name,
+            job_location=job.location,
             job_id=job_id,
-            user_id=job_application.user.id  # Use the user_id from the JobApplication
+            user_id=job_application.user.id  # Use the applicant's user_id here
         )
 
     except Exception as e:
         print(f"Error in chat route for job_id={job_id}, user_id={user_id}: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
-    
 
 @app.route('/messages')
 @login_required
@@ -1541,63 +1539,80 @@ def messages():
             (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
         ).all()
 
+        # Group unread counts by room
         unread_counts = db.session.query(Message.room, db.func.count(Message.id)).filter(
-        Message.receiver_id == current_user.id,
-        Message.is_read == False
-         ).group_by(Message.room).all()
+            Message.receiver_id == current_user.id,
+            Message.is_read == False
+        ).group_by(Message.room).all()
         unread_map = {room: count for room, count in unread_counts}
 
         conversations = []  # To store conversation data
+
         for message in messages:
-            job_application = JobApplication.query.get(message.job_application_id)
-            if job_application:
-                job_id = job_application.job.id  # Get the job ID
-                user_id = job_application.user_id  # Get the user ID of the applicant
-                job_poster_id = job_application.job.user_id  # Job poster's user ID
+            if message.job_application_id:
+                # Job-related chat
+                job_application = JobApplication.query.get(message.job_application_id)
+                if job_application:
+                    other_user_id = job_application.user_id if current_user.business_profile else job_application.job.user_id
+                    job_id = job_application.job.id
 
-                # We only need the user_id for accessing the conversation
-                # We don’t need to track a separate 'chat_partner_id'
-                if current_user.business_profile:
-                    # If current user is business (job poster), chat partner is the applicant
-                    other_user_id = job_application.user_id
-                else:
-                    # If current user is labourer (applicant), chat partner is the job poster
-                    other_user_id = job_poster_id
+                    # Check if the conversation already exists
+                    conversation = next(
+                        (conv for conv in conversations if conv.get('job_application_id') == job_application.id),
+                        None
+                    )
+                    if not conversation:
+                        conversations.append({
+                            'room': message.room,
+                            'job_application_id': job_application.id,
+                            'job_id': job_id,
+                            'applicant_user_id': job_application.user_id,
+                            'job_name': job_application.job.job_name,
+                            'most_recent_message': message.content,
+                            'timestamp': message.timestamp,
+                            'other_user_id': other_user_id,
+                            'is_job_chat': True
+                        })
+                    else:
+                        if message.timestamp > conversation['timestamp']:
+                            conversation['most_recent_message'] = message.content
+                            conversation['timestamp'] = message.timestamp
+            else:
+                # User-to-user chat
+                other_user_id = message.sender_id if message.receiver_id == current_user.id else message.receiver_id
 
-                # Check if the conversation already exists for this job_application
-                conversation = next((conv for conv in conversations if conv['job_application_id'] == job_application.id), None)
+                # Check if the conversation already exists
+                conversation = next(
+                    (conv for conv in conversations if conv.get('room') == message.room),
+                    None
+                )
                 if not conversation:
-                    # Create a new conversation entry if it doesn't exist
                     conversations.append({
-                        'job_application_id': job_application.id,
-                        'job_id': job_id,
-                        'user_id': user_id,
-                        'job_name': job_application.job.job_name,  # Assuming 'job_name' exists
+                        'room': message.room,
+                        'user_id': other_user_id,
                         'most_recent_message': message.content,
                         'timestamp': message.timestamp,
-                        'other_user_id': other_user_id  # Store other user's ID
+                        'other_user_id': other_user_id,
+                        'is_job_chat': False
                     })
                 else:
-                    # Update existing conversation with the most recent message and timestamp
                     if message.timestamp > conversation['timestamp']:
                         conversation['most_recent_message'] = message.content
                         conversation['timestamp'] = message.timestamp
 
-        # Fetch the name of the other user (job applicant or job poster) for all conversations in a single query
+        # Fetch user details in a single query
         user_ids = [conv['other_user_id'] for conv in conversations]
         users = User.query.filter(User.id.in_(user_ids)).all()
         user_map = {user.id: user.first_name for user in users}
-
-        # Fetch the trading_name for the other users (job applicants or job posters)
         company_details_map = {user.id: user.company_details.trading_name if user.company_details else "None" for user in users}
 
-        # Update each conversation with the name of the other user and their trading_name
+        # Update conversations with user names and trading names
         for conv in conversations:
             conv['other_user_name'] = user_map.get(conv['other_user_id'], "Unknown")
             conv['other_user_trading_name'] = company_details_map.get(conv['other_user_id'], "None")
 
-        # Render the template with the conversations
-        return render_template('messages.html', conversations=conversations, unread_map=unread_map,is_dashboard_page=True)
+        # Render the template
+        return render_template('messages.html', conversations=conversations, unread_map=unread_map, is_dashboard_page=True)
 
     except Exception as e:
         print(f"Error in messages route: {e}")
@@ -1638,12 +1653,6 @@ def get_or_create_labourer_chat_room(user1_id, user2_id):
 def labourer_chat(user2_id):
     """
     Handles labourer-to-labourer chat functionality.
-
-    Args:
-        user2_id (int): The ID of the other user in the chat.
-    
-    Returns:
-        Rendered template or JSON response.
     """
     try:
         # Ensure current user is a labourer

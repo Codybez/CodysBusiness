@@ -83,24 +83,22 @@
         data-room-id="{{ conv.room }}"
       >
         <a
-          href="{{ url_for('chat', job_id=conv.job_id, user_id=conv.user_id) }}"
+          href="{% if conv.is_job_chat %}
+           {{ url_for('chat', job_id=conv.job_id, user_id=conv.applicant_user_id) }}
+         {% else %}
+           {{ url_for('labourer_chat', user1_id=current_user.id, user2_id=conv.user_id) }}
+         {% endif %}"
           style="text-decoration: none; color: inherit"
         >
           <div class="conversation-details">
             <p>
               <strong>{{ conv.other_user_name }}</strong>
-              {% if current_user.labourer_profile %}
-              <!-- Display job name if the current user is a labourer -->
-              | {{ conv.job_name }} {% elif current_user.business_profile %}
-              <!-- Display trading name if the current user is a business -->
-              {% if conv.other_user_trading_name != "None" %} | {{
-              conv.other_user_trading_name }} {% else %} &nbsp;
-              <!-- If no trading name, display nothing -->
-              {% endif %} {% endif %}
+              {% if conv.is_job_chat %} | {{ conv.job_name }} {% elif
+              conv.other_user_trading_name != "None" %} | {{
+              conv.other_user_trading_name }} {% endif %}
             </p>
             <p>{{ conv.most_recent_message }}</p>
           </div>
-
           <div class="conversation-time">
             {{ conv.timestamp.strftime('%b %d | %I:%M %p') }}
           </div>
@@ -117,6 +115,7 @@
       <p>No conversations available.</p>
       {% endif %}
     </div>
+
     {% endblock %}
   </body>
 </html>
