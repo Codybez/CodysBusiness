@@ -131,31 +131,52 @@
       }
 
       #user-info-container {
-        padding: 15px;
+        padding: 5px;
         background-color: #ffffff;
-        text-align: center;
         font-family: Arial, sans-serif;
-        margin-top: 10px;
-        background-color: #ffffff;
+        margin-top: 15px;
       }
 
       .user-info {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        align-items: center; /* Vertically align content */
+        justify-content: space-between; /* Space between profile section and button */
+        width: 100%;
       }
 
-      .user-info strong {
-        font-size: 16px;
-        color: #333;
+      .profile-section {
+        display: flex;
+        flex-direction: column; /* Stack image and name vertically */
+        align-items: center; /* Center content horizontally */
+        text-align: center;
+        flex: 1; /* Ensures the section takes equal space */
+      }
+
+      .profile-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 0px;
       }
 
       .user-info p {
-        margin: 5px 0 0;
+        margin: 0;
         color: #555;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 12px;
+      }
+
+      .view-profile-button {
+        background-color: #ff7148;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
       }
     </style>
   </head>
@@ -164,7 +185,22 @@
     <!-- User Info Container -->
     <div id="user-info-container">
       <div class="user-info">
-        <strong>Chat with {{ other_user.first_name }}</strong>
+        <!-- Profile Section: Centered Image and Name -->
+        <div class="profile-section">
+          <a href="{{ url_for('labourer_profile', user_id=other_user.id) }}">
+            <img
+              src="{{ url_for('static', filename='profile_pics/' + (other_user.profile_image.filename if other_user.profile_image else 'orange.jpg')) }}"
+              alt="{{ other_user.first_name }}"
+              class="profile-image"
+            />
+          </a>
+
+          <p>
+            {{ other_user.first_name }} - {{
+            other_user.company_details.trading_name }}
+          </p>
+        </div>
+        <!-- View Profile Button -->
       </div>
     </div>
 

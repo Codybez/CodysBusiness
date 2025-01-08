@@ -135,7 +135,7 @@ class Notification(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  
     job = db.relationship('Job', backref='notifications', lazy=True)
-    
+    user2_id = db.Column(db.Integer, nullable=True)  # Add user2_id here
     job_application_id = db.Column(db.Integer, db.ForeignKey('job_application.id'), nullable=True)
     job_application = db.relationship('JobApplication', backref='notifications', lazy=True)
 
@@ -1571,12 +1571,14 @@ def messages():
                             'most_recent_message': message.content,
                             'timestamp': message.timestamp,
                             'other_user_id': other_user_id,
-                            'is_job_chat': True
+                            'is_job_chat': True,
+                            'is_unread': unread_map.get(message.room, 0) > 0
                         })
                     else:
                         if message.timestamp > conversation['timestamp']:
                             conversation['most_recent_message'] = message.content
                             conversation['timestamp'] = message.timestamp
+                            conversation['is_unread'] = unread_map.get(message.room, 0) > 0
             else:
                 # User-to-user chat
                 other_user_id = message.sender_id if message.receiver_id == current_user.id else message.receiver_id
@@ -1593,12 +1595,14 @@ def messages():
                         'most_recent_message': message.content,
                         'timestamp': message.timestamp,
                         'other_user_id': other_user_id,
-                        'is_job_chat': False
+                        'is_job_chat': False,
+                        'is_unread': unread_map.get(message.room, 0) > 0
                     })
                 else:
                     if message.timestamp > conversation['timestamp']:
                         conversation['most_recent_message'] = message.content
                         conversation['timestamp'] = message.timestamp
+                        conversation['is_unread'] = unread_map.get(message.room, 0) > 0
 
         # Fetch user details in a single query
         user_ids = [conv['other_user_id'] for conv in conversations]
@@ -1611,12 +1615,16 @@ def messages():
             conv['other_user_name'] = user_map.get(conv['other_user_id'], "Unknown")
             conv['other_user_trading_name'] = company_details_map.get(conv['other_user_id'], "None")
 
+        # Sort conversations by the most recent message timestamp, latest message first
+        conversations.sort(key=lambda conv: conv['timestamp'], reverse=True)
+
         # Render the template
         return render_template('messages.html', conversations=conversations, unread_map=unread_map, is_dashboard_page=True)
 
     except Exception as e:
         print(f"Error in messages route: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
+
 
 
 def create_message(sender_id, receiver_id, content, job_application_id=None, room=None):
@@ -1678,6 +1686,8 @@ def labourer_chat(user2_id):
             db.session.add(message)
             db.session.commit()
 
+            trade_message(user2_id) 
+
         # Fetch all messages in this room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
 
@@ -1696,3 +1706,17 @@ def labourer_chat(user2_id):
     except Exception as e:
         print(f"Error in labourer route for user2_id={user2_id}: {e}")
         return jsonify({"error": "An unexpected error occurred."}), 500
+
+def trade_message(user2_id):  # Add the colon here
+    receiver = User.query.get(user2_id)
+    if receiver:
+        notification_message = f"{current_user.first_name} from {current_user.company_details.trading_name} sent you a message"
+        notification = Notification(
+            user_id=user2_id,
+            message=notification_message,
+            read=False,
+            notification_type="trade_message",
+            timestamp=datetime.utcnow(),
+        )
+        db.session.add(notification)
+        db.session.commit()
