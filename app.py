@@ -459,7 +459,7 @@ def labourer_profile():
     # Fetch company details if available
     company_details = user.company_details
 
-    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details,is_dashboard_page=True)
+    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details)
 
 
 
@@ -1686,7 +1686,10 @@ def labourer_chat(user2_id):
             db.session.add(message)
             db.session.commit()
 
+
             create_trade_message_notification(user2_id) 
+
+
 
         # Fetch all messages in this room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
@@ -1695,11 +1698,12 @@ def labourer_chat(user2_id):
         Message.query.filter_by(room=room, receiver_id=current_user.id, is_read=False).update({"is_read": True})
         db.session.commit()
 
+
         # Render the chat template
         return render_template(
             'chat_labourer.html',
             messages=messages,
-            room=room,
+            room=room,  
             other_user=User.query.get(user2_id)  # Fetch the other user's details
         )
 

@@ -64,16 +64,29 @@
         font-size: 20px;
         color: orange;
       }
+
+      .conversation-badge {
+        display: flex;
+        justify-content: flex-end; /* Aligns content to the right */
+        align-items: center; /* Centers the badge vertically if needed */
+        margin-right: 10px;
+      }
+
+      .unread-badge {
+        background-color: #f44336; /* Red background for unread badge */
+        color: white; /* White text */
+        padding: 5px 10px; /* Space around the text */
+        border-radius: 20px; /* Rounded corners */
+        font-size: 12px; /* Smaller font */
+        font-weight: bold; /* Make the text bold */
+      }
     </style>
     <script src="path/to/your/javascript.js"></script>
   </head>
   <body>
     {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
     elif current_user.business_profile %} {% extends 'base_business.html' %} {%
-    else %}
-    <h1>Error: Invalid profile type.</h1>
-    <p>Your account does not have a valid profile.</p>
-    {% endif %} {% block content %}
+    else %} {% extends 'base_labour.html' %} {% endif %} {% block content %}
     <div class="conversation-list">
       <h1>Your Conversations</h1>
 

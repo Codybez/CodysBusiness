@@ -109,7 +109,7 @@
       }
       textarea {
         width: 85%;
-        height: 25px;
+        height: 20px;
         padding: 10px;
         border-radius: 20px;
         border: 1px solid #ccc;
@@ -117,6 +117,7 @@
         resize: none;
         font-family: Arial, Helvetica, sans-serif;
         margin-right: 10px;
+        margin-top: 10px;
       }
       .send-button {
         width: 40px;
@@ -130,6 +131,7 @@
         align-items: center;
         font-size: 24px;
         cursor: pointer;
+        margin-top: 10px;
       }
 
       /* User Info Container */
@@ -175,7 +177,7 @@
       <div class="user-info">
         <strong>{{ user_name }}</strong>
         {% if current_user.labourer_profile %}
-        <p>{{ job_name }} - {{ job_poster_first_name }}</p>
+        <p>{{ job_poster_first_name }} - {{ job_name }}</p>
 
         {% elif current_user.business_profile %}
 
