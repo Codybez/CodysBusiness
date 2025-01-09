@@ -1686,7 +1686,7 @@ def labourer_chat(user2_id):
             db.session.add(message)
             db.session.commit()
 
-            trade_message(user2_id) 
+            create_trade_message_notification(user2_id) 
 
         # Fetch all messages in this room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
@@ -1707,7 +1707,7 @@ def labourer_chat(user2_id):
         print(f"Error in labourer route for user2_id={user2_id}: {e}")
         return jsonify({"error": "An unexpected error occurred."}), 500
 
-def trade_message(user2_id):  # Add the colon here
+def create_trade_message_notification(user2_id):
     receiver = User.query.get(user2_id)
     if receiver:
         notification_message = f"{current_user.first_name} from {current_user.company_details.trading_name} sent you a message"
@@ -1717,6 +1717,7 @@ def trade_message(user2_id):  # Add the colon here
             read=False,
             notification_type="trade_message",
             timestamp=datetime.utcnow(),
+            user2_id=current_user.id  # This should be the current user's ID
         )
         db.session.add(notification)
         db.session.commit()

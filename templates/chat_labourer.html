@@ -158,6 +158,7 @@
         border-radius: 50%;
         object-fit: cover;
         margin-bottom: 0px;
+        border: 1px solid #999;
       }
 
       .user-info p {
@@ -187,7 +188,9 @@
       <div class="user-info">
         <!-- Profile Section: Centered Image and Name -->
         <div class="profile-section">
-          <a href="{{ url_for('labourer_profile', user_id=other_user.id) }}">
+          <a
+            href="{{ url_for('view_tradesman_profile', user_id=other_user.id) }}"
+          >
             <img
               src="{{ url_for('static', filename='profile_pics/' + (other_user.profile_image.filename if other_user.profile_image else 'orange.jpg')) }}"
               alt="{{ other_user.first_name }}"
