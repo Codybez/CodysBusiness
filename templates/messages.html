@@ -80,6 +80,11 @@
         font-size: 12px; /* Smaller font */
         font-weight: bold; /* Make the text bold */
       }
+      .no_convs {
+        text-align: center;
+        font-size: 18px;
+        color: #333;
+      }
     </style>
     <script src="path/to/your/javascript.js"></script>
   </head>
@@ -88,7 +93,7 @@
     elif current_user.business_profile %} {% extends 'base_business.html' %} {%
     else %} {% extends 'base_labour.html' %} {% endif %} {% block content %}
     <div class="conversation-list">
-      <h1>Your Conversations</h1>
+      <h1>Your Messages</h1>
 
       {% if conversations %} {% for conv in conversations %}
       <div
@@ -125,7 +130,7 @@
         {% endif %}
       </div>
       {% endfor %} {% else %}
-      <p>No conversations available.</p>
+      <p class="no_convs">No conversations available.</p>
       {% endif %}
     </div>
 

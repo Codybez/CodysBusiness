@@ -134,34 +134,34 @@
         margin-top: 10px;
       }
 
-      /* User Info Container */
       #user-info-container {
-        padding: 15px;
+        padding: 5px;
         background-color: #ffffff;
-
-        text-align: center;
         font-family: Arial, sans-serif;
-        margin-top: 10px;
-        background-color: #ffffff;
+        margin-top: 15px;
       }
 
       .user-info {
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column; /* Stack image and name vertically */
+        align-items: center; /* Center content horizontally */
+        text-align: center;
       }
 
-      .user-info strong {
-        font-size: 16px;
-        color: #333;
+      .profile-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 5px;
+        border: 1px solid #999;
       }
 
       .user-info p {
-        margin: 5px 0 0;
+        margin: 0;
         color: #555;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 12px;
       }
     </style>
   </head>
@@ -181,7 +181,13 @@
 
         {% elif current_user.business_profile %}
 
+        <img
+          src="{{ url_for('static', filename='profile_pics/' + (applicant_profile_image if applicant_profile_image else 'orange.jpg')) }}"
+          alt="{{ applicant_name }}"
+          class="profile-image"
+        />
         <p>{{ applicant_name }} - {{ labourer_trading_name }}</p>
+
         {% endif %}
       </div>
     </div>

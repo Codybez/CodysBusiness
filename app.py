@@ -1470,6 +1470,8 @@ def chat(job_id, user_id):
         # Fetch the first name of the job poster (business)
         job_poster_first_name = job.user.first_name
 
+        applicant_profile_image = job_application.user.profile_image.filename if job_application.user.profile_image else 'orange.jpg'
+
         # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
@@ -1512,6 +1514,7 @@ def chat(job_id, user_id):
         ).update({"is_read": True})
         db.session.commit()
 
+    
         # Render the chat template
         return render_template(
             'chat_business.html',
@@ -1523,7 +1526,9 @@ def chat(job_id, user_id):
             job_poster_first_name=job_poster_first_name,
             job_location=job.location,
             job_id=job_id,
-            user_id=job_application.user.id  # Use the applicant's user_id here
+            user_id=job_application.user.id,
+            user=current_user,
+            applicant_profile_image=applicant_profile_image
         )
 
     except Exception as e:
