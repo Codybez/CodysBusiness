@@ -1737,3 +1737,23 @@ def create_trade_message_notification(user2_id):
         )
         db.session.add(notification)
         db.session.commit()
+
+def time_ago(dt):
+    now = datetime.utcnow()
+    diff = now - dt
+
+    seconds = diff.total_seconds()
+    minutes = seconds // 60
+    hours = minutes // 60
+    days = hours // 24
+
+    if seconds < 60:
+        return f"{int(seconds)}s ago"
+    elif minutes < 60:
+        return f"{int(minutes)}m ago"
+    elif hours < 24:
+        return f"{int(hours)}h ago"
+    else:
+        return f"{int(days)}d ago"
+    
+app.jinja_env.filters['time_ago'] = time_ago

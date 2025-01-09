@@ -27,6 +27,7 @@
         background-color: #fff;
         border: 1px solid #ddd;
         padding: 20px;
+        padding-top: 15px;
         margin: 5px auto;
         max-width: 600px;
         position: relative;
@@ -108,8 +109,8 @@
       /* Job image in the top-right corner */
       .job-image {
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 15px;
+        right: 15px;
         width: 40px;
         height: 40px;
         object-fit: cover;
@@ -150,7 +151,7 @@
         text-decoration: none;
         padding: 12px 20px;
         font-size: 16px;
-        border-radius: 5px;
+        border-radius: 25px;
         margin-top: 20px;
         cursor: pointer;
         transition: background-color 0.3s ease;
@@ -187,25 +188,18 @@
         color: #333;
         padding-right: 70px;
       }
-    </style>
-    <script>
-      // Function to toggle the details of a job listing
-      function toggleDetails(jobId) {
-        const details = document.getElementById(`details_${jobId}`);
-        const listing = document.getElementById(`job_${jobId}`);
-        const arrow = document.getElementById(`arrow_${jobId}`);
-
-        if (details.style.display === "none" || !details.style.display) {
-          details.style.display = "block";
-          listing.classList.add("open");
-          arrow.classList.add("arrow-up");
-        } else {
-          details.style.display = "none";
-          listing.classList.remove("open");
-          arrow.classList.remove("arrow-up");
-        }
+      .date-created p {
+        position: absolute;
+        bottom: 20px;
+        right: 15px;
+        font-size: 10px;
+        color: #777;
+        
       }
 
+      
+    </style>
+    <script>
       // Function to reset all job details on page load
       function resetJobStates() {
         const jobListings = document.querySelectorAll(".job-listing");
@@ -241,11 +235,11 @@
       >
     </div>
     {% else %} {% for job in created_jobs | reverse %}
-    <div
-      class="job-listing"
-      id="job_{{ job.id }}"
-      onclick="toggleDetails({{ job.id }})"
-    >
+    <div class="job-listing" id="job_{{ job.id }}">
+      <a
+      href="{{ url_for('business_display_jobs', job_id=job.id) }}"
+      style="text-decoration: none; color: inherit;"
+      >
       <h3>{{ job.job_name }}</h3>
       <p class="job-location" color="#333">
         {{ job.location }} | {{ job.job_category }}
@@ -260,14 +254,16 @@
         alt="Job Image"
         class="job-image"
       />
+    <div class="date-created">
+      <p>{{ job.date_created | time_ago }}</p>
+    </div>
       {% endif %}
 
-      <!-- Arrow inside the job listing -->
-      <div id="arrow_{{ job.id }}" class="arrow"></div>
+     
 
       <!-- Hidden Details -->
       <div id="details_{{ job.id }}" class="hidden-details">
-        <p>Posted: {{ job.date_created | time_ago }}</p>
+
 
         <div class="button-container">
           <a

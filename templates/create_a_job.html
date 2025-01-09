@@ -59,28 +59,18 @@
       }
 
       button {
-        background-color: #ff7148;
-        color: white;
-        border: none;
+        background-color: #ffffff;
+        color: #555;
+        border: 2px solid #ff7148;
         padding: 12px 24px;
-        text-align: left;
+        text-align: center;
         text-decoration: none;
+        font-weight: bold;
         display: inline-block;
         font-size: 18px;
-        border-radius: 5px;
+        border-radius: 25px;
         cursor: pointer;
         width: 100%; /* Make button span 90% of its container */
-        position: relative; /* Position for the pseudo-element */
-      }
-
-      button::after {
-        content: "\203A"; /* Unicode for a right-pointing arrow */
-        font-size: 40px; /* Adjust the size of the arrow */
-        margin-left: 10px; /* Space between the text and the arrow */
-        position: absolute;
-        right: 20px; /* Position the arrow on the right */
-        top: 50%;
-        transform: translateY(-60%); /* Vertically center the arrow */
       }
 
       /* Style the form sections */
@@ -154,11 +144,11 @@
       /* Style the custom file input button */
       .custom-file-input {
         display: inline-block;
-        padding: 10px 20px;
+        padding: 8px 18px;
         background-color: #ffffff;
-        color: #ff7148;
-        border: 1px solid #ff7148;
-        border-radius: 5px;
+        color: #555;
+        border: 2px solid #ff7148;
+        border-radius: 25px;
         cursor: pointer;
         margin-top: 20px;
       }

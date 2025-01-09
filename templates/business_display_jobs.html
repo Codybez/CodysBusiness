@@ -118,6 +118,30 @@
         margin-bottom: 25px;
         font-size: 18px;
       }
+
+      /* Button Container */
+      .button-container {
+        display: flex;
+        justify-content: space-evenly; /* Spread buttons evenly */
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-top: 25px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      /* Action Buttons */
+      .action-button {
+        background-color: #ffffff; /* Orange background */
+        color: #555; /* White text */
+        padding: 6px 12px; /* Small button padding */
+        text-decoration: none; /* No underline */
+        font-size: 12px; /* Small text */
+        border-radius: 25px; /* Rounded corners */
+
+        text-align: center;
+        border: 2px solid #ff7148; /* Border matching the background */
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
     </style>
   </head>
   <body>
@@ -139,6 +163,30 @@
       <p>
         <i class="fas fa-arrow-right"></i>{{ job.applicants|length }} Contacts
       </p>
+
+      <div class="button-container">
+        <a
+          href="{{ url_for('edit_job', job_id=job.id) }}"
+          class="action-button"
+          onclick="preventToggle(event)"
+        >
+          Edit Job
+        </a>
+        <a
+          href="{{ url_for('close_job', job_id=job.id) }}"
+          class="action-button"
+          onclick="preventToggle(event)"
+        >
+          Close Job
+        </a>
+        <a
+          href="{{ url_for('view_applicants', job_id=job.id) }}"
+          class="action-button"
+          onclick="preventToggle(event)"
+        >
+          View Applicants
+        </a>
+      </div>
       <br />
 
       <p>{{ job.tasks }}</p>

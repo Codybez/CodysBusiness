@@ -22,13 +22,12 @@
       /* Container for Applicant Profiles */
       .applicant-container {
         margin-top: 40px; /* Make space for the back button */
-        padding-bottom: 30px; /* Optional: Add some space at the bottom */
       }
 
       .profile-pic {
-        border-radius: 10%;
-        width: 70px;
-        height: 70px;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
         object-fit: cover;
         position: absolute;
         top: 20px;
@@ -71,20 +70,22 @@
         justify-content: center;
         align-items: center;
         box-sizing: border-box; /* Prevent overflow due to padding */
+        border-radius: 25px;
       }
 
       /* Orange Button */
       .button-container .orange-button {
-        background-color: #ff7148;
-        color: white;
-        border: none;
+        background-color: white;
+        color: #555;
         border: 2px solid #ff7148;
+        padding-left: -25px;
+        padding-right: -25px;
       }
 
       /* White Button with Orange Border */
       .button-container .white-button {
         background-color: white;
-        color: #ff7148;
+        color: #555;
         border: 2px solid #ff7148;
         padding-left: -25px;
         padding-right: -25px;
@@ -93,7 +94,9 @@
       /* Ensure applicant profile respects container width */
       .applicant-profile {
         background-color: #fff;
-        padding: 20px;
+        padding-left: 20px;
+        padding-top: 5px;
+        padding-right: 20px;
         margin: 10px auto;
         max-width: 600px; /* Prevent container from expanding */
         box-sizing: border-box; /* Include padding in width */
@@ -150,7 +153,7 @@
             href="{{ url_for('view_tradesman_profile', user_id=application.user.id) }}"
             class="white-button"
           >
-            <span>View Profile</span>
+            <span>Profile</span>
           </a>
         </div>
 
