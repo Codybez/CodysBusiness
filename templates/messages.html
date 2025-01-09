@@ -93,7 +93,7 @@
     elif current_user.business_profile %} {% extends 'base_business.html' %} {%
     else %} {% extends 'base_labour.html' %} {% endif %} {% block content %}
     <div class="conversation-list">
-      <h1>Your Messages</h1>
+      <h1>Messages</h1>
 
       {% if conversations %} {% for conv in conversations %}
       <div

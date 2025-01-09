@@ -1472,6 +1472,12 @@ def chat(job_id, user_id):
 
         applicant_profile_image = job_application.user.profile_image.filename if job_application.user.profile_image else 'orange.jpg'
 
+        if job.image_paths:
+            job_image_paths = job.image_paths.split(',')  # Assuming it's a comma-separated list
+            job_image_path = job_image_paths[0]  # Take the first image
+        else:
+            job_image_path = 'default-job.jpg'
+
         # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
@@ -1528,7 +1534,8 @@ def chat(job_id, user_id):
             job_id=job_id,
             user_id=job_application.user.id,
             user=current_user,
-            applicant_profile_image=applicant_profile_image
+            applicant_profile_image=applicant_profile_image,
+            job_image_path=job_image_path
         )
 
     except Exception as e:

@@ -177,6 +177,13 @@
       <div class="user-info">
         <strong>{{ user_name }}</strong>
         {% if current_user.labourer_profile %}
+        <!-- Display the job image -->
+        <img
+          src="{{ url_for('static', filename='job_images/' + (job_image_path if job_image_path else 'orange.jpg')) }}"
+          alt="{{ job_name }}"
+          class="profile-image"
+        />
+
         <p>{{ job_poster_first_name }} - {{ job_name }}</p>
 
         {% elif current_user.business_profile %}
