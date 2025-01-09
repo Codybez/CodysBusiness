@@ -173,6 +173,7 @@ class Post(db.Model):
     description = db.Column(db.Text, nullable=False)
     job_location_name = db.Column(db.String(100), nullable=False)  # Just storing the name
     job_category_name = db.Column(db.String(100), nullable=False)  # Just storing the name
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
