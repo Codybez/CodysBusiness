@@ -268,7 +268,8 @@
     color: #ff7148; /* Highlight the text in orange */
   }
 
-      
+/* Initial state: hidden to the left */
+/* Add margin-bottom to .page-content to prevent footer overlap */
 
       @keyframes slideDown {
         from {
@@ -343,7 +344,8 @@
     </div>
   </header>
 
-  <body>
+<body>
+
 <!-- Notification Box -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages or session.get('notification') %}
@@ -384,8 +386,7 @@
   
 
     {% block content %} {% endblock %}
-  </body>
-
+</body>
 <footer>
   <a 
     href="{{ url_for('find_a_job') }}" 
@@ -415,7 +416,11 @@
     <p>Account</p>
   </a>
   {% endif %}
+
 </footer>
+
+
+
 
   <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -443,6 +448,7 @@ function checkNotifications() {
     notificationBox.style.padding = '0'; // Remove padding if no notifications
   }
 }
+
 
 </script>
 

@@ -24,7 +24,7 @@
       .sort-options {
         margin: 10px;
         margin-top: 20px;
-        margin-bottom: 20px;
+        
         display: flex;
         justify-content: center;
         gap: 15px;
@@ -57,19 +57,21 @@
       .job-listing {
         background-color: #fff;
         border: 1px solid #ddd;
-        padding: 15px;
+        padding: 20px;
+        padding-bottom: 15px;
         margin: 10px auto;
         max-width: 600px;
         position: relative;
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
+        
       }
 
       .job-listing h3 {
         color: #333;
         margin: 0;
-        font-size: 22px;
+        font-size: 20px;
         font-family: Arial, Helvetica, sans-serif;
       }
 
@@ -127,12 +129,31 @@
       .job-details .span {
         color: #ff7148;
       }
+
+      .date-posted {
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        font-size: 10px;
+        color: #777;
+      }
+     
+      .applicants {
+        color: #ff7148;
+        font-weight: bold;
+      }
+
+      .applicants span {
+        color: #333;
+        font-weight: 400;
+      }
+      
     </style>
   </head>
   <body>
     {% extends 'base_labour.html' %} {% block title %}Labourer{% endblock %} {%
     block content %}
-
+<div class="page-wrapper">
     <!-- Sorting Options -->
     <div class="sort-options">
       <!-- Sort by Category -->
@@ -211,19 +232,15 @@
 
             <!-- Separate Text below -->
             <div class="job-details">
-              <p>
-                {{ job.city }} |
-                <span style="color: #ff7148"
-                  >{{ job.date_created|time_ago }}</span
-                >
-              </p>
-              <p>
-                Applicants: {{ job.applicants|length }} {% if
+              <div class="date-posted">
+                <p>{{ job.date_created|time_ago }}</p>
+              </div>
+              <div class="applicants">
+                 {{ job.applicants|length }} Applicants{% if
                 job.applicants|length == 0 %}
-                <span style="color: #ff7148"
-                  >Be the first to make contact!</span
-                >
+                <span>Be The First!</span>
                 {% endif %}
+              </div> 
               </p>
             </div>
           </div>
@@ -233,15 +250,15 @@
             src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
             alt="Job Image"
             style="
-              width: 50px;
-              height: 50px;
+              width: 45px;
+              height: 45px;
               object-fit: cover;
               border-radius: 5px;
               margin-left: 10px;
             "
           />
           {% else %}
-          <span class="no-image">No Image Available</span>
+          <span class="no-image">No Images</span>
           {% endif %}
         </div>
       </a>
@@ -249,7 +266,7 @@
       <div class="no-jobs">No jobs available based on your filters.</div>
       {% endif %}
     </div>
-
+</div>  
     <script>
       document
         .getElementById("sort-category")
@@ -301,6 +318,7 @@
 
       // Initialize with all jobs visible
       window.addEventListener("DOMContentLoaded", filterJobs);
+
     </script>
   </body>
   {% endblock %}

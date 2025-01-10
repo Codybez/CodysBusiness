@@ -136,7 +136,7 @@
         display: flex;
         justify-content: center;
         gap: 15px;
-        margin-top: 5px;
+        margin-top: 10px;
       }
 
       .sort-dropdown {
@@ -165,10 +165,13 @@
         position: absolute;
         top: 75px;
         right: 20px;
-        font-size: 12px;
+        font-size: 10px;
         color: #777;
       }
 
+      .job-listing .title {
+        font-size: 20px;
+      }
       .profile-image {
         position: absolute;
         right: 20px;
@@ -312,7 +315,7 @@
               </div>
             </div>
 
-            <h4>{{ post.title }}</h4>
+            <h4 class="title">{{ post.title }}</h4>
             <p class="post-location">
               <strong>{{ post.job_location_name }}</strong> | {{
               post.job_category_name }}
