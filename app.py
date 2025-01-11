@@ -19,6 +19,8 @@ from sqlalchemy.sql import expression
 from flask import abort
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import and_
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.types import JSON
 
 app = Flask(__name__)
 
@@ -175,11 +177,21 @@ class Post(db.Model):
     job_category_name = db.Column(db.String(100), nullable=False)  # Just storing the name
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
+    saved_by_users = Column(MutableList.as_mutable(JSON), default=[])
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
         return f"<Post {self.title}>"
+    
+    def add_saved_user(self, user_id):
+        # Add user_id to the list if it's not already present
+        if user_id not in self.saved_by_users:
+            self.saved_by_users.append(user_id)
+    
+    def remove_saved_user(self, user_id):
+        # Remove user_id from the list if present
+        if user_id in self.saved_by_users:
+            self.saved_by_users.remove(user_id)
 
 
 class Chat(db.Model):
@@ -1441,31 +1453,76 @@ def edit_tradie_post(post_id):
     # Render the form pre-filled with the post's existing data
     return render_template('edit_tradie_post.html', post=post)
 
-@app.route('/delete_post/<int:post_id>', methods=['POST'])
-@login_required
-def delete_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.user_id != current_user.id:
-        abort(403)  # Ensure the user owns the post
-
-    db.session.delete(post)
-    db.session.commit()
-    flash('Post deleted successfully!', 'success')
-    return redirect(url_for('tradies_my_posts'))
-
 @app.route('/save_post/<int:post_id>', methods=['GET', 'POST'])
+@login_required
 def save_post(post_id):
     post = Post.query.get(post_id)
     if post:
         user = current_user  # Assuming the user is logged in
-        # Assuming the user has a saved_posts list to store saved posts
-        user.saved_posts.append(post)
-        db.session.commit()
-        flash('Post saved successfully!', 'success')
+        
+        # Ensure saved_by_users is not None
+        if post.saved_by_users is None:
+            post.saved_by_users = []
+
+        # Add user ID to the post's saved_by_users list if not already added
+        if user.id not in post.saved_by_users:
+            post.add_saved_user(user.id)  # Using the method we created earlier
+            db.session.commit()
+            flash('Post saved successfully!', 'success')
+        else:
+            flash('You have already saved this post!', 'info')
     else:
         flash('Post not found!', 'error')
 
-    return redirect(url_for('some_page'))  # Redirect after saving
+    return redirect(url_for('tradies_saved_posts'))  # Redirect to the desired page after saving
+
+@app.route('/remove_saved_post/<int:post_id>', methods=['POST' , 'GET'])
+@login_required
+def remove_saved_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if current_user.id in post.saved_by_users:
+        post.remove_saved_user(current_user.id)
+        db.session.commit()
+        flash('Post removed from saved posts.', 'success')
+    else:
+        flash('Post not found in saved list.', 'error')
+    
+    return redirect(url_for('tradies_saved_posts'))
+
+@app.route('/delete_post/<int:post_id>', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    
+    # Ensure the current user is the owner of the post
+    if post.user_id != current_user.id:
+        abort(403)  # Unauthorized if not the owner
+
+    # Remove the post from the saved_by_users list of all users who saved it
+    for user_id in post.saved_by_users:
+        user = User.query.get(user_id)
+        if user:
+            post.remove_saved_user(user.id)  # Remove the user from the saved posts list
+            db.session.commit()
+
+    # Delete the post
+    db.session.delete(post)
+    db.session.commit()
+
+    flash('Post deleted successfully!', 'success')
+    return redirect(url_for('tradies_my_posts'))  # Redirect to the user's posts page
+
+@app.route('/tradies_saved_posts')
+@login_required  # Ensure the user is logged in
+def tradies_saved_posts():
+    # Get the current logged-in user
+    user = current_user
+    
+    # Query all posts where the current user is in the saved_user_ids list
+    saved_posts = Post.query.filter(Post.saved_by_users.contains([user.id])).all()
+
+    return render_template('tradies_saved_posts.html', saved_posts=saved_posts)
+
 
 
 @app.route('/tradies_my_posts', methods=['GET'])

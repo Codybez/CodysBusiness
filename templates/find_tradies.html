@@ -82,7 +82,7 @@
         color: #777;
         font-size: 16px;
         margin-top: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
       }
 
       /* Button container adjustments */
@@ -126,7 +126,7 @@
 
       .no-posts-message {
         text-align: center;
-        color: #ff7148;
+        color: #333;
         font-size: 18px;
         margin-top: 40px;
       }
@@ -163,7 +163,7 @@
 
       .job-listing .date {
         position: absolute;
-        top: 75px;
+        top: 60px;
         right: 20px;
         font-size: 10px;
         color: #ff7148;
@@ -176,8 +176,8 @@
         position: absolute;
         right: 20px;
         top: 20px;
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
         border-radius: 50%;
         object-fit: cover;
         margin-bottom: 5px;
@@ -215,7 +215,7 @@
 
       .plus-symbol {
         position: absolute;
-        top: 100px; /* Adjust as needed */
+        top: 75px; /* Adjust as needed */
         right: 20px; /* Adjust the distance from the right edge */
         font-size: 30px; /* Adjust size */
         color: #ff7148; /* Change the color to match your theme */
@@ -249,8 +249,8 @@
           My Posts <span class="arrow">&#9662;</span>
         </a>
         <a
-          href="/saved-posts"
-          class="action-button {{ 'active' if request.endpoint == 'saved_posts' else '' }}"
+          href="/tradies_saved_posts"
+          class="action-button {{ 'active' if request.endpoint == 'tradies_saved_posts' else '' }}"
         >
           Saved <span class="arrow">&#9662;</span>
         </a>
