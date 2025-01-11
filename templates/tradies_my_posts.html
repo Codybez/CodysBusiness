@@ -54,7 +54,7 @@
 
       .my-posts-container {
         background-color: #ffffff;
-        padding-top: 10px;
+        padding: 20px;
       }
 
       .post-list {
@@ -63,23 +63,41 @@
       }
 
       .post-item {
+        position: relative; /* Make the container relative for absolute positioning */
         padding: 20px;
         border: 1px solid #e0e0e0;
         margin-bottom: 15px;
         background-color: #ffffff;
+        border-radius: 10px;
+      }
+
+      .profile-image-container {
+        position: absolute;
+        top: 20px; /* Adjust the distance from the top */
+        right: 20px; /* Adjust the distance from the right */
+      }
+
+      .profile-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #999;
       }
 
       .post-title {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: bold;
         color: #333;
+        padding-right: 50px;
       }
 
       .post-category,
       .post-location {
         font-size: 14px;
-        color: #666;
+        color: #333;
         margin-top: 5px;
+        margin-bottom: 10px;
       }
 
       .post-description {
@@ -106,6 +124,56 @@
 
       .conversation-card em {
         color: #888;
+      }
+
+      .company_name {
+        color: #777;
+      }
+      .date {
+        position: absolute;
+        top: 75px;
+        right: 20px;
+        font-size: 10px;
+        color: #ff7148;
+      }
+
+      /* Button container adjustments */
+      .button-container {
+        display: flex;
+        justify-content: space-between; /* Even spacing between the buttons */
+        gap: 10px; /* Add some space between the buttons if desired */
+        width: 100%; /* Ensure the container takes up full width */
+        padding-right: 10px; /* Ensure there is padding on the right */
+        margin-top: 20px;
+      }
+
+      /* Button styling */
+      .button {
+        width: 48%; /* Ensure the buttons take up nearly half of the container each (with some space in between) */
+        padding: 10px 20px;
+        text-align: center;
+        border-radius: 25px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+      }
+
+      /* Optional: Set a max width for buttons in case they're too wide */
+      .button-container .button {
+        max-width: calc(50% - 10px); /* Allow space for gap */
+      }
+
+      .left-button {
+        background-color: #ff7148;
+        color: #ffffff;
+        border: solid 2px #ff7148;
+      }
+
+      .right-button {
+        background-color: #ffffff;
+        color: #555;
+        border: solid 2px #ff7148;
       }
     </style>
   </head>
@@ -142,28 +210,42 @@
       </div>
 
       <div class="my-posts-container">
-        {% if posts_with_messages %}
+        {% if posts %}
         <ul class="post-list">
-          {% for item in posts_with_messages %}
+          {% for post in posts %}
           <li class="post-item">
-            <!-- Post details -->
-            <div class="post-title">{{ item.post.title }}</div>
-            <div class="post-category">
-              <strong>{{ item.post.job_category_name }}</strong> | {{
-              item.post.job_location_name }}
+            <!-- Profile Image -->
+            <div class="profile-image-container">
+              <img
+                src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_image.filename if post.user.profile_image else 'default.jpg')) }}"
+                alt="{{ post.user.first_name }}'s Profile Picture"
+                class="profile-image"
+              />
             </div>
-            <div class="post-description">{{ item.post.description }}</div>
-
-            <!-- Group messages by room -->
-            <div class="messages">
-              {% if item.messages %}
-              <h4>Conversations:</h4>
-              {% set seen_rooms = [] %} {% for message in item.messages %}
-              <!-- Only show one card per room -->
-              {% if message.room not in seen_rooms %} {% set seen_rooms =
-              seen_rooms + [message.room] %} {% endif %} {% endfor %} {% else %}
-              <p>No conversations yet.</p>
-              {% endif %}
+            <!-- Post details -->
+            <div>
+              <div class="post-title">{{ post.title }}</div>
+              <div class="post-category">
+                <strong>{{ post.job_location_name }}</strong> | {{
+                post.job_category_name }}
+              </div>
+              <div class="company_name">
+                {{ post.user.company_details.trading_name }}
+              </div>
+              <p class="date">{{ post.date_created|time_ago }}</p>
+              <div class="post-description">{{ post.description }}</div>
+            </div>
+            <div class="button-container">
+              <a
+                href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"
+                class="button left-button"
+                >Edit</a
+              >
+              <a
+                href="{{ url_for('labourer_chat', user2_id=post.user.id) }}"
+                class="button right-button"
+                >Delete</a
+              >
             </div>
           </li>
           {% endfor %}

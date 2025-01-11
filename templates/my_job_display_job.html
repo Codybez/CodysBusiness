@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Details</title>
+    <style>
+      .logo {
+        color: #ff7148;
+        font-family: "Arial", sans-serif !important;
+        font-size: 27px !important;
+        font-weight: bold !important;
+      }
+
+      .job-details-container {
+        padding: 15px;
+        margin-bottom: 70px;
+        margin: auto;
+        max-width: 600px;
+      }
+
+      .job-details-container h1 {
+        color: #555;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 21px;
+        margin-bottom: -10px;
+        padding-right: 40px;
+      }
+
+      .job-details-container h2 {
+        color: #777;
+        font-family: Arial, Helvetica, sans-serif;
+        padding-right: 60px;
+        font-weight: normal;
+      }
+
+      .job-details-container p {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        color: #555;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 10px 0;
+        font-size: 17px;
+      }
+
+      .job-details-container i {
+        font-size: 17px;
+        line-height: 1;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+
+      #applybutton {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 85%;
+        max-width: 500px;
+        margin-top: 10px;
+        margin-bottom: 100px;
+        margin-left: 15px;
+        text-decoration: none;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      #applybutton i {
+        margin-left: 10px;
+        font-size: 16px;
+      }
+
+      .image-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-left: -5px;
+        margin-bottom: 60px;
+        margin-top: 20px;
+      }
+
+      .image-gallery img {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        border-radius: 10px;
+      }
+
+      #imageModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 999;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #modalImage {
+        max-width: 80%;
+        max-height: 80%;
+        margin: auto;
+        display: block;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 20px;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .job-details-container .job-location {
+        color: #777;
+        margin-bottom: 25px;
+        font-size: 17px;
+      }
+
+      h6 {
+        color: #777777;
+        font-size: 12px;
+        margin-left: 10px;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .chat-link,
+      .view-job-link {
+        padding: 10px 20px;
+        text-align: center;
+        border-radius: 25px;
+        font-size: 16px;
+        text-decoration: none;
+        color: white;
+        display: block;
+        width: 48%;
+      }
+
+      .chat-link {
+        background-color: #ff7148;
+      }
+
+      .view-job-link {
+        background-color: #ffffff;
+        color: #333;
+        border: 2px solid #ff7148;
+      }
+
+      .job-image {
+        position: absolute;
+        top: 73px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Job Details{% endblock %}
+    {% block content %}
+
+    <div class="job-details-container">
+      <h1>{{ job.job_name }}</h1>
+      <h2 class="job-location">{{ job.location }} | {{ job.job_category }}</h2>
+      <p>
+        <i class="fas fa-map-marker-alt"></i>
+        {{ job.city }}, {{ job.suburb }}
+      </p>
+      <p>
+        <i class="fas fa-circle-user"></i> Posted by {{ job.user.first_name }}
+      </p>
+      <p><i class="far fa-clock"></i> {{ job.date_created|time_ago }}</p>
+      <p class="applicant-count">
+        <i class="fas fa-arrow-right"></i> {{ job.applicants|length }} Contacts
+      </p>
+
+      {% if job.image_list and job.image_list[0] %}
+      <img
+        src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
+        alt="Job Image"
+        class="job-image"
+      />
+      {% endif %}
+
+      <div class="button-container">
+        <a
+          href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
+          class="chat-link"
+          onclick="preventToggle(event)"
+        >
+          Chat
+        </a>
+        <a
+          href="{{ url_for('remove_application', job_id=job.id) }}"
+          class="view-job-link"
+        >
+          Remove Job
+        </a>
+      </div>
+
+      <p>{{ job.tasks }}</p>
+      <p>{{ job.additional_details }}</p>
+
+      {% if job.image_paths %}
+      <h1>Images</h1>
+      <div class="image-gallery">
+        {% for image_filename in job.image_paths.split(',') %} {% set image_path
+        = url_for('static', filename='job_images/' + image_filename) %}
+        <img
+          src="{{ image_path }}"
+          alt="Job Image"
+          onclick="openImageModal('{{ image_path }}')"
+        />
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div id="imageModal">
+      <span class="close-btn" onclick="closeImageModal()">&times;</span>
+      <img id="modalImage" src="" alt="Enlarged Image" />
+    </div>
+
+    <script>
+      function openImageModal(imagePath) {
+        const modal = document.getElementById("imageModal");
+        const modalImage = document.getElementById("modalImage");
+        modalImage.src = imagePath;
+        modal.style.display = "flex";
+      }
+
+      function closeImageModal() {
+        document.getElementById("imageModal").style.display = "none";
+      }
+
+      window.onclick = function (event) {
+        const modal = document.getElementById("imageModal");
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
+
+    {% endblock %}
+  </body>
+</html>

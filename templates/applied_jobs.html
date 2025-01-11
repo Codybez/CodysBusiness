@@ -25,6 +25,7 @@
         background-color: #fff;
         border: 1px solid #ddd;
         padding: 20px;
+        padding-bottom: 10px;
         margin: 5px auto;
         max-width: 600px;
         position: relative;
@@ -60,50 +61,6 @@
         height: 45px;
         object-fit: cover;
         border-radius: 8px;
-      }
-
-      .hidden-details {
-        display: none;
-        margin-top: 15px;
-      }
-
-      .button-container {
-        display: flex;
-        justify-content: space-between; /* Places the buttons side by side with space between */
-        align-items: center;
-        gap: 20px; /* Space between buttons */
-        margin-top: 10px;
-        margin-bottom: 20px;
-      }
-
-      .chat-link,
-      .view-job-link {
-        padding: 10px 20px;
-        text-align: center;
-        border-radius: 5px;
-        font-size: 16px;
-        text-decoration: none;
-        color: white;
-        display: block;
-        width: 48%; /* Makes the buttons take up equal space side by side */
-      }
-
-      .chat-link {
-        background-color: #ff7148;
-      }
-
-      .view-job-link {
-        background-color: #ffffff;
-        color: #ff7148;
-        border: 2px solid #ff7148;
-      }
-
-      .remove-job-container {
-        display: flex;
-        justify-content: center; /* Centers the remove job button */
-        margin-top: 10px;
-        font-weight: bold;
-        font-size: 10px;
       }
 
       .remove-job-icon {
@@ -277,70 +234,36 @@
         </button>
       </form>
     </div>
+
     {% if applied_jobs | length == 0 %}
     <p class="no-jobs-msg">You have no applied jobs.</p>
     {% else %} {% for job in applied_jobs | reverse %}
-
     <div
       class="job-listing"
       id="job_{{ job.id }}"
-      onclick="toggleDetails({{ job.id }})"
+      onclick="window.location.href='{{ url_for('my_job_display_job', job_id=job.id) }}'"
+      style="cursor: pointer"
     >
       <h1>{{ job.job_name }}</h1>
       <p class="job-location">
         <strong>{{ job.location }}</strong> | {{ job.job_category }}
       </p>
-      {% if job.status == 'closed' %}
-      <span class="job-closed">Job Closed</span>
-      {% endif %} {% if job.image_list and job.image_list[0] %}
+      <p class="applicant-count">
+        <span>{{ job.applicants | length }} Contact</span>
+      </p>
+      
+
+        {% if job.status == 'closed' %}
+        <span class="job-closed">Job Closed</span>
+        {% endif %}
+      </p>
+      {% if job.image_list and job.image_list[0] %}
       <img
         src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
         alt="Job Image"
         class="job-image"
       />
       {% endif %}
-
-      <!-- Arrow -->
-      <div id="arrow_{{ job.id }}" class="arrow-left"></div>
-
-      <div id="details_{{ job.id }}" class="hidden-details">
-        <p class="applicant-count">
-          <span>{{ job.applicants | length }} Contact</span>
-        </p>
-        <p>Posted by: {{ job.user.first_name }}</p>
-        <p>Email: {{ job.user.email }}</p>
-        <p>Phone: {{ job.contact_number }}</p>
-
-        <div class="button-container">
-          <a
-            href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
-            class="chat-link"
-            onclick="preventToggle(event)"
-          >
-            Chat
-          </a>
-
-          <a
-            href="{{ url_for('display_jobs', job_id=job.id) }}"
-            class="view-job-link"
-            onclick="preventToggle(event)"
-          >
-            View Job
-          </a>
-        </div>
-
-        <!-- Remove Job Icon centered below -->
-        <div class="remove-job-container">
-          <a
-            href="{{ url_for('remove_application', job_id=job.id) }}"
-            class="remove-job-icon"
-            onclick="event.stopPropagation();"
-          >
-            Remove Job
-            <i class="fas fa-trash-alt"></i>
-          </a>
-        </div>
-      </div>
     </div>
     {% endfor %} {% endif %} {% endblock %}
   </body>

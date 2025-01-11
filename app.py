@@ -1418,21 +1418,7 @@ def tradies_my_posts():
     # Fetch the current user's posts
     posts = Post.query.filter_by(user_id=current_user.id).all()
 
-    # Prepare data for each post with users who have messaged
-    posts_with_messages = []
-    for post in posts:
-        # Fetch users who have messaged about the post
-        messages = (
-            Chat.query.filter_by(post_id=post.id)
-            .join(User, User.id == Chat.sender_id)
-            .join(CompanyDetails, CompanyDetails.user_id == User.id)
-            .add_columns(User.first_name, CompanyDetails.trading_name, User.id.label("user_id"))
-            .distinct(User.id)  # Ensure unique users who have messaged
-            .all()
-        )
-        posts_with_messages.append({'post': post, 'messages': messages})
-
-    return render_template('tradies_my_posts.html', posts_with_messages=posts_with_messages)
+    return render_template('tradies_my_posts.html', posts=posts)
 
 
 
@@ -1758,3 +1744,11 @@ def time_ago(dt):
         return f"{int(days)}d ago"
     
 app.jinja_env.filters['time_ago'] = time_ago
+
+@app.route('/my_jobs_display_job/<int:job_id>')
+@login_required
+def my_job_display_job(job_id):
+    job = Job.query.get_or_404(job_id)
+
+
+    return render_template('my_job_display_job.html', job=job,)
