@@ -212,6 +212,16 @@
         font-size: 18px;
         color: #333;
       }
+
+      .plus-symbol {
+        position: absolute;
+        top: 100px; /* Adjust as needed */
+        right: 20px; /* Adjust the distance from the right edge */
+        font-size: 30px; /* Adjust size */
+        color: #ff7148; /* Change the color to match your theme */
+        cursor: pointer;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
@@ -328,6 +338,12 @@
               {{ post.user.company_details.trading_name }}
             </p>
             <p class="date">{{ post.date_created|time_ago }}</p>
+
+            <a
+              href="{{ url_for('save_post', post_id=post.id) }}"
+              class="plus-symbol"
+              >+</a
+            >
 
             <p>{{ post.description }}</p>
             <div class="button-container">

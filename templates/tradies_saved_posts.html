@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Tradie Post</title>
+    <title>Saved Posts</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='business_home.css') }}"
@@ -63,7 +63,7 @@
       }
 
       .post-item {
-        position: relative; /* Make the container relative for absolute positioning */
+        position: relative;
         padding: 20px;
         border: 1px solid #e0e0e0;
         margin-bottom: 15px;
@@ -73,8 +73,8 @@
 
       .profile-image-container {
         position: absolute;
-        top: 20px; /* Adjust the distance from the top */
-        right: 20px; /* Adjust the distance from the right */
+        top: 20px;
+        right: 20px;
       }
 
       .profile-image {
@@ -169,8 +169,8 @@
     </style>
   </head>
   <body>
-    {% extends 'base_labour.html' %} {% block title %}Create Tradie Post{%
-    endblock %} {% block content %}
+    {% extends 'base_labour.html' %} {% block title %}Saved Posts{% endblock %}
+    {% block content %}
     <div class="main-container">
       <!-- Buttons at the top -->
       <div class="buttons-container">
@@ -201,9 +201,9 @@
       </div>
 
       <div class="my-posts-container">
-        {% if posts %}
+        {% if saved_posts %}
         <ul class="post-list">
-          {% for post in posts %}
+          {% for post in saved_posts %}
           <li class="post-item">
             <!-- Profile Image -->
             <div class="profile-image-container">
@@ -226,22 +226,11 @@
               <p class="date">{{ post.date_created|time_ago }}</p>
               <div class="post-description">{{ post.description }}</div>
             </div>
-            <div class="button-container">
-              <form
-                action="{{ url_for('delete_post', post_id=post.id) }}"
-                method="POST"
-                style="margin: 0"
-              >
-                <button type="submit" class="button delete-button">
-                  Delete
-                </button>
-              </form>
-            </div>
           </li>
           {% endfor %}
         </ul>
         {% else %}
-        <p>No posts created yet.</p>
+        <p>No saved posts yet.</p>
         {% endif %}
       </div>
     </div>

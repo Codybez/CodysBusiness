@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Tradie Post</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='business_home.css') }}"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        margin-top: 20px;
+      }
+
+      .main-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .find-tradies-heading {
+        font-size: 28px;
+        color: #333;
+        text-align: center;
+        margin-bottom: 40px;
+        font-weight: bold;
+      }
+
+      .edit-post-section {
+        background-color: #ffffff;
+        padding: 20px;
+        margin: 10px auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 15px;
+        max-width: 60%;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        margin-top: 20px;
+      }
+
+      .edit-post-section h3 {
+        color: #333;
+        font-size: 21px;
+        margin-bottom: -10px;
+      }
+
+      .edit-post-form input,
+      .edit-post-form select,
+      .edit-post-form textarea {
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #333333;
+        outline: none;
+        transition: border 0.2s ease-in-out;
+      }
+
+      .edit-post-form button {
+        background-color: #ff7148;
+        color: white;
+        font-weight: bold;
+        padding: 12px 20px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: none;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+      }
+
+      .edit-post-form button:hover {
+        background-color: #e8633d;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Edit Tradie Post{%
+    endblock %} {% block content %}
+    <div class="main-container">
+      <!-- Edit Post Section -->
+      <div class="edit-post-section" id="editPostSection">
+        <h3>Edit Your Post</h3>
+        <p>Make changes to your post below.</p>
+        <form
+          class="edit-post-form"
+          action="/edit_tradie_post/{{ post.id }}"
+          method="POST"
+        >
+          <div class="form-group">
+            <input
+              type="text"
+              id="job_title"
+              name="job_title"
+              placeholder="Enter the job title"
+              value="{{ post.job_title }}"
+              required
+            />
+          </div>
+
+          <!-- Job Category (Hardcoded) -->
+          <div class="form-group">
+            <select id="job_category" name="job_category" required>
+              <option value="" disabled>Select a category</option>
+              <option value="General Labouring" {{ 'selected' if post.job_category == 'General Labouring' else '' }}>General Labouring</option>
+              <option value="Construction" {{ 'selected' if post.job_category == 'Construction' else '' }}>Construction</option>
+              <option value="Landscaping" {{ 'selected' if post.job_category == 'Landscaping' else '' }}>Landscaping</option>
+              <option value="Cleaning" {{ 'selected' if post.job_category == 'Cleaning' else '' }}>Cleaning</option>
+              <option value="Painting" {{ 'selected' if post.job_category == 'Painting' else '' }}>Painting</option>
+              <option value="Plumbing" {{ 'selected' if post.job_category == 'Plumbing' else '' }}>Plumbing</option>
+              <option value="Electrical" {{ 'selected' if post.job_category == 'Electrical' else '' }}>Electrical</option>
+              <option value="Carpentry" {{ 'selected' if post.job_category == 'Carpentry' else '' }}>Carpentry</option>
+              <option value="Roofing" {{ 'selected' if post.job_category == 'Roofing' else '' }}>Roofing</option>
+              <option value="HVAC" {{ 'selected' if post.job_category == 'HVAC' else '' }}>HVAC</option>
+              <option value="Moving" {{ 'selected' if post.job_category == 'Moving' else '' }}>Moving</option>
+              <option value="Gardening" {{ 'selected' if post.job_category == 'Gardening' else '' }}>Gardening</option>
+              <option value="Handyman" {{ 'selected' if post.job_category == 'Handyman' else '' }}>Handyman</option>
+              <option value="Other" {{ 'selected' if post.job_category == 'Other' else '' }}>Other</option>
+            </select>
+          </div>
+
+          <!-- Location (Hardcoded) -->
+          <div class="form-group">
+            <select id="job_location" name="job_location" required>
+              <option value="" disabled>Select a location</option>
+              <option value="Northland" {{ 'selected' if post.job_location == 'Northland' else '' }}>Northland</option>
+              <option value="Auckland" {{ 'selected' if post.job_location == 'Auckland' else '' }}>Auckland</option>
+              <option value="Waikato" {{ 'selected' if post.job_location == 'Waikato' else '' }}>Waikato</option>
+              <option value="Bay of Plenty" {{ 'selected' if post.job_location == 'Bay of Plenty' else '' }}>Bay of Plenty</option>
+              <option value="Gisborne" {{ 'selected' if post.job_location == 'Gisborne' else '' }}>Gisborne</option>
+              <option value="Hawke's Bay" {{ 'selected' if post.job_location == "Hawke's Bay" else '' }}>Hawke's Bay</option>
+              <option value="Taranaki" {{ 'selected' if post.job_location == 'Taranaki' else '' }}>Taranaki</option>
+              <option value="Manawatū-Whanganui" {{ 'selected' if post.job_location == 'Manawatū-Whanganui' else '' }}>Manawatū-Whanganui</option>
+              <option value="Wellington" {{ 'selected' if post.job_location == 'Wellington' else '' }}>Wellington</option>
+              <option value="Tasman" {{ 'selected' if post.job_location == 'Tasman' else '' }}>Tasman</option>
+              <option value="Nelson" {{ 'selected' if post.job_location == 'Nelson' else '' }}>Nelson</option>
+              <option value="Marlborough" {{ 'selected' if post.job_location == 'Marlborough' else '' }}>Marlborough</option>
+              <option value="West Coast" {{ 'selected' if post.job_location == 'West Coast' else '' }}>West Coast</option>
+              <option value="Canterbury" {{ 'selected' if post.job_location == 'Canterbury' else '' }}>Canterbury</option>
+              <option value="Otago" {{ 'selected' if post.job_location == 'Otago' else '' }}>Otago</option>
+              <option value="Southland" {{ 'selected' if post.job_location == 'Southland' else '' }}>Southland</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <textarea
+              id="job_details"
+              name="job_details"
+              rows="5"
+              placeholder="Provide details about the job"
+              required
+            >{{ post.job_details }}</textarea>
+          </div>
+          <button type="submit">Save Changes</button>
+        </form>
+      </div>
+    </div>
+    {% endblock %}
+  </body>
+</html>

@@ -1412,6 +1412,62 @@ def create_tradie_post():
         flash("An unexpected error occurred. Please try again later.", 'danger')
         return redirect(url_for('create_tradie_post'))
 
+
+@app.route('/edit_tradie_post/<int:post_id>', methods=['GET', 'POST'])
+def edit_tradie_post(post_id):
+    # Fetch the post from the database by its ID
+    post = Post.query.get(post_id)
+    
+    if not post:
+        flash("Post not found", "error")
+        return redirect(url_for('find_tradies'))
+
+    if request.method == 'POST':
+        # Update the post with new data from the form
+        post.title = request.form.get('job_title')
+        post.category = request.form.get('job_category')
+        post.location = request.form.get('job_location')
+        post.details = request.form.get('job_details')
+
+        # Save changes to the database
+        try:
+            db.session.commit()
+            flash("Post updated successfully", "success")
+            return redirect(url_for('tradies_my_posts'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An error occurred: {str(e)}", "error")
+
+    # Render the form pre-filled with the post's existing data
+    return render_template('edit_tradie_post.html', post=post)
+
+@app.route('/delete_post/<int:post_id>', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.user_id != current_user.id:
+        abort(403)  # Ensure the user owns the post
+
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted successfully!', 'success')
+    return redirect(url_for('tradies_my_posts'))
+
+@app.route('/save_post/<int:post_id>', methods=['GET', 'POST'])
+def save_post(post_id):
+    post = Post.query.get(post_id)
+    if post:
+        user = current_user  # Assuming the user is logged in
+        # Assuming the user has a saved_posts list to store saved posts
+        user.saved_posts.append(post)
+        db.session.commit()
+        flash('Post saved successfully!', 'success')
+    else:
+        flash('Post not found!', 'error')
+
+    return redirect(url_for('some_page'))  # Redirect after saving
+
+
 @app.route('/tradies_my_posts', methods=['GET'])
 @login_required
 def tradies_my_posts():

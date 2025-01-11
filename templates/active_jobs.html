@@ -26,6 +26,7 @@
         border: 1px solid #ddd;
         padding: 20px;
         margin: 5px auto;
+
         max-width: 600px;
         position: relative;
         text-decoration: none;
@@ -39,7 +40,7 @@
 
       .job-listing h1 {
         color: #333;
-        font-size: 22px;
+        font-size: 19px;
         margin: 0;
         margin-bottom: -5px;
         padding-right: 70px;
@@ -142,7 +143,7 @@
         align-items: center;
         justify-content: center;
         margin-top: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 28px;
       }
 
       .action-button {
@@ -259,6 +260,12 @@
       <img
         src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
         alt="Job Image"
+        class="job-image"
+      />
+      {% else %}
+      <img
+        src="{{ url_for('static', filename='job_images/orange.jpg') }}"
+        alt="Default Job Image"
         class="job-image"
       />
       {% endif %}

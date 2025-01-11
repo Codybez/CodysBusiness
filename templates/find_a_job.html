@@ -130,12 +130,13 @@
         color: #ff7148;
       }
 
-      .date-posted {
+      .date-posted p {
         position: absolute;
-        top: 70px;
+        top: 72px;
         right: 20px;
-        font-size: 10px;
-        color: #777;
+        font-size: 12px;
+        color: #ff7148;
+     
       }
      
       .applicants {
@@ -147,6 +148,15 @@
         color: #333;
         font-weight: 400;
       }
+
+      .job-image{
+        width: 45px;
+        height: 45px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-left: 10px;
+      }
+            
       
     </style>
   </head>
@@ -249,16 +259,15 @@
           <img
             src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
             alt="Job Image"
-            style="
-              width: 45px;
-              height: 45px;
-              object-fit: cover;
-              border-radius: 5px;
-              margin-left: 10px;
-            "
+            class="job-image"
+
           />
           {% else %}
-          <span class="no-image">No Images</span>
+          <img
+            src="{{ url_for('static', filename='job_images/orange.jpg') }}"
+            alt="Default Job Image"
+            class="job-image"
+          />
           {% endif %}
         </div>
       </a>

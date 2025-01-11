@@ -48,9 +48,10 @@
 
       .job-listing p {
         color: #333;
-        font-size: 1rem;
+        
         margin-top: 10px;
         padding-right: 70px;
+        margin-bottom: 10px;
       }
 
       .job-image {
@@ -119,6 +120,7 @@
         margin-bottom: -5px;
       }
 
+ 
       .job-closed {
         position: absolute;
         bottom: 10px;
@@ -245,12 +247,14 @@
       style="cursor: pointer"
     >
       <h1>{{ job.job_name }}</h1>
+
       <p class="job-location">
         <strong>{{ job.location }}</strong> | {{ job.job_category }}
       </p>
       <p class="applicant-count">
-        <span>{{ job.applicants | length }} Contact</span>
+        <span>{{ job.applicants | length }} Applicants</span>
       </p>
+          
       
 
         {% if job.status == 'closed' %}
@@ -261,6 +265,12 @@
       <img
         src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
         alt="Job Image"
+        class="job-image"
+      />
+      {% else %}
+      <img
+        src="{{ url_for('static', filename='job_images/orange.jpg') }}"
+        alt="Default Job Image"
         class="job-image"
       />
       {% endif %}
