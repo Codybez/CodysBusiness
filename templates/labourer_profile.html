@@ -10,6 +10,7 @@
         background-color: #ffffff;
         margin: 0;
         padding: 0;
+        margin-bottom: 50px;
       }
 
       /* Profile container */
@@ -190,6 +191,41 @@
         border-radius: 5px;
         font-size: 14px;
         border: 1px solid #ddd;
+      }
+
+      /* Image preview styling */
+      #image-preview {
+        margin-top: 10px;
+        width: 150px;
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 10px;
+        display: block; /* Ensure it's a block element */
+        align-items: center;
+      }
+
+      /* Styling for both buttons */
+      .upload-id-button {
+        background-color: #333; /* Dark gray background */
+        color: white; /* White text */
+        border: none; /* Remove default border */
+        padding: 10px 20px; /* Add padding for click area */
+        cursor: pointer; /* Pointer cursor for hover */
+        border-radius: 5px; /* Rounded corners */
+        margin-top: 10px; /* Space between elements */
+        text-align: center; /* Center text */
+        display: inline-block; /* Ensure inline-block layout */
+      }
+
+      /* Add hover effect for the button */
+      .upload-id-button:hover {
+        background-color: #555; /* Slightly lighter gray */
+      }
+
+      /* Additional container adjustments (optional) */
+      #image-preview-container {
+        text-align: center; /* Center content inside the container */
+        margin-top: 20px;
+        align-items: center;
       }
     </style>
   </head>
@@ -392,6 +428,114 @@
           <a href="{{ url_for('edit_social_links') }}">Add/Edit</a>
         </div>
       </div>
+      <div class="social-links-info">
+        <p>
+          Step 5: We require one form of identification to compare against your
+          business details. This can be a picture of your Drivers Licence or
+          Passport photo page.
+        </p>
+      </div>
+
+      <!-- Image Upload Section -->
+      <div class="section-container">
+        <h2>Upload Your ID Image*</h2>
+        {% if user.labourer_profile.id_image %}
+        <p>Your ID is saved</p>
+        {% else %} {% endif %}
+        <form
+          id="id-image-form"
+          action="{{ url_for('upload_id_image') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="upload-id-form"
+        >
+          <label for="id-image-upload" class="upload-id-button"
+            >Upload ID Image</label
+          >
+          <input
+            type="file"
+            id="id-image-upload"
+            name="id_image"
+            style="display: none"
+            accept="image/*"
+            onchange="previewImage()"
+          />
+        </form>
+
+        <!-- Preview Section -->
+        <div id="image-preview-container" style="display: none">
+          <img id="image-preview" src="" alt="Image Preview" />
+          <button
+            type="button"
+            class="upload-id-button"
+            onclick="submitIdImage()"
+          >
+            Confirm Image
+          </button>
+        </div>
+
+        <!-- Upload Status -->
+        <div id="upload-status"></div>
+      </div>
+
+      <script>
+        // Preview the image after selection
+        function previewImage() {
+          const file = document.getElementById("id-image-upload").files[0];
+          const previewContainer = document.getElementById(
+            "image-preview-container"
+          );
+          const previewImage = document.getElementById("image-preview");
+
+          // Check if file exists and is an image
+          if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              previewImage.src = e.target.result; // Set the preview image source
+              previewContainer.style.display = "block"; // Show the preview section
+            };
+
+            reader.readAsDataURL(file); // Read the image as a data URL
+          }
+        }
+
+        // Submit the image using AJAX
+        function submitIdImage() {
+          var formData = new FormData(document.getElementById("id-image-form"));
+          var uploadStatus = document.getElementById("upload-status");
+          var previewContainer = document.getElementById(
+            "image-preview-container"
+          );
+
+          // Show loading message
+          uploadStatus.innerHTML = "<p>Uploading...</p>";
+
+          // AJAX request to submit the form
+          var xhr = new XMLHttpRequest();
+          xhr.open(
+            "POST",
+            document.getElementById("id-image-form").action,
+            true
+          );
+
+          // Handle the response after the file is uploaded
+          xhr.onload = function () {
+            if (xhr.status == 200) {
+              uploadStatus.innerHTML = "<p>Upload successful!</p>";
+
+              // Hide the preview and reset the file input
+              previewContainer.style.display = "none";
+              document.getElementById("id-image-upload").value = ""; // Reset file input
+            } else {
+              uploadStatus.innerHTML = "<p>Error uploading image.</p>";
+            }
+          };
+
+          // Send the form data to the server
+          xhr.send(formData);
+        }
+      </script>
     </div>
     {% endblock %}
   </body>

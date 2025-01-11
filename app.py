@@ -85,6 +85,7 @@ class LabourerProfile(db.Model):
     user_blurb = db.Column(db.String(250), nullable=False)
     job_categories = db.Column(db.String(500), nullable=True)
     job_locations = db.Column(db.String(500), nullable=True) 
+    id_image = db.Column(db.String(120), nullable=True)
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1865,3 +1866,31 @@ def my_job_display_job(job_id):
 
 
     return render_template('my_job_display_job.html', job=job,)
+
+from flask import request, jsonify, redirect, url_for
+import os
+from werkzeug.utils import secure_filename
+
+@app.route('/upload_id_image', methods=['POST'])
+@login_required
+def upload_id_image():
+    # Check if a file is uploaded
+    if 'id_image' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    
+    file = request.files['id_image']
+    
+    # If no file is selected
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    # Secure the filename and save it
+    filename = secure_filename(file.filename)
+    upload_path = os.path.join('static', 'id_images', filename)
+    file.save(upload_path)
+    
+    # Optionally, store the file path in the user's profile or wherever appropriate
+    current_user.labourer_profile.id_image = upload_path
+    db.session.commit()
+    
+    return jsonify({"message": "Upload successful!"}), 200
