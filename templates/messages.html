@@ -26,8 +26,8 @@
         transition: all 0.3s ease;
         position: relative;
         max-width: 600px;
-        border-top: 2px solid #aaa;
-        border-bottom: 2px solid #aaa;
+        border-top: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
         margin-left: -26px;
         margin-right: -26px;
       }
@@ -109,10 +109,11 @@
         >
           <div class="conversation-details">
             <p>
-              <strong>{{ conv.other_user_name }}</strong>
-              {% if conv.is_job_chat %} | {{ conv.job_name }} {% elif
-              conv.other_user_trading_name != "None" %} | {{
-              conv.other_user_trading_name }} {% endif %}
+              <strong
+                >{{ conv.other_user_name }} {% if conv.is_job_chat %} | {{
+                conv.job_name }} {% elif conv.other_user_trading_name != "None"
+                %} | {{ conv.other_user_trading_name }} {% endif %}</strong
+              >
             </p>
             <p>{{ conv.most_recent_message }}</p>
           </div>

@@ -86,6 +86,9 @@ class LabourerProfile(db.Model):
     job_categories = db.Column(db.String(500), nullable=True)
     job_locations = db.Column(db.String(500), nullable=True) 
     id_image = db.Column(db.String(120), nullable=True)
+    insurance_image = db.Column(db.String(120),nullable=True)
+    id_verified = db.Column(db.Boolean, default=False)
+    insurance_verified = db.Column(db.Boolean, default=False) 
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1894,3 +1897,45 @@ def upload_id_image():
     db.session.commit()
     
     return jsonify({"message": "Upload successful!"}), 200
+
+
+@app.route('/upload_liability_insurance', methods=['POST'])
+@login_required
+def upload_liability_insurance():
+    # Check if any files are uploaded
+    if 'liability_insurance' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    files = request.files.getlist('liability_insurance')
+    
+    # If no files are selected
+    if not files or all(file.filename == '' for file in files):
+        return jsonify({"error": "No selected files"}), 400
+    
+    # Allowed file extensions for images and documents
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'pdf'}
+    
+    # Ensure labourer_profile exists
+    if not current_user.labourer_profile:
+        return jsonify({"error": "Labourer profile not found"}), 400
+
+    # Save the files and store paths
+    file_paths = []
+    for file in files:
+        if file and '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join('static', 'insurance_images', filename)
+            file.save(file_path)
+            file_paths.append(file_path)
+        else:
+            return jsonify({"error": "Invalid file format. Only images and PDFs are allowed."}), 400
+
+    # Assuming insurance_images is a list of file paths, update accordingly
+    current_user.labourer_profile.insurance_image = ','.join(file_paths)  # Save multiple file paths as a comma-separated string
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of error
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
+    
+    return jsonify({"message": "Liability insurance uploaded successfully!"}), 200

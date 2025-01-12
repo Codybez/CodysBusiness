@@ -105,8 +105,8 @@
       }
 
       .profile-pic {
-        height: 170px;
-        width: 170px;
+        height: 155px;
+        width: 155px;
         border-radius: 50%;
         object-fit: cover;
         border: 3px solid #3f3f3f82;
@@ -227,6 +227,21 @@
         margin-top: 20px;
         align-items: center;
       }
+
+      #insurance-image-preview-container {
+        text-align: center; /* Center content inside the container */
+        margin-top: 20px;
+        align-items: center;
+      }
+
+      #insurance-image-preview {
+        margin-top: 10px;
+        width: 150px;
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 10px;
+        display: block; /* Ensure it's a block element */
+        align-items: center;
+      }
     </style>
   </head>
   <body>
@@ -341,14 +356,13 @@
             <li>Please select job locations.</li>
             {% endif %}
           </ul>
+          <div class="edit-button">
+            <a href="{{ url_for('select_job_categories_and_locations') }}"
+              >Update Categories & Locations</a
+            >
+          </div>
         </div>
-        <p>
-          <a href="{{ url_for('select_job_categories_and_locations') }}"
-            >Update Categories & Locations</a
-          >
-        </p>
       </div>
-
       <div class="company-details-info">
         <p>
           Step 3: Please complete your Business details. Only your trading name,
@@ -431,8 +445,8 @@
       <div class="social-links-info">
         <p>
           Step 5: We require one form of identification to compare against your
-          business details. This can be a picture of your Drivers Licence or
-          Passport photo page.
+          business details. This can be a picture of the front of your Drivers
+          Licence or Passport photo page.
         </p>
       </div>
 
@@ -476,6 +490,57 @@
 
         <!-- Upload Status -->
         <div id="upload-status"></div>
+      </div>
+
+      <div class="social-links-info">
+        <p>
+          Step 6: Upload a photo or file of your Business Liability Insurance
+          document(s), ensuring that all key details are visible. This includes
+          the policyholder's name, insurance provider, policy number, coverage
+          details, and expiration date.
+        </p>
+      </div>
+      <!-- Insurance Image Upload Section -->
+      <div class="section-container">
+        <h2>Upload Your Business Liability Insurance*</h2>
+        {% if user.labourer_profile.insurance_image %}
+        <p>Your Insurance document(s) are saved</p>
+        {% else %} {% endif %}
+        <form
+          id="insurance-image-form"
+          action="{{ url_for('upload_liability_insurance') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="upload-insurance-form"
+        >
+          <label for="insurance-image-upload" class="upload-id-button">
+            Upload Insurance Document(s)
+          </label>
+          <input
+            type="file"
+            id="insurance-image-upload"
+            name="liability_insurance"
+            style="display: none"
+            accept="image/*,.pdf"
+            onchange="previewInsuranceImage()"
+            multiple
+          />
+        </form>
+
+        <!-- Preview Section -->
+        <div id="insurance-image-preview-container" style="display: none">
+          <div id="preview-images"></div>
+          <button
+            type="button"
+            class="upload-id-button"
+            onclick="submitInsuranceImage()"
+          >
+            Confirm Images/Documents
+          </button>
+        </div>
+
+        <!-- Upload Status -->
+        <div id="insurance-upload-status"></div>
       </div>
 
       <script>
@@ -527,6 +592,89 @@
               // Hide the preview and reset the file input
               previewContainer.style.display = "none";
               document.getElementById("id-image-upload").value = ""; // Reset file input
+            } else {
+              uploadStatus.innerHTML = "<p>Error uploading image.</p>";
+            }
+          };
+
+          // Send the form data to the server
+          xhr.send(formData);
+        }
+
+        // Preview the insurance image after selection
+        function previewInsuranceImage() {
+          const files = document.getElementById("insurance-image-upload").files;
+          const previewContainer = document.getElementById(
+            "insurance-image-preview-container"
+          );
+          const previewImages = document.getElementById("preview-images");
+
+          previewImages.innerHTML = ""; // Clear previous previews
+
+          // Check if any files are selected
+          if (files.length > 0) {
+            previewContainer.style.display = "block"; // Show the preview section
+            for (let file of files) {
+              const reader = new FileReader();
+
+              reader.onload = function (e) {
+                const fileType = file.type.split("/")[0];
+                const fileElement = document.createElement("div");
+
+                if (fileType === "image") {
+                  const img = document.createElement("img");
+                  img.src = e.target.result;
+                  img.alt = "Insurance Preview";
+                  img.style.maxWidth = "200px"; // Limit image size
+                  fileElement.appendChild(img);
+                } else if (
+                  fileType === "application" &&
+                  file.type === "application/pdf"
+                ) {
+                  const pdfLink = document.createElement("a");
+                  pdfLink.href = e.target.result;
+                  pdfLink.textContent = "Preview PDF";
+                  pdfLink.target = "_blank";
+                  fileElement.appendChild(pdfLink);
+                }
+
+                previewImages.appendChild(fileElement);
+              };
+
+              reader.readAsDataURL(file); // Read the image/document as a data URL
+            }
+          }
+        }
+
+        // Submit the insurance image using AJAX
+        function submitInsuranceImage() {
+          var formData = new FormData(
+            document.getElementById("insurance-image-form")
+          );
+          var uploadStatus = document.getElementById("insurance-upload-status");
+          var previewContainer = document.getElementById(
+            "insurance-image-preview-container"
+          );
+
+          // Show loading message
+          uploadStatus.innerHTML = "<p>Uploading...</p>";
+
+          // AJAX request to submit the form
+          var xhr = new XMLHttpRequest();
+          xhr.open(
+            "POST",
+            document.getElementById("insurance-image-form").action,
+            true
+          );
+
+          // Handle the response after the file is uploaded
+          xhr.onload = function () {
+            if (xhr.status == 200) {
+              uploadStatus.innerHTML = "<p>Upload successful!</p>";
+
+              // Hide the preview and reset the file input
+              previewContainer.style.display = "none";
+              document.getElementById("insurance-image-upload").value = ""; // Reset file input
             } else {
               uploadStatus.innerHTML = "<p>Error uploading image.</p>";
             }

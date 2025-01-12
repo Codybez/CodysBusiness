@@ -34,9 +34,10 @@
       }
 
       h1 {
-        font-size: 24px;
+        font-size: 26px;
         margin: 10px 0;
         color: #333;
+        margin-bottom: -10px;
       }
 
       h2 {
@@ -47,7 +48,8 @@
 
       .user-location {
         font-size: 16px;
-        color: #666;
+        color: #333;
+        font-weight: bold;
       }
 
       .section-container {
@@ -78,7 +80,7 @@
       .user-social-links {
         display: flex;
         justify-content: space-around;
-        margin-top: 10px;
+        margin-top: 20px;
         margin-bottom: 20px;
         padding: 10px;
 
@@ -114,6 +116,36 @@
       .social-icon:hover {
         transform: scale(1.1);
         color: #ff7148;
+      }
+
+      .verification {
+        display: flex;
+        justify-content: space-evenly; /* Ensures equal spacing between the badges and container */
+        align-items: center; /* Aligns the items vertically */
+        margin-bottom: 20px;
+      }
+
+      .verified_user_badge,
+      .verified_insurance_badge {
+        color: goldenrod;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 5px 5px;
+        background-color: #ffffff;
+        border: 2px solid goldenrod;
+        border-radius: 25px;
+        width: 150px;
+        text-align: center;
+        display: flex; /* Allows the icon and text to sit side by side */
+        align-items: center; /* Vertically aligns the tick with the text */
+        justify-content: center; /* Centers the content within the badge */
+      }
+
+      .verified_user_badge::before,
+      .verified_insurance_badge::before {
+        content: "✔"; /* Unicode for the tick mark */
+        margin-right: 5px; /* Adds space between the tick and the text */
+        font-size: 18px; /* Adjust the size of the tick */
       }
     </style>
   </head>
@@ -172,6 +204,13 @@
         >
           <i class="fab fa-google"></i>
         </a>
+        {% endif %}
+      </div>
+      <div class="verification">
+        {% if user.labourer_profile.id_verified %}
+        <div class="verified_user_badge">Business Verified</div>
+        {% endif %} {% if user.labourer_profile.insurance_verified %}
+        <div class="verified_insurance_badge">Insurance Verified</div>
         {% endif %}
       </div>
       <!-- On the Profile Page (profile.html) -->
