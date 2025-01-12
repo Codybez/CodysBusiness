@@ -25,7 +25,7 @@
         background-color: #fff;
         border: 1px solid #ddd;
         padding: 20px;
-        padding-bottom: 10px;
+        padding-bottom: 5px;
         margin: 5px auto;
         max-width: 600px;
         position: relative;
@@ -51,7 +51,7 @@
         
         margin-top: 10px;
         padding-right: 70px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
 
       .job-image {
@@ -104,7 +104,7 @@
       }
 
       .applicant-count {
-        font-size: 0.9rem; /* Slightly smaller font size */
+
         color: #ff7148; /* Orange color */
 
         right: 20px;
@@ -113,7 +113,7 @@
       .applicant-count span {
         font-weight: bold; /* Make the number bold */
         color: #ff7148;
-        font-size: 15px;
+        font-size: 16px;
       }
 
       .job-location {
@@ -125,11 +125,11 @@
         position: absolute;
         bottom: 10px;
         right: 20px;
-        color: #ffffff;
+        color: #555;
         font-size: 12px;
         font-weight: bold;
         padding: 5px 5px;
-        background-color: #ff7148;
+        background-color: #cccccca3;
         border-radius: 25px;
       }
 
@@ -259,6 +259,8 @@
 
         {% if job.status == 'closed' %}
         <span class="job-closed">Job Closed</span>
+        {% else %}
+        <span class="job-closed"> Job Open</span>
         {% endif %}
       </p>
       {% if job.image_list and job.image_list[0] %}

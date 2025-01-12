@@ -56,19 +56,10 @@
         background-color: #fff8e1;
       }
 
-      .conversation-item.unread::before {
-        content: "📩";
-        position: absolute;
-        top: 5px;
-        right: 15px;
-        font-size: 20px;
-        color: orange;
-      }
-
       .conversation-badge {
-        display: flex;
-        justify-content: flex-end; /* Aligns content to the right */
-        align-items: center; /* Centers the badge vertically if needed */
+        position: absolute;
+        top: 20px;
+        right: 10px;
         margin-right: 10px;
       }
 
@@ -77,13 +68,21 @@
         color: white; /* White text */
         padding: 5px 10px; /* Space around the text */
         border-radius: 20px; /* Rounded corners */
-        font-size: 12px; /* Smaller font */
+        font-size: 13px; /* Smaller font */
         font-weight: bold; /* Make the text bold */
       }
       .no_convs {
         text-align: center;
         font-size: 18px;
         color: #333;
+      }
+
+      .arrow-button {
+        color: #ff7148;
+        position: absolute;
+        bottom: 15px;
+        right: 20px;
+        font-size: 22px;
       }
     </style>
     <script src="path/to/your/javascript.js"></script>
@@ -119,6 +118,9 @@
           </div>
           <div class="conversation-time">
             {{ conv.timestamp.strftime('%b %d | %I:%M %p') }}
+          </div>
+          <div class="arrow-button">
+            <i class="fas fa-arrow-right"></i>
           </div>
         </a>
         {% if unread_map.get(conv.room) %}

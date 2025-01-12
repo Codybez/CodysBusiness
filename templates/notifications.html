@@ -25,6 +25,8 @@
         transition: all 0.3s ease;
         position: relative;
         max-width: 600px;
+        margin-left: -10px;
+        margin-right: -10px;
       }
 
       .notification-item:hover {
@@ -49,7 +51,7 @@
       }
 
       .notification-item.unread::before {
-        content: "🔔";
+        content: "";
         position: absolute;
         top: 5px;
         right: 15px;
@@ -76,6 +78,14 @@
         font-size: 18px;
         color: #333;
         margin-top: 20px;
+      }
+
+      .arrow-button {
+        color: #ff7148;
+        position: absolute;
+        bottom: 15px;
+        right: 10px;
+        font-size: 22px;
       }
     </style>
     <script>
@@ -141,6 +151,10 @@
           });
       }
     </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
@@ -189,6 +203,9 @@
         </div>
         <div class="notification-time">
           {{ notification.timestamp.strftime('%b %d | %I:%M %p') }}
+        </div>
+        <div class="arrow-button">
+          <i class="fas fa-arrow-right"></i>
         </div>
         <span
           class="close-btn"
