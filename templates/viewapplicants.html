@@ -21,7 +21,12 @@
 
       /* Container for Applicant Profiles */
       .applicant-container {
-        margin-top: 40px; /* Make space for the back button */
+        margin-top: 10px; /* Make space for the back button */
+        padding: 20px;
+      }
+
+      .applicant-container .heading {
+        margin-left: 10px;
       }
 
       .profile-pic {
@@ -75,8 +80,8 @@
 
       /* Orange Button */
       .button-container .orange-button {
-        background-color: white;
-        color: #555;
+        background-color: #ff7148;
+        color: #ffffff;
         border: 2px solid #ff7148;
         padding-left: -25px;
         padding-right: -25px;
@@ -103,6 +108,7 @@
         position: relative;
         transition: all 0.3s ease;
         border: 1px solid #ddd;
+        border-radius: 10px;
       }
 
       @media (max-width: 600px) {
@@ -122,6 +128,7 @@
 
     <!-- Applicant Profiles Container -->
     <div class="applicant-container">
+      <h1 class="heading">Applicants</h1>
       {% for application in job_applications |reverse %}
       <div class="applicant-profile">
         {% if application.user and application.user.profile_image %} {% if
@@ -144,16 +151,16 @@
 
         <div class="button-container">
           <a
-            href="{{ url_for('chat', job_id=application.job_id, user_id=application.user_id) }}"
+            href="{{ url_for('view_tradesman_profile', user_id=application.user.id) }}"
             class="orange-button"
           >
-            <span>Chat</span>
+            <span>Profile</span>
           </a>
           <a
-            href="{{ url_for('view_tradesman_profile', user_id=application.user.id) }}"
+            href="{{ url_for('chat', job_id=application.job_id, user_id=application.user_id) }}"
             class="white-button"
           >
-            <span>Profile</span>
+            <span>Chat</span>
           </a>
         </div>
 

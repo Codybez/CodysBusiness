@@ -13,6 +13,7 @@
         padding: 20px;
         margin: auto;
         max-width: 600px;
+        margin-bottom: 50px;
       }
 
       .conversation-item {
@@ -35,10 +36,23 @@
       .conversation-details {
         font-size: 16px;
         color: #333;
-        padding-right: 40px;
+        padding-right: 50px;
         display: -webkit-box;
-        max-height: 70px;
+        max-height: 90px;
         -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .conversation-details span {
+        color: #ff7148;
+      }
+      .conversation-details strong {
+        color: #333;
+        display: -webkit-box;
+        max-height: 30px;
+        -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -110,9 +124,10 @@
           <div class="conversation-details">
             <p>
               <strong
-                >{{ conv.other_user_name }} {% if conv.is_job_chat %} | {{
-                conv.job_name }} {% elif conv.other_user_trading_name != "None"
-                %} | {{ conv.other_user_trading_name }} {% endif %}</strong
+                ><span>{{ conv.other_user_name }}</span> {% if conv.is_job_chat
+                %} | {{ conv.job_name }} {% elif conv.other_user_trading_name !=
+                "None" %} | {{ conv.other_user_trading_name }} {% endif
+                %}</strong
               >
             </p>
             <p>{{ conv.most_recent_message }}</p>

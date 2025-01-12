@@ -220,12 +220,16 @@
         >
           Chat
         </a>
+        {% if current_user.id == job.accepted_user_id %}
+        <a href="" class="view-job-link"> Leave Review </a>
+        {% else %}
         <a
           href="{{ url_for('remove_application', job_id=job.id) }}"
           class="view-job-link"
         >
           Remove Job
         </a>
+        {% endif %}
       </div>
 
       <p>{{ job.tasks }}</p>

@@ -34,6 +34,10 @@
         cursor: pointer;
       }
 
+      .job-listing-link {
+        text-decoration: none;
+      }
+
       .job-listing.open {
         background-color: #ffffff;
       }
@@ -246,56 +250,36 @@
     <p class="no-jobs-msg">You have no won jobs.</p>
     {% else %} {% for job in active_jobs %}
 
-    <div
-      class="job-listing"
-      id="job_{{ job.id }}"
-      onclick="toggleDetails({{ job.id }})"
+    <a
+      href="{{ url_for('my_job_display_job', job_id=job.id) }}"
+      class="job-listing-link"
     >
-      <h1>{{ job.job_name }}</h1>
-      <p class="job-location">
-        <strong>{{ job.location }}</strong> | {{ job.job_category }}
-      </p>
+      <div
+        class="job-listing"
+        id="job_{{ job.id }}"
+        onclick="toggleDetails({{ job.id }})"
+      >
+        <h1>{{ job.job_name }}</h1>
+        <p class="job-location">
+          <strong>{{ job.location }}</strong> | {{ job.job_category }}
+        </p>
 
-      {% if job.image_list and job.image_list[0] %}
-      <img
-        src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
-        alt="Job Image"
-        class="job-image"
-      />
-      {% else %}
-      <img
-        src="{{ url_for('static', filename='job_images/orange.jpg') }}"
-        alt="Default Job Image"
-        class="job-image"
-      />
-      {% endif %}
-
-      <!-- Arrow -->
-      <div id="arrow_{{ job.id }}" class="arrow"></div>
-
-      <div id="details_{{ job.id }}" class="hidden-details">
-        <p>Posted by: {{ job.user.first_name }}</p>
-        <p>Email: {{ job.user.email }}</p>
-        <p>Phone: {{ job.contact_number }}</p>
-
-        <div class="button-container">
-          <a
-            href="{{ url_for('display_jobs', job_id=job.id) }}"
-            class="view-job-link"
-            onclick="preventToggle(event)"
-          >
-            View Job
-          </a>
-          <a
-            href="{{ url_for('chat', job_id=job.id, user_id=current_user.id) }}"
-            class="chat-link"
-            onclick="preventToggle(event)"
-          >
-            Chat
-          </a>
-        </div>
+        {% if job.image_list and job.image_list[0] %}
+        <img
+          src="{{ url_for('static', filename='job_images/' + job.image_list[0]) }}"
+          alt="Job Image"
+          class="job-image"
+        />
+        {% else %}
+        <img
+          src="{{ url_for('static', filename='job_images/orange.jpg') }}"
+          alt="Default Job Image"
+          class="job-image"
+        />
+        {% endif %}
       </div>
-    </div>
+    </a>
+
     {% endfor %} {% endif %} {% endblock %}
   </body>
 </html>
