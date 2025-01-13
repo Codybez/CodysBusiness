@@ -35,6 +35,8 @@
 
       .reviews-container {
         padding: 20px;
+        max-width: 600px;
+        margin: auto;
       }
 
       .review {
@@ -149,8 +151,7 @@
         <span>Reviews for</span> <br />
         {{ user.company_details.trading_name }}
       </h1>
-
-      {% for review, job in reviews %}
+      {% if reviews %} {% for review, job in reviews %}
       <div class="job-name-title">{{ job.job_name }}</div>
       <div class="poster-name">{{ job.formatted_date }}</div>
       <p class="comments">
@@ -220,6 +221,8 @@
       </div>
       {% endfor %}
     </div>
-    {% endblock %}
+    {% else %}
+    <p class="no-reviews">This user hasn't been reviewed yet.</p>
+    {% endif %} {% endblock %}
   </body>
 </html>
