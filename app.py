@@ -1979,6 +1979,9 @@ def reviews_page(user_id):
     user = User.query.get_or_404(user_id)  # Fetch user by ID
     # Fetch all reviews for the user and join with the Job table to get job details
     reviews = db.session.query(Review, Job).join(Job, Job.id == Review.job_id).filter(Review.user_id == user_id).all()
+
+    for review, job in reviews:
+        job.formatted_date = job.date_created.strftime("%B %d, %Y")  # Example: January 13, 2025
     
     return render_template('reviews.html', reviews=reviews, user=user)
 

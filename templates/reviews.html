@@ -98,6 +98,7 @@
       .job-name-title {
         font-size: 22px;
         font-weight: bold;
+        margin-top: 20px;
       }
 
       .total-score-container {
@@ -113,6 +114,30 @@
         font-size: 24px;
         margin-bottom: -5px;
       }
+
+      .total-star.empty {
+        color: #e0e0e0; /* Gray color for empty stars */
+      }
+
+      .total-star {
+        font-size: 20px;
+        color: #e0e0e0; /* Gray for empty stars */
+        position: relative;
+        display: inline-block;
+      }
+
+      .total-star.filled {
+        color: #ffcc00; /* Gold for full stars */
+      }
+
+      .total-star.half::before {
+        content: "\2605"; /* Unicode full star */
+        color: #ffcc00; /* Gold for half-filled stars */
+        position: absolute;
+        width: 50%; /* Half-width for half-filled stars */
+        overflow: hidden;
+        left: 0;
+      }
     </style>
   </head>
   <body>
@@ -127,6 +152,10 @@
 
       {% for review, job in reviews %}
       <div class="job-name-title">{{ job.job_name }}</div>
+      <div class="poster-name">{{ job.formatted_date }}</div>
+      <p class="comments">
+        "{{ review.comments | truncate(120, True, '...') }}"
+      </p>
       <div class="review">
         <!-- Review details on the left -->
         <div class="review-details">
@@ -169,6 +198,7 @@
         </div>
 
         <!-- Total score with stars -->
+        <!-- Total score with stars -->
         <div class="total-score-container">
           <span class="total-score">
             {{ (review.professionalism + review.quality + review.cost +
@@ -179,13 +209,13 @@
             {% set avg_score = (review.professionalism + review.quality +
             review.cost + review.communication) / 4 %} {% for i in range(1, 6)
             %}
-            <span class="total-star {% if avg_score < i %}empty{% endif %}"
-              >&#9733;</span
+            <span
+              class="total-star {% if i <= avg_score %}filled {% elif (i - 1) < avg_score < i %}half {% else %}empty{% endif %}"
             >
+              &#9733;
+            </span>
             {% endfor %}
           </div>
-          <p class="comments">{{ review.comments }}</p>
-          <p></p>
         </div>
       </div>
       {% endfor %}
