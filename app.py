@@ -1973,3 +1973,12 @@ def upload_liability_insurance():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
     
     return jsonify({"message": "Liability insurance uploaded successfully!"}), 200
+
+@app.route('/reviews/<int:user_id>')
+def reviews_page(user_id):
+    user = User.query.get_or_404(user_id)  # Fetch user by ID
+    # Fetch all reviews for the user and join with the Job table to get job details
+    reviews = db.session.query(Review, Job).join(Job, Job.id == Review.job_id).filter(Review.user_id == user_id).all()
+    
+    return render_template('reviews.html', reviews=reviews, user=user)
+

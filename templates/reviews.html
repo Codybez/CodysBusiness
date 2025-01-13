@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Reviews</title>
+    <style>
+      /* Styles for reviews page */
+      .review-summary {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+
+      .review-summary h3 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .review-rating {
+        color: gold;
+        font-size: 18px;
+      }
+
+      .review-comment {
+        margin-top: 12px;
+        color: #555;
+      }
+
+      .review-footer {
+        font-size: 12px;
+        color: #888;
+      }
+
+      .reviews-container {
+        padding: 20px;
+      }
+
+      .review {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border: 2px solid #ff7148;
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+
+      /* Make the left side (review details) take up most of the space */
+      .review-details {
+        flex-grow: 1; /* Makes sure the details take up remaining space */
+      }
+
+      /* Total score styling */
+      .total-score {
+        font-size: 70px; /* Larger font size */
+        font-weight: bold;
+        color: #333;
+        text-align: right;
+        margin-right: 10px;
+      }
+
+      /* Star rating styles */
+      .star-rating {
+        display: inline-block;
+      }
+
+      .star {
+        color: #ffcc00; /* Yellow stars */
+        font-size: 20px;
+      }
+
+      .star.empty {
+        color: #e0e0e0; /* Gray for empty stars */
+      }
+
+      .review h3 {
+        font-size: 20px;
+        margin-top: 0px;
+      }
+      .review p {
+        margin-bottom: -5px;
+        margin-top: 0px;
+      }
+
+      .reviews-container {
+        margin-bottom: 50px;
+      }
+
+      .total-star-rating {
+        color: #ffcc00;
+        margin-top: -10px;
+        font-size: 20px;
+        align-items: center;
+      }
+
+      .job-name-title {
+        font-size: 22px;
+        font-weight: bold;
+      }
+
+      .total-score-container {
+        display: flex; /* Enable flexbox */
+        flex-direction: column; /* Stack items vertically */
+        align-items: flex-end; /* Align items to the right side */
+        text-align: right; /* Ensure text aligns to the right */
+        padding-left: 10px;
+      }
+
+      .reviews-container h1 span {
+        color: #ff7148;
+        font-size: 24px;
+        margin-bottom: -5px;
+      }
+    </style>
+  </head>
+  <body>
+    {% if current_user.labourer_profile %} {% extends 'base_labour.html' %} {%
+    elif current_user.business_profile %} {% extends 'base_business.html' %} {%
+    else %} {% extends 'base_labour.html' %} {% endif %} {% block content %}
+    <div class="reviews-container">
+      <h1>
+        <span>Reviews for</span> <br />
+        {{ user.company_details.trading_name }}
+      </h1>
+
+      {% for review, job in reviews %}
+      <div class="job-name-title">{{ job.job_name }}</div>
+      <div class="review">
+        <!-- Review details on the left -->
+        <div class="review-details">
+          <p><strong>Professionalism:</strong> {{ review.professionalism }}</p>
+          <div class="star-rating">
+            {% for i in range(1, 6) %}
+            <span
+              class="star {% if review.professionalism < i %}empty{% endif %}"
+              >&#9733;</span
+            >
+            {% endfor %}
+          </div>
+
+          <p><strong>Quality:</strong> {{ review.quality }}</p>
+          <div class="star-rating">
+            {% for i in range(1, 6) %}
+            <span class="star {% if review.quality < i %}empty{% endif %}"
+              >&#9733;</span
+            >
+            {% endfor %}
+          </div>
+
+          <p><strong>Cost:</strong> {{ review.cost }}</p>
+          <div class="star-rating">
+            {% for i in range(1, 6) %}
+            <span class="star {% if review.cost < i %}empty{% endif %}"
+              >&#9733;</span
+            >
+            {% endfor %}
+          </div>
+
+          <p><strong>Communication:</strong> {{ review.communication }}</p>
+          <div class="star-rating">
+            {% for i in range(1, 6) %}
+            <span class="star {% if review.communication < i %}empty{% endif %}"
+              >&#9733;</span
+            >
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Total score with stars -->
+        <div class="total-score-container">
+          <span class="total-score">
+            {{ (review.professionalism + review.quality + review.cost +
+            review.communication) / 4 }}
+          </span>
+
+          <div class="total-star-rating">
+            {% set avg_score = (review.professionalism + review.quality +
+            review.cost + review.communication) / 4 %} {% for i in range(1, 6)
+            %}
+            <span class="total-star {% if avg_score < i %}empty{% endif %}"
+              >&#9733;</span
+            >
+            {% endfor %}
+          </div>
+          <p class="comments">{{ review.comments }}</p>
+          <p></p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endblock %}
+  </body>
+</html>

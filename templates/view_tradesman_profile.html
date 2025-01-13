@@ -202,8 +202,17 @@
     else %} {% extends 'base_labour.html' %} {% endif %} {% block title
     %}Contact Form{% endblock %} {% block content %}
     <div class="profile-container">
+      <div class="profile-actions">
+        <!-- Link to the reviews page -->
+        <a
+          href="{{ url_for('reviews_page', user_id=user.id) }}"
+          class="btn btn-primary"
+          >See All Reviews</a
+        >
+      </div>
       <!-- Profile Header -->
       <div class="profile-header">
+        <!-- Inside the user profile page -->
         <img
           src="{{ url_for('static', filename='profile_pics/' + (user.profile_image.filename if user.profile_image else 'orange.jpg')) }}"
           class="profile-pic"
