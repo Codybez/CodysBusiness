@@ -1004,7 +1004,7 @@ def tradesman_review(job_id):
         abort(404)
 
     # Check if the user has already submitted a review for this job
-    existing_review = Review.query.filter_by(user_id=current_user.id, job_id=job_id).first()
+    existing_review = Review.query.filter_by(user_id=selected_user.id, job_id=job_id).first()
 
     if request.method == 'POST':
         # Process the submitted review form data
@@ -1027,7 +1027,7 @@ def tradesman_review(job_id):
             # If no review exists, create a new one
             review = Review(
                 job_id=job_id,
-                user_id=current_user.id,
+                user_id=selected_user.id,
                 professionalism=professionalism,
                 quality=quality,
                 cost=cost,
@@ -1081,7 +1081,8 @@ def edit_social_links():
 @app.route('/tradesman_profile/<int:user_id>')
 def view_tradesman_profile(user_id):
     # Query the database for the user
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)  # Get the user by ID
+    reviews = Review.query.filter_by(user_id=user_id).all()  # Fetch reviews for the user
     
     if not user:
         # If the user does not exist, return a 404 error
@@ -1090,7 +1091,7 @@ def view_tradesman_profile(user_id):
     # Render the profile page with the user's data
     return render_template(
         'view_tradesman_profile.html',
-        user=user
+        user=user,reviews=reviews
     )
 
 @app.route('/notifications/unread')
