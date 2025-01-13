@@ -13,11 +13,20 @@
         margin-bottom: 50px;
       }
 
+      .container h1 {
+        font-size: 25px;
+      }
+
       .container {
         max-width: 600px;
         margin: auto;
         padding: 20px;
         background-color: #fff;
+      }
+
+      .container h4 {
+        color: #ff7148;
+        margin-top: -15px;
       }
 
       label {
@@ -52,18 +61,29 @@
       }
 
       button {
-        margin-top: 15px;
-        background-color: #333;
-        color: #fff;
+        margin: 15px auto; /* Centers the button horizontally */
+        display: block; /* Ensures the margin auto works */
+        text-align: center;
         padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
+        background-color: #ff7148;
+        border: 2px solid #ff7148;
+        border-radius: 25px;
+        color: #ffffff;
         cursor: pointer;
         font-size: 16px;
       }
 
       .contaier .review-form {
         margin-top: 30px;
+      }
+
+      .comments-textarea {
+        width: 95%;
+        max-width: 95%;
+        border-radius: 10px;
+        padding: 10px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 17px;
       }
     </style>
   </head>
@@ -75,8 +95,13 @@
         Review {{ selected_user.labourer_profile.first_name }} from {{
         selected_user.company_details.trading_name }}
       </h1>
+      <h4 class="job-name">{{ job.job_name }}</h4>
 
-      <form id="review-form">
+      <form
+        id="review-form"
+        method="POST"
+        action="{{ url_for('tradesman_review', job_id=job.id) }}"
+      >
         <!-- Professionalism Rating -->
         <label>Professionalism:</label>
         <div class="rating">
@@ -137,40 +162,30 @@
           >
         </div>
 
-        <!-- Reliability Rating -->
-        <label>Reliability:</label>
+        <!-- Cost Rating -->
+        <label>Cost:</label>
         <div class="rating">
-          <!-- Reliability Stars -->
-          <input
-            type="radio"
-            id="reliability-5"
-            name="reliability"
-            value="5"
-          /><label for="reliability-5">☆</label>
-          <input
-            type="radio"
-            id="reliability-4"
-            name="reliability"
-            value="4"
-          /><label for="reliability-4">☆</label>
-          <input
-            type="radio"
-            id="reliability-3"
-            name="reliability"
-            value="3"
-          /><label for="reliability-3">☆</label>
-          <input
-            type="radio"
-            id="reliability-2"
-            name="reliability"
-            value="2"
-          /><label for="reliability-2">☆</label>
-          <input
-            type="radio"
-            id="reliability-1"
-            name="reliability"
-            value="1"
-          /><label for="reliability-1">☆</label>
+          <!-- Cost Stars -->
+          <input type="radio" id="cost-5" name="cost" value="5" /><label
+            for="cost-5"
+            >☆</label
+          >
+          <input type="radio" id="cost-4" name="cost" value="4" /><label
+            for="cost-4"
+            >☆</label
+          >
+          <input type="radio" id="cost-3" name="cost" value="3" /><label
+            for="cost-3"
+            >☆</label
+          >
+          <input type="radio" id="cost-2" name="cost" value="2" /><label
+            for="cost-2"
+            >☆</label
+          >
+          <input type="radio" id="cost-1" name="cost" value="1" /><label
+            for="cost-1"
+            >☆</label
+          >
         </div>
 
         <!-- Communication Rating -->
@@ -216,7 +231,7 @@
           id="comments"
           name="comments"
           rows="6"
-          style="width: 95%; max-width: 95%"
+          class="comments-textarea"
         ></textarea>
 
         <div>

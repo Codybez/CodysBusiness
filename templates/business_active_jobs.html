@@ -120,24 +120,37 @@
 
       .button-group {
         display: flex;
-        gap: 10px; /* Space between buttons */
-        margin-top: 10px;
-        justify-content: space-evenly; /* Spread buttons evenly across the screen */
+        justify-content: space-between;
+        gap: 10px; /* Adjust the gap between the buttons */
         margin-top: 20px;
       }
 
       .button {
-        display: inline-block;
-        border: 2px solid #ff7148;
-        background-color: #ffffff;
-        color: #555;
-        padding: 10px 30px; /* Increased padding to make buttons wider */
-        border-radius: 25px;
-        font-size: 0.9rem;
+        flex: 1; /* Each button takes equal space */
         text-align: center;
-        transition: background 0.2s ease;
+        padding: 10px 0;
+        background-color: #ffffff;
+        border: 1px solid #ff7148;
+        border-radius: 25px;
         text-decoration: none;
-        width: 40%;
+        color: #333;
+      }
+
+      .review-button {
+        margin-top: 10px; /* Space above the review button */
+        display: flex; /* Align the button properly */
+        justify-content: center; /* Center the button horizontally */
+      }
+
+      .review-button a {
+        width: calc(100% + 10px); /* 80% of container minus the gap */
+        text-align: center;
+        padding: 10px 0;
+        background-color: #ff7148;
+        border: 1px solid #ff7148;
+        border-radius: 25px;
+        text-decoration: none;
+        color: #ffffff;
       }
 
       .no-open-jobs-message {
@@ -267,6 +280,11 @@
               onclick="preventToggle(event)"
               class="button"
               >Profile</a
+            >
+          </div>
+          <div class="review-button">
+            <a href="{{ url_for('tradesman_review', job_id=job.id) }}"
+              >Review {{ selected_user.labourer_profile.first_name }}</a
             >
           </div>
         </div>

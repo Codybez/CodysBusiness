@@ -18,6 +18,13 @@
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <style>
+      body {
+        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+      }
+
+      footer {
+        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+      }
       /* Styling for the new message icon */
       .fas.fa-envelope,
       .fas.fa-bell,
@@ -350,7 +357,7 @@
       class="footers-button {% if request.endpoint == 'create_job' %}active{% endif %}"
     >
       <i class="fas fa-search"></i>
-      <p>Create a Job</p>
+      <p>Create Job</p>
     </a>
 
     <a

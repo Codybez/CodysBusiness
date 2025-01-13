@@ -219,6 +219,26 @@ class Chat(db.Model):
         return f"<Chat sender={self.sender_id}, receiver={self.receiver_id}, post_id={self.post_id}>"
 
 
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  # ForeignKey for Job
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # ForeignKey for User
+    professionalism = db.Column(db.Integer, nullable=True)
+    quality = db.Column(db.Integer, nullable=True)
+    cost = db.Column(db.Integer, nullable=True)
+    communication = db.Column(db.Integer, nullable=True)
+    comments = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+
+    # Relationships
+    job = db.relationship('Job', backref='reviews', lazy=True)
+    user = db.relationship('User', backref='reviews', lazy=True)
+
+    def __repr__(self):
+        return f"<Review {self.id} for Job {self.job_id}>"
+
+
+
 @app.route('/landing_page')
 def landing_page():
     return render_template('landing_page.html')
@@ -980,8 +1000,11 @@ def tradesman_review(job_id):
     selected_user = User.query.get(job.accepted_user_id)
 
     if not selected_user:
-        # If no user is found for this job, return an error or a fallback
+        # If no user is found for this job, return a 404 error
         abort(404)
+
+    # Check if the user has already submitted a review for this job
+    existing_review = Review.query.filter_by(user_id=current_user.id, job_id=job_id).first()
 
     if request.method == 'POST':
         # Process the submitted review form data
@@ -991,25 +1014,35 @@ def tradesman_review(job_id):
         communication = int(request.form['communication'])
         comments = request.form['comments']
 
-        # Save the review data to your database
-        # Assuming you have a Review model to store reviews
-        review = Review(
-            job_id=job_id,
-            user_id=selected_user.id,
-            professionalism=professionalism,
-            quality=quality,
-            cost=cost,
-            communication=communication,
-            comments=comments
-        )
-        db.session.add(review)
-        db.session.commit()
+        if existing_review:
+            # If a review already exists, update it
+            existing_review.professionalism = professionalism
+            existing_review.quality = quality
+            existing_review.cost = cost
+            existing_review.communication = communication
+            existing_review.comments = comments
+            db.session.commit()
+            flash('Review updated successfully!', 'success')
+        else:
+            # If no review exists, create a new one
+            review = Review(
+                job_id=job_id,
+                user_id=current_user.id,
+                professionalism=professionalism,
+                quality=quality,
+                cost=cost,
+                communication=communication,
+                comments=comments
+            )
+            db.session.add(review)
+            db.session.commit()
+            flash('Review submitted successfully!', 'success')
 
-        # Redirect to a confirmation page (e.g., a page showing the review was submitted)
-        return redirect(url_for('review_confirmation', job_id=job_id))
+        # Redirect back to the 'business_active_jobs' page after review submission
+        return redirect(url_for('business_active_jobs'))
 
-    # Render the review form template with the job and selected_user data
-    return render_template('labourer_review.html', job_id=job_id, selected_user=selected_user)
+    # Pass the job object and any existing review to the template
+    return render_template('labourer_review.html', job=job, selected_user=selected_user, existing_review=existing_review)
 
 @app.route('/edit_social_links', methods=['GET', 'POST'])
 def edit_social_links():
@@ -1225,7 +1258,7 @@ def select_job_categories_and_locations():
     # Predefined categories and locations
     categories = [
         'General Labouring', 'Construction', 'Landscaping', 'Cleaning', 'Painting', 
-        'Plumbing', 'Electrical', 'Carpentry', 'Roofing', 'HVAC', 'Moving', 'Gardening', 'Handyman', 'Other'
+        'Plumbing', 'Electrical', 'Carpentry', 'Roofing', 'HVAC', 'Moving', 'Gardening', 'Handyman','Window Glazing','Tiling', 'Flooring', 'Concreting', 'Whiteware Repair', 'Other'
     ]
     locations = [
         'Northland', 'Auckland', 'Waikato', 'Bay of Plenty', 'Gisborne', 'Hawke\'s Bay', 

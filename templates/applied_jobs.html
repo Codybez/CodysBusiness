@@ -128,9 +128,8 @@
         color: #555;
         font-size: 12px;
         font-weight: bold;
-        padding: 5px 5px;
-        background-color: #cccccca3;
-        border-radius: 25px;
+        
+        
       }
 
       .buttons-container {
@@ -162,6 +161,8 @@
         border-bottom: 3px solid #ff7148; /* Orange underline */
         color: #ff7148; /* Optional: Change text color to orange */
       }
+
+      
     </style>
     <script>
       // Function to toggle the details of a job listing
@@ -260,7 +261,7 @@
         {% if job.status == 'closed' %}
         <span class="job-closed">Job Closed</span>
         {% else %}
-        <span class="job-closed"> Job Open</span>
+        <span class="job-closed">{{ job.date_created|time_ago }}</span>
         {% endif %}
       </p>
       {% if job.image_list and job.image_list[0] %}

@@ -9,11 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Details</title>
     <style>
+      body {
+        margin-bottom: 50px;
+      }
+
       .logo {
         color: #ff7148;
-        font-family: "Arial", sans-serif !important;
-        font-size: 27px !important;
-        font-weight: bold !important;
+        font-size: 27px;
+        font-weight: bold;
       }
 
       .job-details-container {
@@ -46,6 +49,10 @@
         font-family: Arial, Helvetica, sans-serif;
         margin: 10px 0;
         font-size: 17px;
+      }
+
+      .job-details-container p strong {
+        margin-top: 20px;
       }
 
       .job-details-container i {
@@ -170,7 +177,7 @@
 
       .view-job-link {
         background-color: #ffffff;
-        color: #777;
+        color: #ff7148;
         border: 2px solid #ff7148;
       }
 
@@ -245,7 +252,9 @@
           alt="Job Image"
           onclick="openImageModal('{{ image_path }}')"
         />
-        {% endfor %}
+
+        {% endfor %} {% else %}
+        <p><strong>This Job has no images.</strong></p>
       </div>
       {% endif %}
     </div>
