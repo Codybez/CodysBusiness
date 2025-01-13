@@ -155,6 +155,7 @@
         margin: auto;
         overflow-x: auto; /* Enable horizontal scrolling */
         padding-bottom: 20px; /* Optional, adds space at the bottom */
+        margin-bottom: 15px;
       }
 
       .review-slider {
@@ -211,6 +212,32 @@
         margin-bottom: 5px;
         font-weight: bold;
       }
+
+      .overall-rating .rating-display {
+        display: flex;
+        align-items: center;
+        font-size: 18px; /* Adjust size */
+        gap: 8px; /* Space between star and rating */
+      }
+
+      .overall-rating .rating-star {
+        color: #ffcc00; /* Star color */
+        font-size: 24px; /* Star size */
+        margin-left: 15px;
+      }
+
+      .overall-rating .rating-value {
+        font-weight: bold;
+        color: #333; /* Rating text color */
+      }
+
+      .btn-btn-primary {
+        color: #333;
+        text-decoration: none;
+        font-weight: bold;
+        margin-left: 20px;
+        margin-bottom: 20px;
+      }
     </style>
   </head>
   <body>
@@ -219,12 +246,20 @@
     %}Contact Form{% endblock %} {% block content %}
     <div class="profile-container">
       <div class="profile-actions">
-        <!-- Link to the reviews page -->
-        <a
-          href="{{ url_for('reviews_page', user_id=user.id) }}"
-          class="btn btn-primary"
-          >See All Reviews</a
-        >
+        <div class="overall-rating">
+          <!-- Link to the reviews page -->
+          <a
+            href="{{ url_for('reviews_page', user_id=user.id) }}"
+            class="btn-btn-primary"
+          >
+            Reviews <i class="fas fa-arrow-right"></i>
+          </a>
+
+          <div class="rating-display">
+            <span class="rating-star">&#9733;</span>
+            <span class="rating-value">{{ overall_rating | round(1) }}</span>
+          </div>
+        </div>
       </div>
       <!-- Profile Header -->
       <div class="profile-header">
@@ -294,6 +329,28 @@
         <p class="info-item">{{ user.labourer_profile.user_blurb }}</p>
       </div>
 
+      <div class="reviews-container">
+        <div class="review-slider">
+          {% for review in reviews %}
+          <div class="review {% if loop.index == 1 %}active{% endif %}">
+            <div class="job-name-title">{{ review.job.job_name}}</div>
+            <div class="review-text">"{{ review.comments }}"</div>
+            <div class="total-star-rating">
+              {% set avg_score = (review.professionalism + review.quality +
+              review.cost + review.communication) / 4 %} {% for i in range(1, 6)
+              %}
+              <span
+                class="total-star {% if i <= avg_score %}filled {% elif (i - 1) < avg_score < i %}half {% else %}empty{% endif %}"
+              >
+                &#9733;
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
       <!-- Contact Details -->
       <div class="section-container">
         <div class="section-title">Contact Details</div>
@@ -317,27 +374,6 @@
         <p class="info-item">
           <strong>NZBN:</strong> {{ user.company_details.nzbn }}
         </p>
-      </div>
-    
-    <div class="reviews-container">
-      <div class="review-slider">
-        {% for review in reviews %}
-        <div class="review {% if loop.index == 1 %}active{% endif %}">
-          <div class="job-name-title">{{ review.job.job_name}}</div>
-          <div class="review-text">"{{ review.comments }}"</div>
-          <div class="total-star-rating">
-            {% set avg_score = (review.professionalism + review.quality +
-            review.cost + review.communication) / 4 %} {% for i in range(1, 6)
-            %}
-            <span
-              class="total-star {% if i <= avg_score %}filled {% elif (i - 1) < avg_score < i %}half {% else %}empty{% endif %}"
-            >
-              &#9733;
-            </span>
-            {% endfor %}
-          </div>
-        </div>
-        {% endfor %}
       </div>
     </div>
 

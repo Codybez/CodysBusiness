@@ -37,6 +37,7 @@
         padding: 20px;
         max-width: 600px;
         margin: auto;
+        margin-bottom: 50px;
       }
 
       .review {
@@ -154,9 +155,7 @@
       {% if reviews %} {% for review, job in reviews %}
       <div class="job-name-title">{{ job.job_name }}</div>
       <div class="poster-name">{{ job.formatted_date }}</div>
-      <p class="comments">
-        "{{ review.comments | truncate(120, True, '...') }}"
-      </p>
+      <p class="comments">"{{ review.comments}}"</p>
       <div class="review">
         <!-- Review details on the left -->
         <div class="review-details">

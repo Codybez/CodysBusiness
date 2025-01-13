@@ -1083,6 +1083,7 @@ def view_tradesman_profile(user_id):
     # Query the database for the user
     user = User.query.get_or_404(user_id)  # Get the user by ID
     reviews = Review.query.filter_by(user_id=user_id).all()  # Fetch reviews for the user
+    overall_rating = calculate_overall_rating(user)
     
     if not user:
         # If the user does not exist, return a 404 error
@@ -1092,7 +1093,7 @@ def view_tradesman_profile(user_id):
     # Render the profile page with the user's data
     return render_template(
         'view_tradesman_profile.html',
-        user=user,reviews=reviews
+        user=user,reviews=reviews,overall_rating=overall_rating
     )
 
 @app.route('/notifications/unread')
@@ -1986,3 +1987,15 @@ def reviews_page(user_id):
     
     return render_template('reviews.html', reviews=reviews, user=user)
 
+def calculate_overall_rating(user):
+    reviews = user.reviews  # Assuming `reviews` is a relationship in the User model
+    if not reviews:
+        return 0  # No reviews yet
+
+    total_score = 0
+    for review in reviews:
+        avg_review_score = (review.professionalism + review.quality + review.cost + review.communication) / 4
+        total_score += avg_review_score
+
+    overall_rating = total_score / len(reviews)
+    return round(overall_rating, 2)  # Round to 2 decimal places
