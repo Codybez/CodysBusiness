@@ -131,7 +131,7 @@
             id="name"
             name="name"
             required
-            placeholder="Your Name"
+            value="{{ current_user.first_name }} {{ current_user.last_name }}"
           />
         </div>
 
@@ -143,7 +143,7 @@
             id="email"
             name="email"
             required
-            placeholder="Your Email"
+            value="{{ current_user.email }}"
           />
         </div>
 

@@ -16,6 +16,9 @@
       .job-details-container {
         padding: 15px;
         margin-bottom: 70px;
+        background-color: #f9f9f9;
+        margin-top: 20px;
+        border-radius: 10px;
       }
       .job-details-container h1 {
         color: #555;
@@ -122,25 +125,21 @@
       /* Button Container */
       .button-container {
         display: flex;
-        justify-content: space-evenly; /* Spread buttons evenly */
-        margin-left: -20px;
-        margin-right: -20px;
-        margin-top: 25px;
-        font-family: Arial, Helvetica, sans-serif;
+        justify-content: space-between;
+        gap: 10px; /* Adjust the gap between the buttons */
+        margin-top: 20px;
       }
 
       /* Action Buttons */
       .action-button {
-        background-color: #ffffff; /* Orange background */
-        color: #555; /* White text */
-        padding: 6px 12px; /* Small button padding */
-        text-decoration: none; /* No underline */
-        font-size: 12px; /* Small text */
-        border-radius: 25px; /* Rounded corners */
-
+        flex: 1; /* Each button takes equal space */
         text-align: center;
-        border: 2px solid #ff7148; /* Border matching the background */
-        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: 10px 0;
+        background-color: #ffffff;
+        border: 1px solid #ff7148;
+        border-radius: 25px;
+        text-decoration: none;
+        color: #333;
       }
     </style>
   </head>
@@ -165,13 +164,6 @@
       </p>
 
       <div class="button-container">
-        <a
-          href="{{ url_for('edit_job', job_id=job.id) }}"
-          class="action-button"
-          onclick="preventToggle(event)"
-        >
-          Edit Job
-        </a>
         <a
           href="{{ url_for('close_job', job_id=job.id) }}"
           class="action-button"

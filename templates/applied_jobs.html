@@ -38,13 +38,21 @@
         background-color: #ffffff;
       }
 
-      .job-listing h1 {
-        color: #333;
-        font-size: 20px;
-        margin: 0;
-        margin-bottom: -5px;
-        padding-right: 70px;
-      }
+.job-listing h1 {
+  color: #333;
+  font-size: 20px;
+  margin: 0;
+  margin-bottom: -5px;
+  padding-right: 50px;
+  display: -webkit-box;        /* Required for the clamp */
+  -webkit-box-orient: vertical; /* Required for the clamp */
+  overflow: hidden;            /* Ensures content is hidden */
+  text-overflow: ellipsis;     /* Adds the ellipsis */
+  -webkit-line-clamp: 2;       /* Limits to 2 lines */
+  line-height: 1.2;            /* Adjust the line height */
+  max-height: calc(1.2em * 2); /* Adjust based on line-height */
+}
+
 
       .job-listing p {
         color: #333;

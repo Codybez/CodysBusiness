@@ -27,7 +27,7 @@
         padding: 20px;
         background-color: #ccccccdf;
         margin: auto;
-
+        margin-top: -40px;
         background-color: #fff;
         margin-bottom: 70px;
       }
@@ -56,20 +56,18 @@
 
       .form-group {
         margin-bottom: 30px;
+        margin-top: 30px;
       }
 
       button {
-        background-color: #ffffff;
-        color: #555;
-        border: 2px solid #ff7148;
-        padding: 12px 24px;
         text-align: center;
-        text-decoration: none;
-        font-weight: bold;
-        display: inline-block;
-        font-size: 18px;
+        padding: 14px 0;
+        background-color: #ffffff;
+        border: 2px solid #ff7148;
         border-radius: 25px;
-        cursor: pointer;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
         width: 100%; /* Make button span 90% of its container */
       }
 
@@ -145,8 +143,8 @@
       .custom-file-input {
         display: inline-block;
         padding: 8px 18px;
-        background-color: #ffffff;
-        color: #555;
+        background-color: #ff7148;
+        color: #ffffff;
         border: 2px solid #ff7148;
         border-radius: 25px;
         cursor: pointer;
@@ -183,6 +181,7 @@
         position: relative;
         margin-right: 10px;
         margin-bottom: 10px;
+        margin-top: 15px;
       }
 
       .preview-image {
@@ -233,6 +232,34 @@
         font-size: 14px;
         margin-top: 10px;
       }
+
+      .note {
+        font-size: 0.9em;
+        color: #6c757d; /* Subtle gray color */
+      }
+
+      .form-text.text-muted {
+        font-size: 0.85em;
+        color: #6c757d;
+      }
+
+      .job-heading {
+        text-align: left;
+      }
+
+      .job-heading h1 {
+        color: #333; /* Orange color */
+        font-size: 28px; /* Adjust the size as needed */
+        margin-bottom: 20px;
+        margin-left: 5px;
+      }
+
+      .job-heading h1 span {
+        color: #ff7148;
+        font-size: 24px;
+        margin-bottom: -5px;
+      }
+
     </style>
   </head>
   <body>
@@ -241,6 +268,11 @@
     <br /><br />
 
     <div class="container">
+      <div class="job-heading">
+      <h1>
+        <span>Get started</span> <br />
+        Create Your Job Listing!
+      </h1>
       <form
         id="job-form"
         method="POST"
@@ -249,7 +281,18 @@
       >
         <div class="form-group">
           <label for="job_name">Job Name: *</label>
-          <input type="text" id="job_name" name="job_name" required />
+          <input
+            type="text"
+            id="job_name"
+            maxlength="35"
+            name="job_name"
+            required
+            placeholder="'New Weatherboards on Garage'"
+          />
+          <small class="form-text text-muted">
+            A short and concise title for your job eg 'New weatherboards on
+            garage'
+          </small>
         </div>
 
         <div class="form-group">
@@ -276,6 +319,9 @@
             <option value="Whiteware Repair">Whiteware Repair</option>
             <option value="Other">Other</option>
           </select>
+          <small class="form-text text-muted">
+            Select the category that best suits your job.
+          </small>
         </div>
 
         <div class="form-group">
@@ -299,31 +345,44 @@
             <option value="Otago">Otago</option>
             <option value="Southland">Southland</option>
           </select>
+          <small class="form-text text-muted">
+            Select the region the job is located in.
+          </small>
         </div>
 
         <div class="form-group">
           <label for="city">City/Town: *</label>
           <input type="text" id="city" name="city" required />
+          <small class="form-text text-muted">
+            Enter the City/Town the job is located in.
+          </small>
         </div>
 
         <div class="form-group">
           <label for="suburb">Suburb: *</label>
           <input type="text" id="suburb" name="suburb" required />
+          <small class="form-text text-muted">
+            Enter the Suburb the job is located in.
+          </small>
         </div>
 
         <div class="form-group">
-          <label for="contact_number">Contact Number: *</label>
-          <input
-            type="text"
-            id="contact_number"
-            name="contact_number"
-            required
-          />
+          <label for="contact_number">Contact Number:</label>
+          <input type="text" id="contact_number" name="contact_number" />
+          <small class="form-text text-muted">
+            This is optional, users can contact you through chat, but providing
+            a contact number allows tradesmen to reach you directly if you
+            prefer.
+          </small>
         </div>
 
         <div class="form-group">
           <label for="tasks">Basic Outline of Tasks: *</label>
           <textarea id="tasks" name="tasks" rows="10" required></textarea>
+          <small class="form-text text-muted">
+            Provide a brief overview of the tasks to be completed. Be clear and
+            concise to help tradesmen understand the scope of work.
+          </small>
         </div>
 
         <div class="form-group">
@@ -333,15 +392,20 @@
             name="additional-details"
             rows="10"
           ></textarea>
+          <small class="form-text text-muted">
+            Include any relevant details such as preferred date and time,
+            specific requirements, or any other information that might help
+            tradesmen understand your needs better.
+          </small>
         </div>
 
         <div class="form-group">
           <label for="photo-upload"
-            >Upload Photos (Multiple images must be added together not
-            seperately):</label
+            >Upload Photos: Multiple images must be uploaded together. Images
+            added seperately will not be added to the job.</label
           >
           <label for="photo-upload" class="custom-file-input"
-            >Choose File</label
+            >Choose Images</label
           >
           <input
             type="file"
