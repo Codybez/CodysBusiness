@@ -47,6 +47,7 @@ def index():
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    soft_deleted = db.Column(db.Boolean, default=False)  # New column for soft delete
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
     location = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
@@ -341,9 +342,22 @@ def register():
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
 
+        # Check if the email already exists in the database
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            if user.soft_deleted:
+                # If the account is soft-deleted, notify the user to contact support
+                flash('This email is associated with a deactivated account. Please contact support to reactivate your account.', 'error')
+            else:
+                # If the account is active, notify the user that the account already exists
+                flash('An active account already exists with this email. Please log in.', 'error')
+            return redirect(url_for('login'))  # Redirect to login page if email exists
+
+        # If the email doesn't exist, create a new user
         hashed_password = generate_password_hash(password, method='sha256')
 
-        # Create the user
+        # Create the new user
         new_user = User(
             email=email,
             password=hashed_password,
@@ -363,8 +377,8 @@ def register():
             db.session.add(business_profile)
             db.session.commit()
 
-        flash('Registration successful! Please Login to begin', 'success')
-        return redirect(url_for('login'))
+        flash('Registration successful! Please log in to begin.', 'success')
+        return redirect(url_for('login'))  # Redirect to the login page after successful registration
 
     return render_template('register.html')
 
@@ -376,24 +390,33 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
 
-        if user and check_password_hash(user.password, password):
-            print(f"User email: {user.email}, User type: {user.user_type}")  # Add this line for debugging
-            login_user(user)
-            if user.user_type == 'Business':
-                print("Redirecting to business_dashboard")
-                return redirect(url_for('business_created_jobs'))
+        if user:
+            # Check if the password is correct and if the account is not soft deleted
+            if check_password_hash(user.password, password):
+                if user.soft_deleted:
+                    flash('Your account has been deactivated. Please contact support.', 'error')
+                    return redirect(url_for('login'))
+
+                # If the account is not soft deleted, log the user in
+                login_user(user)
+                
+                # Redirect based on user type
+                if user.user_type == 'Business':
+                    return redirect(url_for('business_created_jobs'))
+                else:
+                    return redirect(url_for('find_a_job'))
             else:
-                print("Redirecting to labourer_dashboard")
-                return redirect(url_for('find_a_job'))
+                flash('Invalid password. Please try again.', 'error')
+        else:
+            flash('No account found with this email address.', 'error')
 
-
-    return render_template('login.html')  # Create a corresponding HTML template
-
+    return render_template('login.html')
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
+
    
     return redirect(url_for('login'))  # Redirect to the login page after logout
 
@@ -572,7 +595,7 @@ def find_a_job():
     my_categories = current_user.labourer_profile.job_categories.split(', ') if current_user.labourer_profile.job_categories else []
     my_locations = current_user.labourer_profile.job_locations.split(', ') if current_user.labourer_profile.job_locations else []
 
-    job_data = Job.query.all()
+    job_data = Job.query.join(User).filter(User.soft_deleted == False).all()
 
     # Ensure image_list is a list of paths
     for job in job_data:
@@ -1999,3 +2022,15 @@ def calculate_overall_rating(user):
 
     overall_rating = total_score / len(reviews)
     return round(overall_rating, 2)  # Round to 2 decimal places
+
+@app.route('/delete_account', methods=['POST' , 'GET'])
+def delete_account():
+    # Get the current user (assuming they are logged in)
+    user = current_user  # or however you're retrieving the user
+
+    # Mark the user as soft deleted
+    user.soft_deleted = True
+    db.session.commit()
+
+    flash('Your account has been deactivated.', 'success')
+    return redirect(url_for('login'))  # Or wherever the user should be redirected

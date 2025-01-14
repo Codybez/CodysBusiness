@@ -15,8 +15,8 @@
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: #ff7148;
-        color: white;
+        background-color: #ffffff;
+        color: #333;
         padding: 10px 20px;
         border-radius: 5px;
         font-size: 16px;
@@ -24,6 +24,18 @@
         z-index: 9999;
         display: inline-block;
         animation: slideDown 3s forwards;
+      }
+
+      .notification-box .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 20px;
+        color: #333;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-weight: bold;
       }
 
       @keyframes slideDown {
@@ -166,15 +178,29 @@
 
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %}
-    <div class="notification-box">
+    <div class="notification-box" id="notification-box">
       {% for category, message in messages %}
       <div class="flash {{ category }}">{{ message }}</div>
       {% endfor %}
     </div>
     {% endif %} {% endwith %} {% if session.get('notification') %}
-    <div class="notification-box">{{ session.pop('notification') }}</div>
+    <div class="notification-box" id="notification-box">
+      {{ session.pop('notification') }}
+      <button class="close-btn" id="close-btn">X</button>
+    </div>
     {% endif %}
 
     <main>{% block content %}{% endblock %}</main>
+    <script>
+      // JavaScript to hide the notification box when clicked
+      document.addEventListener("DOMContentLoaded", function () {
+        const notificationBox = document.getElementById("notification-box");
+        if (notificationBox) {
+          notificationBox.addEventListener("click", function () {
+            notificationBox.style.display = "none";
+          });
+        }
+      });
+    </script>
   </body>
 </html>
