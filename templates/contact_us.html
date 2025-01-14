@@ -14,32 +14,34 @@
         justify-content: center; /* Horizontally center */
         align-items: center; /* Vertically center */
         height: 100vh; /* Take full height of the viewport */
-        margin: 0; /* Remove default margin */
+        margin: 0; /* Remove default
+        margin */
         background-color: #ffffff; /* Optional, for better visibility */
+        margin-bottom: 50px;
       }
 
       /* Container styling */
       .contact-container {
         background-color: #ffffff;
         padding: 20px;
-        margin: 20px auto;
-        border: 1px solid #e0e0e0;
         border-radius: 15px;
-        max-width: 600px;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-        box-sizing: border-box;
+        width: 80%;
       }
 
       /* Form title */
-      .contact-container h1 {
-        font-size: 24px;
+      .contact-container h1 span {
+        font-size: 40px;
         color: #333333;
         text-align: center;
         margin-bottom: 20px;
       }
 
+      .contact-container h1 {
+        font-size: 24px;
+        color: #ff7148;
+        text-align: center;
+        margin-bottom: -10px;
+      }
       /* Label styling */
       .contact-container label {
         font-size: 14px;
@@ -59,19 +61,16 @@
         margin-bottom: 15px;
         border: 1px solid #cccccc;
         border-radius: 5px;
-        font-size: 14px;
+        font-size: 16px;
         color: #333333;
         outline: none;
         transition: border 0.2s ease-in-out;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
       }
 
       /* Input focus effect */
       .contact-container input:focus,
       .contact-container textarea:focus {
         border-color: #ff7148;
-        box-shadow: 0 0 5px rgba(255, 113, 72, 0.3);
       }
 
       /* Button styling */
@@ -83,7 +82,7 @@
         border: none;
         padding: 10px;
         width: 100%; /* Full width button */
-        border-radius: 5px;
+        border-radius: 25px;
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
         margin-bottom: 10px;
@@ -96,7 +95,7 @@
       /* Link and text styling */
       .contact-container p {
         text-align: center;
-        font-size: 14px;
+        font-size: 16px;
         color: #555555;
         margin-top: 15px;
       }
@@ -111,6 +110,10 @@
       .contact-container a:hover {
         color: #ff5e33;
       }
+
+      .form-start {
+        margin-top: 30px;
+      }
     </style>
   </head>
   <body>
@@ -120,11 +123,11 @@
     <div class="contact-container">
       <form method="POST" action="{{ url_for('contact') }}">
         <div>
-          <h1>Contact Us</h1>
+          <h1>Have a Question?<br /><span>Contact Us</span></h1>
         </div>
 
         <!-- Name Input -->
-        <div>
+        <div class="form-start">
           <label for="name">Name</label>
           <input
             type="text"
@@ -155,7 +158,8 @@
             name="message"
             required
             placeholder="Your Message"
-            rows="5"
+            rows="10"
+            style="font-family: Arial, Helvetica, sans-serif"
           ></textarea>
         </div>
 

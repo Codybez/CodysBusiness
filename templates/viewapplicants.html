@@ -14,7 +14,6 @@
     />
     <style>
       body {
-        font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
       }
@@ -41,7 +40,6 @@
 
       .applicant-profile h3 {
         color: #555;
-        font-family: Arial, Helvetica, sans-serif;
         margin-top: 15px;
         margin-bottom: -10px;
         margin-left: 5px;
@@ -70,12 +68,17 @@
         text-decoration: none;
         text-align: center;
         font-size: 16px;
-        font-family: Arial, Helvetica, sans-serif;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         box-sizing: border-box; /* Prevent overflow due to padding */
         border-radius: 25px;
+      }
+
+      .no-applicants {
+        text-align: center;
+        font-size: 18px;
+        color: #333;
       }
 
       /* Orange Button */
@@ -128,8 +131,8 @@
 
     <!-- Applicant Profiles Container -->
     <div class="applicant-container">
-      <h1 class="heading">Applicants</h1>
-      {% for application in job_applications |reverse %}
+      <h1 class="heading">Job Applicants</h1>
+      {% for application in job_applications | reverse %}
       <div class="applicant-profile">
         {% if application.user and application.user.profile_image %} {% if
         application.user.user_profile_image %} {% set image_path =
@@ -163,11 +166,12 @@
             <span>Chat</span>
           </a>
         </div>
-
         {% else %}
         <p>No user information available for this application.</p>
         {% endif %}
       </div>
+      {% else %}
+      <p class="no-applicants">Your job currently has no applications.</p>
       {% endfor %}
     </div>
 

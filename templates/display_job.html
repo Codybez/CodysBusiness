@@ -24,14 +24,13 @@
       }
       .job-details-container h1 {
         color: #555;
-        font-family: Arial, Helvetica, sans-serif;
         font-size: 21px;
         margin-bottom: -5px;
       }
 
       .job-details-container h2 {
-        color: #777;
-        font-family: Arial, Helvetica, sans-serif;
+        color: #333;
+        font-size: 21px;
       }
 
       .job-details-container p {
@@ -39,7 +38,6 @@
         align-items: flex-start;
         gap: 15px;
         color: #555;
-        font-family: Arial, Helvetica, sans-serif;
         margin: 10px 0;
         font-size: 17px;
       }
@@ -69,7 +67,6 @@
         margin-left: 15px;
         text-decoration: none;
         text-align: center;
-        font-family: Arial, Helvetica, sans-serif;
       }
 
       #applybutton i {
@@ -132,7 +129,6 @@
         font-size: 12px;
         margin-left: 10px;
         padding: 0;
-        font-family: Arial, Helvetica, sans-serif;
       }
     </style>
   </head>
@@ -162,7 +158,7 @@
 
       <!-- Image Gallery -->
       {% if job.image_paths %}
-      <h2>Images</h2>
+      <h2>Job Images</h2>
       <div class="image-gallery">
         {% for image_filename in job.image_paths.split(',') %} {% set image_path
         = url_for('static', filename='job_images/' + image_filename) %}

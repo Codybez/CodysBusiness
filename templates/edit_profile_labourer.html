@@ -9,13 +9,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
       body {
-        font-family: Arial, Helvetica, sans-serif;
-        background-color: #f0f0f0;
+        background-color: #ffffff;
         color: #333;
         margin: 0;
-        padding: 0;
+        margin-top: 0px;
       }
 
+      .edit-form-container h1 {
+        text-align: center;
+        font-size: 40px;
+        margin-top: -30px;
+      }
+
+      .edit-form-container h2 {
+        text-align: center;
+        font-size: 24px;
+        color: #ff7148;
+        margin-bottom: 20px;
+        margin-right: 53px;
+      }
       .edit-form-container {
         max-width: 600px;
         margin: 0 auto;
@@ -26,7 +38,7 @@
 
       label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
 
       input,
@@ -36,8 +48,10 @@
         margin-bottom: 16px;
         box-sizing: border-box;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 10px;
         font-size: 16px;
+        margin-bottom: 10px;
+        font-family: "roboto";
       }
 
       button {
@@ -48,6 +62,9 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 16px;
+        display: block; /* Makes the button a block-level element */
+        margin-left: auto; /* Automatically pushes the button to the right */
+        margin-right: auto; /* Automatically pushes the button to the left */
       }
 
       button:hover {
@@ -60,43 +77,40 @@
       .edit-form-container {
         background-color: #ffffff;
         padding: 20px;
-        margin: 20px auto;
+        margin: auto;
         margin-bottom: 50px;
-        max-width: 400px;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        max-width: 600px;
       }
 
       /* Styles for form labels */
       .edit-form-container label {
         font-weight: bold;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
       }
 
       /* Styles for form inputs */
 
       .edit-form-container input[type="text"],
       .edit-form-container input[type="file"] {
-        width: calc(100% - 20px); /* Adjusted width */
         padding: 10px;
         margin-bottom: 10px;
         border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 10px;
         font-size: 14px;
         box-sizing: border-box; /* Added box-sizing property */
+        width: 100%;
       }
       textarea.form-control {
-        width: 90%;
-        padding: 12px;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: "roboto";
         font-size: 16px;
         line-height: 1.5;
         border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f9f9f9;
+        border-radius: 10px;
         resize: vertical; /* Allows the user to resize the textarea vertically */
         transition: all 0.3s ease;
+        width: 93%;
+        padding: 10px;
       }
       /* Styles for form buttons */
       .edit-form-container button {
@@ -105,8 +119,9 @@
         border: none;
         padding: 10px 15px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 25px;
         font-size: 16px;
+        margin-top: 15px;
       }
 
       .edit-form-container button:hover {
@@ -139,6 +154,16 @@
       .btn:hover {
         background-color: rgb(42, 191, 42);
       }
+
+      .form-text.text-muted {
+        font-size: 0.85em;
+        color: #6c757d;
+        margin-top: 5px;
+      }
+
+      .bottom-slot {
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
@@ -146,7 +171,8 @@
     block content %}
 
     <div class="edit-form-container">
-      <h2>Edit Profile</h2>
+      <h2>Add Your Basic</h2>
+      <h1>Information</h1>
       <form method="POST" enctype="multipart/form-data" action="">
         {{ form.hidden_tag() }}
 
@@ -165,9 +191,16 @@
         <label for="{{ form.user_blurb.id }}"
           >Tell us about your business</label
         >
-        {{ form.user_blurb(class="form-control", rows=15, cols=40) }}
+        {{ form.user_blurb(class="form-control", rows=10) }}
+        <div class="bottom-slot">
+          <small class="form-text text-muted">
+            Provide a detailed description of your business and the services you
+            offer. This will be displayed on your profile, and is the main
+            section potential clients will see.
+          </small>
+        </div>
 
-        <button type="submit">Save Profile</button>
+        <button type="submit">Save Information</button>
       </form>
     </div>
     <br />

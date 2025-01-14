@@ -6,7 +6,6 @@
     <title>Labourer Profile</title>
     <style>
       body {
-        font-family: Arial, Helvetica, sans-serif;
         background-color: #ffffff;
         margin: 0;
         padding: 0;
@@ -43,7 +42,6 @@
         border-bottom: 2px solid #ff7148;
         padding-bottom: 5px;
         margin-bottom: 15px;
-        font-family: Arial, Helvetica, sans-serif;
       }
 
       /* Info items */
@@ -56,12 +54,17 @@
         border-radius: 5px;
         margin-bottom: 10px;
         font-size: 14px;
-        font-family: Arial, Helvetica, sans-serif;
+        display: -webkit-box;
+        -webkit-box-orient: horizontal; /* Ensures content is laid out in a single row */
+        overflow: hidden; /* Hides overflowed content */
+        white-space: nowrap; /* Prevents text from wrapping */
+        text-overflow: ellipsis; /* Adds ellipsis when text overflows */
       }
 
       .info-item strong {
         color: #333;
         font-weight: bold;
+        margin-right: 5px;
       }
 
       .info-item span {
@@ -77,7 +80,7 @@
       .edit-button a {
         color: #ffffff;
         background-color: #333;
-        border-radius: 5px;
+        border-radius: 25px;
         padding: 10px 20px;
         text-decoration: none;
         font-size: 14px;
@@ -88,7 +91,6 @@
         text-align: center;
         font-size: 18px;
         color: #3f3f3fc6;
-        margin-bottom: 20px;
       }
 
       .user-location .fa-map-marker-alt {
@@ -101,7 +103,7 @@
       .profile-pic-container {
         text-align: center;
         position: relative;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
       }
 
       .profile-pic {
@@ -114,10 +116,9 @@
 
       .profile-pic-overlay {
         position: absolute;
-        bottom: 10px;
+        bottom: -10px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: rgba(255, 255, 255, 0.8);
         padding: 5px;
         border-radius: 10px;
       }
@@ -126,9 +127,9 @@
         background-color: #333;
         color: white;
         border: none;
-        padding: 10px 10px;
+        padding: 10px 20px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 25px;
       }
 
       .social-links-info {
@@ -151,29 +152,18 @@
         line-height: 1.6;
       }
 
-      .info-item span {
-        display: inline-block;
-        max-width: 100%; /* Limit the width of the URL */
-        white-space: nowrap; /* Prevent wrapping */
-        overflow: hidden; /* Hide the overflow */
-        text-overflow: ellipsis; /* Add an ellipsis when the URL overflows */
-      }
-
       /* Job categories and locations section */
       .categories-locations-container {
         background-color: #f9f9f9;
         padding: 20px;
         border-radius: 10px;
         margin-bottom: -10px;
-
         border: 1px solid #ddd;
       }
 
       .categories-locations-container h3 {
         font-size: 20px;
         color: #333;
-
-        font-family: Arial, Helvetica, sans-serif;
         border-bottom: 2px solid #ff7148;
         padding-bottom: 5px;
       }
@@ -263,7 +253,7 @@
             enctype="multipart/form-data"
           >
             <label for="profile-image-upload" class="edit-pic-button"
-              >Profile Pic</label
+              >Choose Image</label
             >
             <input
               type="file"
