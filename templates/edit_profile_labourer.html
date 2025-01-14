@@ -164,6 +164,11 @@
       .bottom-slot {
         padding: 10px;
       }
+
+      .text {
+        margin-bottom: 10px;
+        padding: 10px;
+      }
     </style>
   </head>
   <body>
@@ -187,6 +192,12 @@
 
         <label for="{{ form.phone_number.id }}">Phone Number</label>
         {{ form.phone_number(class="form-control") }}
+        <div class="text">
+          <small class="form-text text-muted">
+            Please provide the number you want on your profile for potential
+            clients to contact you directly.
+          </small>
+        </div>
 
         <label for="{{ form.user_blurb.id }}"
           >Tell us about your business</label
@@ -196,7 +207,8 @@
           <small class="form-text text-muted">
             Provide a detailed description of your business and the services you
             offer. This will be displayed on your profile, and is the main
-            section potential clients will see.
+            section potential clients will see. This page can be edited in the
+            future.
           </small>
         </div>
 

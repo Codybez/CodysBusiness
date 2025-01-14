@@ -20,9 +20,10 @@
         border-radius: 8px;
       }
 
-      h2 {
+      h3 {
         text-align: center;
         color: #333;
+        font-size: 26px;
       }
 
       .button-group {
@@ -76,6 +77,15 @@
         cursor: pointer;
         font-size: 16px;
       }
+
+      .form-text.text-muted {
+        font-size: 0.85em;
+        color: #6c757d;
+      }
+
+      .text {
+        margin-bottom: 30px;
+      }
     </style>
   </head>
   <body>
@@ -84,8 +94,15 @@
     <div class="container">
       <form method="POST">
         <div class="button-group">
+          <!-- Job Categories Section -->
           <div>
             <h3>Job Categories</h3>
+            <div class="text">
+              <small class="form-text text-muted">
+                Please select the job categories relevant to your business.
+                These categories will determine the types of jobs shown to you.
+              </small>
+            </div>
             {% for category in categories %}
             <button
               type="button"
@@ -105,10 +122,25 @@
               {{ category }}
             </button>
             {% endfor %}
+            <!-- Display selected categories -->
+            <div class="selected-items">
+              <ul id="selected-categories-list">
+                {% for selected_category in selected_categories %}
+                <li>{{ selected_category }}</li>
+                {% endfor %}
+              </ul>
+            </div>
           </div>
 
+          <!-- Job Locations Section -->
           <div>
             <h3>Job Locations</h3>
+            <div class="text">
+              <small class="form-text text-muted">
+                Please select the locations where your business operates. This
+                will ensure you see jobs available in your preferred areas.
+              </small>
+            </div>
             {% for location in locations %}
             <button
               type="button"
@@ -128,14 +160,15 @@
               {{ location }}
             </button>
             {% endfor %}
+            <!-- Display selected locations -->
+            <div class="selected-items">
+              <ul id="selected-locations-list">
+                {% for selected_location in selected_locations %}
+                <li>{{ selected_location }}</li>
+                {% endfor %}
+              </ul>
+            </div>
           </div>
-        </div>
-
-        <!-- Display selected categories and locations here -->
-        <div class="selected-items">
-          <ul id="selected-categories-list"></ul>
-
-          <ul id="selected-locations-list"></ul>
         </div>
 
         <!-- Hidden inputs to store selections -->

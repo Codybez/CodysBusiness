@@ -17,6 +17,11 @@
         padding: 0;
       }
 
+      h2 {
+        text-align: center;
+        color: #333;
+        font-size: 26px;
+      }
       form {
         max-width: 600px;
         margin: 0 auto;
@@ -27,6 +32,7 @@
       label {
         display: block;
         margin-bottom: 8px;
+        font-weight: bold;
       }
 
       input,
@@ -49,13 +55,26 @@
         color: #fff;
         padding: 10px 20px;
         border: none;
-        border-radius: 5px;
+        border-radius: 25px;
         cursor: pointer;
         font-size: 16px;
+        width: 100%;
+        align-items: center;
+        margin-top: 15px;
       }
 
       button:hover {
         background-color: #555;
+      }
+
+      .form-text.text-muted {
+        font-size: 0.85em;
+        color: #6c757d;
+      }
+
+      .text {
+        margin-bottom: 30px;
+        padding: 10px;
       }
     </style>
   </head>
@@ -66,10 +85,13 @@
     <div class="container">
       <form method="post" action="{{ url_for('edit_tradesman_profile') }}">
         <h2>Business details</h2>
-        <p>
-          These details will be checked by our staff and confirmed within 24hrs.
-        </p>
-        <p>Details are not publicly viewable.</p>
+        <div class="text">
+          <small class="form-text text-muted">
+            These details will be reviewed by our team and confirmed within 24
+            hours. Once confirmed, this section will be locked, and any further
+            changes will require contacting our support team.
+          </small>
+        </div>
 
         <label for="businessType">Business Type*</label>
         <select id="businessType" name="businessType">
@@ -93,12 +115,12 @@
           placeholder="Your NZ Business Number"
         />
 
-        <label for="established">Established*</label>
+        <label for="established">Year Established*</label>
         <input
           type="text"
           id="established"
           name="established"
-          placeholder="Date Business Was Established"
+          placeholder="Year Business Was Established"
         />
 
         <label for="directorFirstName">Director first name*</label>

@@ -11,6 +11,7 @@
         color: #333;
         margin: 0;
         padding: 0;
+        margin-bottom: 70px;
       }
 
       .edit-form-container {
@@ -48,9 +49,8 @@
 
       .help-button {
         position: absolute;
-        transform: translateY(-180%);
-        top: 50%;
-        right: 10px;
+        transform: translateY(-220%);
+        right: 30px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -75,9 +75,10 @@
         background-color: #333;
         color: #fff;
         border: none;
-        border-radius: 4px;
+        border-radius: 25px;
         font-size: 16px;
         cursor: pointer;
+        margin-top: 20px;
       }
 
       button[type="submit"]:hover {
@@ -102,13 +103,13 @@
         padding: 20px;
         border-radius: 8px;
         max-width: 500px;
-        width: 80%;
+        width: 70%;
         text-align: left;
-        font-size: 14px;
+        font-size: 16px;
       }
 
       .modal-content h3 {
-        color: orange;
+        color: #ff7148;
         margin-bottom: 10px;
       }
 
@@ -117,13 +118,23 @@
         color: white;
         border: none;
         padding: 5px 10px;
-        border-radius: 4px;
+        border-radius: 25px;
         cursor: pointer;
         float: right;
       }
 
       .close-modal:hover {
         background: #555;
+      }
+
+      .form-text.text-muted {
+        font-size: 0.85em;
+        color: #6c757d;
+      }
+
+      .text {
+        margin-bottom: 10px;
+        padding: 10px;
       }
     </style>
   </head>
@@ -133,77 +144,94 @@
 
     <div class="edit-form-container">
       <h2>Edit Social Links</h2>
+      <button
+        type="button"
+        class="help-button"
+        onclick="openModal('facebook-help')"
+      >
+        ?
+      </button>
+      <div class="text">
+        <small class="form-text text-muted">
+          Social and web links will be prominently displayed at the top of your
+          profile, providing potential clients with easy access to your pages.
+          We highly recommend adding these links to enhance your credibility and
+          showcase your social proof.
+        </small>
+      </div>
       <form method="POST">
         <!-- Facebook -->
         <div class="form-group">
           <label for="facebook">Facebook URL:</label>
+          <div class="text">
+            <small class="form-text text-muted">
+              Log in to Facebook, navigate to your page, and copy the URL
+              directly from your browser's address bar. For example:
+              https://www.facebook.com/YourAccount.
+            </small>
+          </div>
           <input
             type="text"
             id="facebook"
             name="facebook"
             value="{{ current_user.social_links.facebook if current_user.social_links else '' }}"
           />
-          <button
-            type="button"
-            class="help-button"
-            onclick="openModal('facebook-help')"
-          >
-            ?
-          </button>
         </div>
 
         <!-- Instagram -->
         <div class="form-group">
           <label for="instagram">Instagram URL:</label>
+          <div class="text">
+            <small class="form-text text-muted">
+              Log in to Instagram, navigate to your page, and copy the URL
+              directly from your browser's address bar. For example:
+              https://www.instagram.com/YourHandle.
+            </small>
+          </div>
           <input
             type="text"
             id="instagram"
             name="instagram"
             value="{{ current_user.social_links.instagram if current_user.social_links else '' }}"
           />
-          <button
-            type="button"
-            class="help-button"
-            onclick="openModal('instagram-help')"
-          >
-            ?
-          </button>
         </div>
 
         <!-- Website -->
         <div class="form-group">
           <label for="website">Website URL:</label>
+          <div class="text">
+            <small class="form-text text-muted">
+              Visit your website and copy the full URL from your browser's
+              address bar. Ensure the URL begins with "https://" for a secure
+              link. For example: https://www.YourBusinessName.com.
+            </small>
+          </div>
           <input
             type="text"
             id="website"
             name="website"
             value="{{ current_user.social_links.website if current_user.social_links else '' }}"
           />
-          <button
-            type="button"
-            class="help-button"
-            onclick="openModal('website-help')"
-          >
-            ?
-          </button>
         </div>
 
         <!-- Google Reviews -->
         <div class="form-group">
           <label for="google">Google Reviews URL:</label>
+          <div class="text">
+            <small class="form-text text-muted">
+              To get your Google Reviews link, go to your Google Business
+              Profile or search for your business on Google. Once you find your
+              business, click on the "Reviews" section or open Google Maps, find
+              your business, and copy the URL from the address bar when you're
+              on the reviews page.
+            </small>
+          </div>
           <input
             type="text"
             id="google"
             name="google"
             value="{{ current_user.social_links.google if current_user.social_links else '' }}"
           />
-          <button
-            type="button"
-            class="help-button"
-            onclick="openModal('google-help')"
-          >
-            ?
-          </button>
         </div>
 
         <button type="submit">Save Changes</button>
@@ -216,61 +244,12 @@
         <button class="close-modal" onclick="closeModal('facebook-help')">
           Close
         </button>
-        <h3>Facebook Link Help</h3>
+        <h3>Social Links Help</h3>
         <p>
-          Log in to Facebook, go to your page, and copy the URL from your
-          browser's address bar.
-        </p>
-        <p>
-        <strong>Example:</strong> 
-        <p> https://www.facebook.com/YourBusinessName </p>
-        </p>
-      </div>
-    </div>
-
-    <div id="instagram-help" class="modal">
-      <div class="modal-content">
-        <button class="close-modal" onclick="closeModal('instagram-help')">
-          Close
-        </button>
-        <h3>Instagram Link Help</h3>
-        <p>
-          Log in to Instagram, go to your profile, and copy the URL from your
-          browser's address bar.
-        </p>
-        <p>
-        <strong>Example:</strong> 
-        <p>https://www.instagram.com/YourBusinessHandle</p>
-        </p>
-      </div>
-    </div>
-
-    <div id="website-help" class="modal">
-      <div class="modal-content">
-        <button class="close-modal" onclick="closeModal('website-help')">
-          Close
-        </button>
-        <h3>Website Link Help</h3>
-        <p>
-          Enter the URL of your website. Ensure it starts with http:// or
-          https://.
-        </p>
-      </div>
-    </div>
-
-    <div id="google-help" class="modal">
-      <div class="modal-content">
-        <button class="close-modal" onclick="closeModal('google-help')">
-          Close
-        </button>
-        <h3>Google Reviews Link Help</h3>
-        <p>
-          Log in to Google Business Profile, find the "Get More Reviews"
-          section, and copy the provided link.
-        </p>
-        <p>
-        <strong>Example:</strong> 
-        <p> https://g.page/r/YourBusinessReviewLink </p>
+          If you encounter any issues with adding your links, please contact
+          support through the
+          <a href="{{ url_for('contact') }}">Contact Openwork</a> page, and we
+          will be happy to assist you.
         </p>
       </div>
     </div>
