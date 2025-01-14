@@ -1856,6 +1856,15 @@ def labourer_chat(user2_id):
         if not current_user.labourer_profile:
             return jsonify({"error": "You are not authorized to use this feature."}), 403
 
+      # Check for soft-deleted profile of the other user
+        profile_deleted_note = None
+        other_user = User.query.get(user2_id)  # Fetch the other user's details
+        if not other_user:
+            return jsonify({"error": "The user does not exist."}), 404
+
+        if other_user.soft_deleted:
+            profile_deleted_note = f"{other_user.first_name}'s profile has been deleted."  
+
         # Get or create the room
         room = get_or_create_labourer_chat_room(current_user.id, user2_id)
 
@@ -1892,7 +1901,7 @@ def labourer_chat(user2_id):
         return render_template(
             'chat_labourer.html',
             messages=messages,
-            room=room,  
+            room=room, profile_deleted_note=profile_deleted_note, 
             other_user=User.query.get(user2_id)  # Fetch the other user's details
         )
 

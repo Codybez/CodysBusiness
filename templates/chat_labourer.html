@@ -57,12 +57,12 @@
         height: 0;
         border-style: solid;
         border-width: 10px 0 10px 10px;
-        border-color: transparent transparent transparent #ff7148;
+        border-color: transparent transparent transparent #fff3cd;
       }
 
       .message.sent {
-        background-color: #ff7048f6;
-        color: white;
+        background-color: #fff3cd;
+        color: #333;
         margin-left: auto;
         text-align: left;
       }
@@ -180,6 +180,14 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
       }
+
+      .alert-warning {
+        background-color: #ff7148;
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -207,7 +215,12 @@
     </div>
 
     <div id="messages-container">
-      {% for message in messages %}
+      {% for message in messages %} {% if profile_deleted_note %}
+      <div class="alert alert-warning">
+        <strong>Notice:</strong> {{ profile_deleted_note }}
+      </div>
+      {% endif %}
+
       <div
         class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}"
       >
