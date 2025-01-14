@@ -1641,6 +1641,18 @@ def chat(job_id, user_id):
         else:
             job_image_path = 'default-job.jpg'
 
+        # Check if the applicant's profile is soft-deleted
+        profile_deleted_note = None
+
+        # Check for the applicant
+        if job_application.user.soft_deleted:
+            profile_deleted_note = f"The applicant's profile has been deleted."
+
+        # Check for the job poster
+        elif job.user.soft_deleted:
+            profile_deleted_note = f"The job poster's profile has been deleted."
+
+
         # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
@@ -1659,7 +1671,8 @@ def chat(job_id, user_id):
                 receiver_id=receiver_id,
                 content=content,
                 job_application_id=job_application.id,
-                room=room
+                room=room,
+                
             )
             db.session.add(message)
             db.session.commit()
@@ -1698,7 +1711,7 @@ def chat(job_id, user_id):
             user_id=job_application.user.id,
             user=current_user,
             applicant_profile_image=applicant_profile_image,
-            job_image_path=job_image_path
+            job_image_path=job_image_path, profile_deleted_note=profile_deleted_note
         )
 
     except Exception as e:
@@ -1809,7 +1822,8 @@ def create_message(sender_id, receiver_id, content, job_application_id=None, roo
         content=content,
         timestamp=datetime.utcnow(),
         job_application_id=job_application_id,
-        room=room
+        room=room,
+        
     )
     db.session.add(message)
     db.session.commit()
