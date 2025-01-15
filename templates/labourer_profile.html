@@ -277,10 +277,6 @@
         color: #fff;
       }
 
-      .modal-footer .delete-btn:hover {
-        background-color: #cc0000;
-      }
-
       #deleteAccountBtn {
         margin-top: 30px;
         color: #ffffff; /* Button text color */
@@ -290,6 +286,123 @@
         border-radius: 4px; /* Rounded corners */
         cursor: pointer; /* Pointer cursor on hover */
         font-size: 16px; /* Text size */
+      }
+
+      /* Style for the arrow */
+      .arrow {
+        margin-left: 8px; /* Space between text and arrow */
+        font-size: 18px; /* Arrow size */
+      }
+
+      .modal-header {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+      }
+
+      .modal-footer button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      input,
+      select {
+        width: 100%;
+        height: 150%;
+        padding: 10px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      .modal-footer .cancel-btn {
+        background-color: #ccc;
+      }
+
+      .modal-footer .delete-btn {
+        background-color: #ff7148;
+        color: #fff;
+      }
+
+      button {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 15px;
+        background-color: #ffffff;
+        border: 1px solid #555;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        color: #333;
+        text-align: left;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+      }
+
+      button .arrow {
+        font-weight: bold;
+        font-size: 24px;
+        margin-left: auto;
+      }
+
+      button.btn-danger {
+        background-color: #ffffff;
+        border-color: #ff7148;
+        color: #ff7148;
+      }
+
+      .h2 {
+        font-size: 30px;
+      }
+
+      /* Styles specific to the location modal */
+
+      #locationModal .btn-primary {
+        background-color: #ff7148;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #locationModal .btn-close {
+        background-color: #ccc;
+      }
+
+      /* Remove button styles */
+      .lower {
+        font-size: 16px; /* Adjust the font size */
+        color: #333; /* Blue color for text */
+        text-decoration: none; /* Remove underline */
+        cursor: pointer; /* Pointer cursor */
+        display: inline-flex;
+        align-items: center; /* Align arrow next to text */
+      }
+
+      .lower:hover {
+        color: #9b9b9b; /* Darker blue on hover */
+      }
+
+      .arrow {
+        margin-left: 8px; /* Space between the text and the arrow */
+        font-size: 20px; /* Arrow size */
+      }
+
+      #deleteAccountBtn {
+        background-color: transparent; /* Make the button transparent */
+        border: none; /* Remove the border */
+        padding: 0; /* Remove padding */
+        color: #ff4141; /* Red color for text */
+        cursor: pointer; /* Pointer cursor */
+      }
+
+      .lower-buttons {
+        padding: 20px;
       }
     </style>
   </head>
@@ -575,7 +688,6 @@
             multiple
           />
         </form>
-
         <!-- Preview Section -->
         <div id="insurance-image-preview-container" style="display: none">
           <div id="preview-images"></div>
@@ -591,9 +703,27 @@
         <!-- Upload Status -->
         <div id="insurance-upload-status"></div>
       </div>
-
       <!-- Delete account section -->
-      <div>
+
+      <div class="lower-buttons">
+        <a href="#" id="changeEmailBtn" class="lower">
+          <span>Change Email</span>
+          <span class="arrow">→</span>
+        </a>
+        <br />
+
+        <a href="#" id="changePasswordBtn" class="lower">
+          <span>Change Password</span>
+          <span class="arrow">→</span>
+        </a>
+        <br />
+
+        <a href="#" id="changeLocationBtn" class="lower">
+          <span>Change Location</span>
+          <span class="arrow">→</span>
+        </a>
+        <br />
+
         <button type="button" id="deleteAccountBtn" class="btn btn-danger">
           Delete Account
         </button>
@@ -619,27 +749,204 @@
           </div>
         </div>
       </div>
+
+      <!-- Modal for Change Email -->
+      <div id="changeEmailModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4>Change Email</h4>
+          </div>
+          <form method="POST" action="{{ url_for('labourer_change_email') }}">
+            <input
+              type="email"
+              name="new_email"
+              placeholder="Enter New Email"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter Current Password"
+              required
+            />
+            <div class="modal-footer">
+              <button type="button" class="cancel-btn" id="cancelChangeEmail">
+                Cancel
+              </button>
+              <button type="submit" class="delete-btn">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal for Change Password -->
+      <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4>Change Password</h4>
+          </div>
+          <form
+            method="POST"
+            action="{{ url_for('labourer_change_password') }}"
+          >
+            <input
+              type="password"
+              name="current_password"
+              placeholder="Enter Current Password"
+              required
+            />
+            <input
+              type="password"
+              name="new_password"
+              placeholder="Enter New Password"
+              required
+            />
+            <input
+              type="password"
+              name="confirm_password"
+              placeholder="Confirm New Password"
+              required
+            />
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="cancel-btn"
+                id="cancelChangePassword"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="delete-btn">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="locationModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>Select a Region</h5>
+          </div>
+          <form method="POST" action="{{ url_for('labourer_save_location') }}">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="location"></label>
+                <select id="location" name="location" required>
+                  <option value="" disabled selected>Select a region</option>
+                  <option value="Northland">Northland</option>
+                  <option value="Auckland">Auckland</option>
+                  <option value="Waikato">Waikato</option>
+                  <option value="Bay of Plenty">Bay of Plenty</option>
+                  <option value="Gisborne">Gisborne</option>
+                  <option value="Hawke's Bay">Hawke's Bay</option>
+                  <option value="Taranaki">Taranaki</option>
+                  <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+                  <option value="Wellington">Wellington</option>
+                  <option value="Tasman">Tasman</option>
+                  <option value="Nelson">Nelson</option>
+                  <option value="Marlborough">Marlborough</option>
+                  <option value="West Coast">West Coast</option>
+                  <option value="Canterbury">Canterbury</option>
+                  <option value="Otago">Otago</option>
+                  <option value="Southland">Southland</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <!-- Only one close button is needed -->
+              <button type="button" class="btn-close">Cancel</button>
+              <button type="submit" class="btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <script>
+        // Prevent the page from scrolling to the top when clicking the links
+        document.querySelectorAll(".lower").forEach(function (link) {
+          link.addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent the default link behavior (scroll to top)
+            // Your modal logic here, e.g., showing the modal for change email
+            if (link.id === "changeEmailBtn") {
+              document.getElementById("changeEmailModal").style.display =
+                "block";
+            }
+            if (link.id === "changePasswordBtn") {
+              document.getElementById("changePasswordModal").style.display =
+                "block";
+            }
+            if (link.id === "changeLocationBtn") {
+              document.getElementById("changeLocationModal").style.display =
+                "block";
+            }
+          });
+        });
+
         // Get modal and buttons
-        const modal = document.getElementById("deleteAccountModal");
+        const locationModal = document.getElementById("locationModal");
+        const changeLocationBtn = document.getElementById("changeLocationBtn");
+        const closeLocationModal = document.querySelector(
+          "#locationModal .btn-close"
+        );
+
+        // Show the modal when the change location button is clicked
+        changeLocationBtn.onclick = () => {
+          locationModal.style.display = "flex";
+        };
+
+        // Close the modal when the close button is clicked
+        closeLocationModal.onclick = () => {
+          locationModal.style.display = "none";
+        };
+
+        // Close the modal if clicked outside of the modal content
+        window.onclick = (event) => {
+          if (event.target === locationModal) {
+            locationModal.style.display = "none";
+          }
+        };
+
+        // Get modal and buttons
+        const changeEmailModal = document.getElementById("changeEmailModal");
+        const changePasswordModal = document.getElementById(
+          "changePasswordModal"
+        );
+        const deleteAccountModal =
+          document.getElementById("deleteAccountModal");
+
+        const changeEmailBtn = document.getElementById("changeEmailBtn");
+        const changePasswordBtn = document.getElementById("changePasswordBtn");
         const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+
+        const cancelChangeEmail = document.getElementById("cancelChangeEmail");
+        const cancelChangePassword = document.getElementById(
+          "cancelChangePassword"
+        );
         const cancelDelete = document.getElementById("cancelDelete");
 
-        // When the user clicks the "Delete Account" button, open the modal
-        deleteAccountBtn.onclick = function () {
-          modal.style.display = "flex";
-        };
+        // Show modals when corresponding buttons are clicked
+        changeEmailBtn.onclick = () =>
+          (changeEmailModal.style.display = "flex");
+        changePasswordBtn.onclick = () =>
+          (changePasswordModal.style.display = "flex");
+        deleteAccountBtn.onclick = () =>
+          (deleteAccountModal.style.display = "flex");
 
-        // When the user clicks the "Cancel" button, close the modal
-        cancelDelete.onclick = function () {
-          modal.style.display = "none";
-        };
+        // Close modals when cancel buttons are clicked
+        cancelChangeEmail.onclick = () =>
+          (changeEmailModal.style.display = "none");
+        cancelChangePassword.onclick = () =>
+          (changePasswordModal.style.display = "none");
+        cancelDelete.onclick = () =>
+          (deleteAccountModal.style.display = "none");
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-          }
+        // Close modals if clicked outside of them
+        window.onclick = (event) => {
+          if (event.target == changeEmailModal)
+            changeEmailModal.style.display = "none";
+          if (event.target == changePasswordModal)
+            changePasswordModal.style.display = "none";
+          if (event.target == deleteAccountModal)
+            deleteAccountModal.style.display = "none";
         };
         // Preview the image after selection
         function previewImage() {

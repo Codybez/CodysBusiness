@@ -2125,3 +2125,64 @@ def save_location():
     else:
         flash('Please select a valid location.', 'error')
     return redirect(url_for('business_profile'))  # Replace with your appropriate redirect
+
+@app.route('/labourer-change-email', methods=['GET', 'POST'])
+@login_required
+def labourer_change_email():
+    if request.method == 'POST':
+        new_email = request.form.get('new_email')
+        password = request.form.get('password')
+
+        # Verify the password
+        if not check_password_hash(current_user.password, password):
+            flash('Incorrect password. Please try again.', 'danger')
+            return redirect(url_for('labourer_profile'))
+
+        # Update email
+        current_user.email = new_email
+        db.session.commit()
+        flash('Your email has been updated successfully.', 'success')
+        return redirect(url_for('labourer_profile'))  # Redirect to labourer profile
+
+    return render_template('labourer_profile.html')  # Render the labourer profile page
+
+
+@app.route('/labourer-change-password', methods=['GET', 'POST'])
+@login_required
+def labourer_change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Verify current password
+        if not check_password_hash(current_user.password, current_password):
+            flash('Incorrect current password. Please try again.', 'danger')
+            return redirect(url_for('labourer_profile'))
+
+        # Check if new passwords match
+        if new_password != confirm_password:
+            flash('New passwords do not match. Please try again.', 'danger')
+            return redirect(url_for('labourer_profile'))
+
+        # Update password
+        current_user.password = generate_password_hash(new_password)
+        db.session.commit()
+        flash('Your password has been updated successfully.', 'success')
+        return redirect(url_for('labourer_profile'))  # Redirect to labourer profile
+
+    return render_template('labourer_profile.html')  # Render the labourer profile page
+
+
+@app.route('/labourer-save-location', methods=['POST'])
+@login_required
+def labourer_save_location():
+    location = request.form.get('location')
+    if location:
+        # Save the location to the user's profile or relevant model
+        current_user.location = location  # Assuming the `location` field exists on your user model
+        db.session.commit()
+        flash(f'Your location has been updated to {location}.', 'success')
+    else:
+        flash('Please select a valid location.', 'error')
+    return redirect(url_for('labourer_profile'))  # Redirect to labourer profile
