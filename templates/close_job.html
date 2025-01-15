@@ -11,7 +11,6 @@
     <style>
       /* Basic reset */
       body {
-        font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
         padding: 0;
@@ -20,10 +19,19 @@
       h1 {
         text-align: center;
         color: #333;
+        font-size: 28px;
+      }
+
+      h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: -25px;
         margin-top: 30px;
+        color: #ff7148;
       }
 
       .form-container {
+        width: 80%;
         max-width: 600px;
         margin: 30px auto;
         background-color: #fff;
@@ -37,6 +45,7 @@
         color: #333;
         margin-bottom: 8px;
         display: block;
+        font-weight: bold;
       }
 
       select {
@@ -55,8 +64,9 @@
         padding: 12px;
         background-color: #ff7148;
         color: white;
+        margin-top: 20px;
         border: none;
-        border-radius: 5px;
+        border-radius: 25px;
         font-size: 16px;
         cursor: pointer;
         transition: background-color 0.3s ease;
@@ -91,7 +101,8 @@
   {% extends 'base_business.html' %} {% block title %}Close Job{% endblock %} {%
   block content %}
   <body>
-    <h1>Close Job: {{ job.job_name }}</h1>
+    <h2>Close Job</h2>
+    <h1>{{ job.job_name }}</h1>
 
     <div class="form-container">
       <form method="POST">
@@ -126,13 +137,44 @@
 
     <script>
       document
+        .querySelector("form")
+        .addEventListener("submit", function (event) {
+          const jobFilled = document.getElementById("job_filled").value;
+          const completionChoice =
+            document.getElementById("completion_choice").value;
+
+          // Validate the first dropdown
+          if (!jobFilled) {
+            event.preventDefault(); // Prevent form submission
+            alert("Please select whether the job has been filled.");
+            return;
+          }
+
+          // Validate the second dropdown if "Yes" is selected
+          if (jobFilled === "yes" && !completionChoice) {
+            event.preventDefault(); // Prevent form submission
+            alert(
+              "Please select who was chosen for the job before submitting."
+            );
+            return;
+          }
+        });
+
+      document
         .getElementById("job_filled")
         .addEventListener("change", function () {
           const completionDropdown = document.getElementById(
             "completion-dropdown"
           );
+
+          // Show or hide the second dropdown based on the first dropdown value
           completionDropdown.style.display =
             this.value === "yes" ? "block" : "none";
+
+          // Reset the second dropdown if the user changes their mind
+          if (this.value !== "yes") {
+            document.getElementById("completion_choice").value = "";
+          }
         });
     </script>
   </body>

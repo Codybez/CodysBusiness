@@ -21,7 +21,7 @@
         border-radius: 10px;
       }
       .job-details-container h1 {
-        color: #555;
+        color: #333;
         font-size: 21px;
         margin-bottom: -5px;
       }
@@ -37,6 +37,7 @@
         gap: 15px;
         margin: 10px 0;
         font-size: 17px;
+        color: #555;
       }
 
       .job-details-container i {
@@ -45,6 +46,7 @@
         width: 24px;
         height: 24px;
         flex-shrink: 0;
+        color: #777;
       }
 
       #applybutton {
@@ -129,12 +131,25 @@
       .action-button {
         flex: 1; /* Each button takes equal space */
         text-align: center;
-        padding: 10px 0;
-        background-color: #ffffff;
+        padding: 8px 0;
+        background-color: #ff7148;
         border: 1px solid #ff7148;
         border-radius: 25px;
         text-decoration: none;
-        color: #333;
+        color: #ffffff;
+        font-size: 16px;
+      }
+
+      .action-button-right {
+        flex: 1; /* Each button takes equal space */
+        text-align: center;
+        padding: 8px 0;
+        background-color: #ffffff;
+        border: 2px solid #ff7148;
+        border-radius: 25px;
+        text-decoration: none;
+        color: #555;
+        font-size: 16px;
       }
     </style>
   </head>
@@ -168,7 +183,7 @@
         </a>
         <a
           href="{{ url_for('view_applicants', job_id=job.id) }}"
-          class="action-button"
+          class="action-button-right"
           onclick="preventToggle(event)"
         >
           View Applicants
