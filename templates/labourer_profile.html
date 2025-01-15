@@ -404,6 +404,45 @@
       .lower-buttons {
         padding: 20px;
       }
+
+      .verification-container {
+        margin-top: 30px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        text-align: center;
+      }
+
+      .verification-container h3 {
+        margin-bottom: 15px;
+      }
+
+      .verification-container p {
+        margin-bottom: 10px;
+        color: #555;
+      }
+
+      .verification-container label {
+        display: block;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #333;
+      }
+
+      .verification-container .complete-btn {
+        padding: 10px 20px;
+        border: none;
+        background-color: #28a745;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .verification-container .complete-btn:hover {
+        background-color: #218838;
+      }
     </style>
   </head>
   <body>
@@ -703,6 +742,38 @@
         <!-- Upload Status -->
         <div id="insurance-upload-status"></div>
       </div>
+
+      <div class="verification-container">
+        {% if current_user.labourer_profile.verification_ready == False %}
+        <h3>Profile Completion</h3>
+        <p>
+          Please confirm that all your information is correct and up-to-date
+          before marking your profile as complete.
+        </p>
+        <form method="POST" action="{{ url_for('verify_profile') }}">
+          <label>
+            <input type="checkbox" name="confirmation" required />
+            I confirm that all my information is correct.
+          </label>
+          <button type="submit" class="complete-btn">
+            Mark Profile as Complete
+          </button>
+        </form>
+        {% elif current_user.labourer_profile.verification_ready == True and current_user.labourer_profile.id_verified == False %}
+        <h3>Profile Under Review</h3>
+        <p>
+          Your profile is awaiting validation from our team. This can take up to 24 hours, you will be
+          notified once it is verified.
+        </p>
+        </div>
+        {% elif current_user.labourer_profile.id_verified == True %}
+          <h3>Profile Verified</h3>
+             <p>
+              Your profile has been successfully verified. You can now access all features.
+            </p>
+        {% endif %}
+      </div>
+
       <!-- Delete account section -->
 
       <div class="lower-buttons">

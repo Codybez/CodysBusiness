@@ -56,6 +56,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(50), nullable=True)   # Initially nullable
     jobs_completed = db.Column(db.Integer, default=0)
     date_created = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)  # New field
+    is_admin = db.Column(db.Boolean, default=False)  # Admin status
     business_profile = db.relationship('BusinessProfile', backref='user', uselist=False)
     profile_image = db.relationship('UserProfileImage', backref='user', uselist=False)
     labourer_profile = db.relationship('LabourerProfile', backref='user', uselist=False)
@@ -88,6 +89,7 @@ class LabourerProfile(db.Model):
     job_categories = db.Column(db.String(500), nullable=True)
     job_locations = db.Column(db.String(500), nullable=True) 
     id_image = db.Column(db.String(120), nullable=True)
+    verification_ready = Column(db.Boolean, default=False)
     insurance_image = db.Column(db.String(120),nullable=True)
     id_verified = db.Column(db.Boolean, default=False)
     insurance_verified = db.Column(db.Boolean, default=False) 
@@ -400,9 +402,11 @@ def login():
 
                 # If the account is not soft deleted, log the user in
                 login_user(user)
-                
+
                 # Redirect based on user type
-                if user.user_type == 'Business':
+                if user.is_admin:
+                    return redirect(url_for('admin_dashboard'))  # Admins go to admin dashboard
+                elif user.user_type == 'Business':
                     return redirect(url_for('business_created_jobs'))
                 else:
                     return redirect(url_for('find_a_job'))
@@ -520,7 +524,8 @@ def labourer_profile():
     # Fetch company details if available
     company_details = user.company_details
 
-    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details)
+    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details,verification_ready=labourer_profile.verification_ready,
+    id_verified=labourer_profile.id_verified)
 
 
 
@@ -590,8 +595,8 @@ from datetime import datetime
 @login_required
 def find_a_job():
     # Check if the current user is a labourer and if their profile and company details are filled out
-    if not current_user.labourer_profile or not current_user.company_details:
-        flash("Please Complete your Profile.", 'warning')
+    if not current_user.labourer_profile.id_verified:
+        flash("This section will be available after your profile is verified.", 'warning')
         return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
     my_categories = current_user.labourer_profile.job_categories.split(', ') if current_user.labourer_profile.job_categories else []
     my_locations = current_user.labourer_profile.job_locations.split(', ') if current_user.labourer_profile.job_locations else []
@@ -1397,8 +1402,8 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
 @login_required
 def find_tradies():
     # Ensure profile and company details are completed
-    if not current_user.labourer_profile or not current_user.company_details:
-        flash("Please Complete your Profile.", 'warning')
+    if not current_user.labourer_profile.id_verified:
+        flash("This section will be available after your profile is verified.", 'warning')
         return redirect(url_for('labourer_profile'))
 
     # Get the user's preferred categories and locations
@@ -1970,17 +1975,23 @@ def upload_id_image():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
     
-    # Secure the filename and save it
-    filename = secure_filename(file.filename)
-    upload_path = os.path.join('static', 'id_images', filename)
-    file.save(upload_path)
+    # Allowed file extensions
+    allowed_extensions = {'png', 'jpg', 'jpeg'}
     
-    # Optionally, store the file path in the user's profile or wherever appropriate
-    current_user.labourer_profile.id_image = upload_path
-    db.session.commit()
-    
-    return jsonify({"message": "Upload successful!"}), 200
-
+    # Ensure the file has a valid extension
+    if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
+        # Secure the filename and save it
+        filename = secure_filename(file.filename)
+        upload_path = os.path.join('static', 'id_images', filename)
+        file.save(upload_path)
+        
+        # Store only the filename in the database (relative path)
+        current_user.labourer_profile.id_image = filename
+        db.session.commit()
+        
+        return jsonify({"message": "ID Image uploaded successfully!"}), 200
+    else:
+        return jsonify({"error": "Invalid file format. Only PNG, JPG, and JPEG are allowed."}), 400
 
 @app.route('/upload_liability_insurance', methods=['POST'])
 @login_required
@@ -1996,7 +2007,7 @@ def upload_liability_insurance():
         return jsonify({"error": "No selected files"}), 400
     
     # Allowed file extensions for images and documents
-    allowed_extensions = {'png', 'jpg', 'jpeg', 'pdf'}
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'ods', 'txt'}
     
     # Ensure labourer_profile exists
     if not current_user.labourer_profile:
@@ -2009,12 +2020,12 @@ def upload_liability_insurance():
             filename = secure_filename(file.filename)
             file_path = os.path.join('static', 'insurance_images', filename)
             file.save(file_path)
-            file_paths.append(file_path)
+            file_paths.append(filename)  # Save only the filename in the database
         else:
             return jsonify({"error": "Invalid file format. Only images and PDFs are allowed."}), 400
 
-    # Assuming insurance_images is a list of file paths, update accordingly
-    current_user.labourer_profile.insurance_image = ','.join(file_paths)  # Save multiple file paths as a comma-separated string
+    # Update the database with the filenames (not the full paths)
+    current_user.labourer_profile.insurance_image = ','.join(file_paths)  # Save multiple file names as a comma-separated string
     try:
         db.session.commit()
     except Exception as e:
@@ -2186,3 +2197,84 @@ def labourer_save_location():
     else:
         flash('Please select a valid location.', 'error')
     return redirect(url_for('labourer_profile'))  # Redirect to labourer profile
+
+from functools import wraps
+from flask import abort
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_admin:
+            abort(403)  # Forbidden
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/admin', methods=['GET'])
+@login_required
+@admin_required
+def admin_dashboard():
+    tradesman_users = User.query.join(LabourerProfile).all()
+    users = User.query.all()
+    jobs = Job.query.all()  # Assuming you have a Job model
+    pending_verifications = User.query.filter(
+        User.labourer_profile.has(
+            (LabourerProfile.verification_ready == True) & 
+            (LabourerProfile.id_verified == False)
+        )
+    ).all()
+
+    return render_template('admin_dashboard.html', users=users, jobs=jobs, pending_verifications=pending_verifications, tradesman_users=tradesman_users)
+
+@app.route('/admin/user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def admin_user_details(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        if 'verify' in request.form:
+            user.id_verified = True
+            db.session.commit()
+            flash(f"{user.email}'s ID has been verified.", 'success')
+        elif 'deactivate' in request.form:
+            user.is_active = False
+            db.session.commit()
+            flash(f"{user.email} has been deactivated.", 'warning')
+    return render_template('admin_user_details.html', user=user)
+
+@app.route('/verify-profile', methods=['POST'])
+@login_required
+def verify_profile():
+    confirmation = request.form.get('confirmation')
+    if confirmation:
+        # Set the verification_ready flag to True
+        current_user.labourer_profile.verification_ready = True
+        db.session.commit()
+        flash('Your profile has been marked as complete and is ready for validation.', 'success')
+    else:
+        flash('Please confirm that your information is correct.', 'error')
+    return redirect(url_for('labourer_profile'))
+
+
+@app.route('/update_verification/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def update_verification(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # Get the checkbox values from the form
+    id_verified = request.form.get('id_verified') == 'true'
+    insurance_verified = request.form.get('insurance_verified') == 'true'
+
+    # Debug: Print the values to the console
+    print("ID Verified:", id_verified)
+    print("Insurance Verified:", insurance_verified)
+
+    # Update the labourer profile with the verification statuses
+    user.labourer_profile.id_verified = id_verified
+    user.labourer_profile.insurance_verified = insurance_verified
+
+    # Commit the changes to the database
+    db.session.commit()
+
+    # Redirect back to the admin dashboard with updated information
+    return redirect(url_for('admin_dashboard'))
