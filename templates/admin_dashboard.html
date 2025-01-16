@@ -20,7 +20,7 @@
       }
 
       .container {
-        max-width: 1200px;
+
         padding: 20px;
         background-color: #fff;
         border-radius: 8px;
@@ -140,14 +140,6 @@
     text-decoration: underline;
 }
 
-#logout-btn {
-    padding: 8px 16px;
-    background-color: #f8d7da;
-    border: none;
-    color: #721c24;
-    cursor: pointer;
-    margin-right: 100px;
-}
 
 #logout-btn:hover {
     background-color: #f5c6cb;
@@ -187,6 +179,15 @@
 .notification-box:empty {
   display: none; /* Hides the box when it's empty */
 }
+    #logout-btn {
+      padding: 8px 16px;
+      background-color: #ff7148;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+      margin-left: auto;
+      margin-right: 30px;
+    }
 
     </style>
   </head>
@@ -196,9 +197,11 @@
         <div class="header-content">
             <!-- Add shortcuts for future use -->
             <nav class="shortcuts">
-                <a href="#">Shortcut 1</a>
-                <a href="#">Shortcut 2</a>
-                <a href="#">Shortcut 3</a>
+                  <a href="{{ url_for('admin_dashboard')}}">Dashboard</a>
+                <a href="{{ url_for('admin_tradesman') }}">Tradesman</a>
+                <a href="{{ url_for('admin_homeowners') }}">Homeowners</a>
+                <a href="{{ url_for('admin_jobs') }}">Jobs</a>
+
             </nav>
 
             <!-- Logout Button -->
@@ -213,15 +216,27 @@
       <div class="overview">
         <div class="card">
           <h3>{{ users|length }}</h3>
-          <p>Total Users</p>
+          <p>Users</p>
         </div>
         <div class="card">
           <h3>{{ jobs|length }}</h3>
-          <p>Total Jobs</p>
+          <p>Jobs</p>
         </div>
         <div class="card">
           <h3>{{ pending_verifications|length }}</h3>
           <p>Pending Verifications</p>
+        </div>
+        <div class="card">
+          <h3>{{ total_job_contacts }}</h3>
+          <p>Job Contacts</p>
+        </div>
+        <div class="card">
+          <h3>{{ tradesman_users | length }}</h3>
+          <p>Tradesman</p>
+        </div>
+        <div class="card">
+          <h3>{{ homeowner_users | length }}</h3>
+          <p>Homeowners</p>
         </div>
       </div>
 
@@ -236,6 +251,8 @@
             <th>Insurance Image</th>
             <th>Insurance Verification</th>
             <th>Actions</th>
+            <th>View Profile</th>
+            <th>Impersonate</th>
           </tr>
         </thead>
         <tbody>
@@ -326,129 +343,105 @@
               <button type="submit" class="verify-btn">Update</button>
             </td>
             </form>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <!-- Tradesman Users -->
-<h2>Tradesman Users</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Full Name</th>
-      <th>ID Image</th>
-      <th>ID Verification</th>
-      <th>Insurance Image</th>
-      <th>Insurance Verification</th>
-      <th>Actions</th>
-      <th>View Profile</th>
-      <th>Impersonate</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in tradesman_users %}
-    <tr>
-      <td>{{ user.email }}</td>
-      <td>{{ user.first_name }} {{ user.last_name }}</td>
-      <td>
-        {% if user.labourer_profile.id_image %}
-        <a href="{{ url_for('static', filename='id_images/' + user.labourer_profile.id_image) }}" target="_blank">
-          View ID Image
-        </a>
-        {% else %} No ID image uploaded {% endif %}
-      </td>
-      <td>
-        <form method="POST" action="{{ url_for('update_verification', user_id=user.id) }}">
-          <select name="id_verified">
-            <option value="true" {% if user.labourer_profile.id_verified %}selected{% endif %}>Verified</option>
-            <option value="false" {% if not user.labourer_profile.id_verified %}selected{% endif %}>Not Verified</option>
-          </select>
-      </td>
-      <td>
-        {% if user.labourer_profile.insurance_image %}
-          {% for file in user.labourer_profile.insurance_image.split(',') %}
-            <a href="{{ url_for('static', filename='insurance_images/' + file) }}" target="_blank">
-              View Insurance Image
-            </a><br />
-          {% endfor %}
-        {% else %} No insurance image uploaded {% endif %}
-      </td>
-      <td>
-        <select name="insurance_verified">
-          <option value="true" {% if user.labourer_profile.insurance_verified %}selected{% endif %}>Verified</option>
-          <option value="false" {% if not user.labourer_profile.insurance_verified %}selected{% endif %}>Not Verified</option>
-        </select>
-      </td>
-      <td class="actions">
-        <button type="submit" class="verify-btn">Update</button>
-      </td>
-      </form>
-      <td>
-        <a href="{{ url_for('view_tradesman_profile', user_id=user.id) }}">View Profile</a>
-      </td>
-      <td>
-        <!-- Add impersonation form -->
-        <form action="{{ url_for('impersonate', user_id=user.id) }}" method="GET">
-          <button type="submit" class="impersonate-btn">Impersonate</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-
-
-
-<!-- All Users -->
-      <h2>All Users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Full Name</th>
-            <th>ID Verified</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in users %}
-          <tr>
-            <td>{{ user.email }}</td>
-            <td>{{ user.first_name }} {{ user.last_name }}</td>
-            <td>{{ 'Yes' if user.id_verified else 'No' }}</td>
             <td>
-              <a href="">View Details</a>
+              <a href="{{ url_for('view_tradesman_profile', user_id=user.id) }}">View Profile</a>
+            </td>
+            <td>
+              <!-- Impersonation Button -->
+              <form action="{{ url_for('impersonate', user_id=user.id) }}" method="GET">
+                <button type="submit" class="impersonate-btn">Impersonate</button>
+               </form>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <!-- All Jobs -->
-      <h2>All Jobs</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Posted By</th>
-            <th>Status</th>
-            <th>Date Posted</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for job in jobs %}
-          <tr>
-            <td>{{ job.title }}</td>
-            <td>{{ job.user.first_name }} {{ job.user.last_name }}</td>
-            <td>{{ job.status }}</td>
-            <td>{{ job.date_created.strftime('%Y-%m-%d') }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+
+
+
+
+<!-- Recent Users -->
+<h2>Recent Users</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Full Name</th>
+      <th>Location</th>
+      <th>Actions</th>
+      <th>User Type</th>
+      <th>User ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users[:5] %}  <!-- Display only the first 5 recent users -->
+    <tr>
+      <td>{{ user.email }}</td>
+      <td>{{ user.first_name }} {{ user.last_name }}</td>
+      
+      <td>{{ user.location }}</td>
+      <td>
+        <a href="">View Details</a>
+      </td>
+      <td>
+          {% if user.user_type == 'Labourer' %}
+            Tradesman
+          {% elif user.user_type == 'Business' %}
+            Homeowner
+          {% endif %}
+      </td>
+      <td>{{ user.id}}</td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Link to all users -->
+<p><a href="">View All Users</a></p>
+
+<!-- Recent Jobs -->
+<h2>Recent Jobs</h2>
+<table>
+  <thead>
+    <tr>
+
+      <th>Title</th>
+      <th>Location</th>
+      <th>Posted By</th>
+      <th>Status</th>
+      <th>Contacts</th>
+      <th>Date Posted</th>
+      <th>View Job</th>
+      <th>Job ID</th>
+      <th>Poster ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for job in jobs[:5] %}  <!-- Display only the first 5 recent jobs -->
+    <tr>
+
+      <td>{{ job.job_name }}</td>
+      <td>{{ job.location }}</td>
+      <td>{{ job.user.first_name }} {{ job.user.last_name }}</td>
+      <td>{{ job.status }}</td>
+      <td>{{ job.applicants | length }}</td>
+      <td>{{ job.date_created.strftime('%Y-%m-%d') }}</td>
+      <td>
+        <a href="{{ url_for('business_display_jobs', job_id=job.id) }}">View Job</a>
+      </td>
+      <td>{{ job.id }}</td>
+      <td>{{ job.user_id }}</td>
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('admin_jobs') }}">View All Jobs</a>
+
+
     <!-- Notification Box -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages or session.get('notification') %}

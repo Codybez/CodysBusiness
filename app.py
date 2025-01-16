@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, current_user, login_required, logout_user
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate 
 from flask_wtf import FlaskForm
@@ -2213,6 +2214,8 @@ def admin_required(f):
 @login_required
 @admin_required
 def admin_dashboard():
+    total_job_contacts = db.session.query(func.count(JobApplication.id)).scalar()
+    homeowner_users = User.query.join(BusinessProfile).all()
     tradesman_users = User.query.join(LabourerProfile).all()
     users = User.query.all()
     jobs = Job.query.all()  # Assuming you have a Job model
@@ -2223,7 +2226,7 @@ def admin_dashboard():
         )
     ).all()
 
-    return render_template('admin_dashboard.html', users=users, jobs=jobs, pending_verifications=pending_verifications, tradesman_users=tradesman_users)
+    return render_template('admin_dashboard.html', users=users, jobs=jobs, pending_verifications=pending_verifications, tradesman_users=tradesman_users,total_job_contacts=total_job_contacts,homeowner_users=homeowner_users)
 
 @app.route('/admin/user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -2302,7 +2305,20 @@ def impersonate(user_id):
     # Log in as the target user
     login_user(user_to_impersonate)
     flash(f"You are now impersonating {user_to_impersonate.first_name}.")
-    return redirect(url_for('labourer_profile'))  # Redirect to the user's dashboard
+
+    # Redirect based on the user type (homeowner or labourer)
+    if hasattr(user_to_impersonate, 'business_profile') and user_to_impersonate.business_profile:
+        # If the user has a business profile (homeowner)
+        return redirect(url_for('business_profile'))  # Redirect to the homeowner's dashboard (or another page for business users)
+    
+    elif hasattr(user_to_impersonate, 'labourer_profile') and user_to_impersonate.labourer_profile:
+        # If the user has a labourer profile (labourer)
+        return redirect(url_for('labourer_profile'))  # Redirect to the labourer's dashboard (or another page for labourers)
+
+    
+    # Default fallback in case the user type is unrecognized
+    flash("Unable to impersonate the selected user.")
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/end_impersonation', methods=['POST'])
 def end_impersonation():
@@ -2325,3 +2341,43 @@ def end_impersonation():
 
     flash("Unable to revert to admin account.")
     return redirect(url_for('login'))
+
+@app.route('/admin_tradesman')
+@login_required
+def admin_tradesman():
+    if not current_user.is_admin:
+        flash("You are not authorized to view this page.")
+        return redirect(url_for('dashboard'))  # Redirect to admin dashboard if not authorized
+
+    # Query all users who have an associated 'labourer_profile' (indicating they are tradesmen)
+    tradesman_users = User.query.filter(User.labourer_profile != None).all()
+
+    return render_template('admin_tradesman.html', tradesman_users=tradesman_users)
+
+@app.route('/admin_homeowners')
+@login_required
+def admin_homeowners():
+    if not current_user.is_admin:
+        flash("You are not authorized to view this page.")
+        return redirect(url_for('login'))  # Redirect to admin dashboard if not authorized
+
+    # Query all users who have a business profile (business users)
+    homeowners = User.query.filter(User.business_profile != None).all()
+
+    # Fetch all open jobs (if any) associated with each homeowner's business profile
+    homeowners_with_jobs = []
+    for homeowner in homeowners:
+        open_jobs = Job.query.filter_by(business_profile_id=homeowner.business_profile.id, status='open').all()
+        homeowners_with_jobs.append({
+            'user': homeowner,
+            'open_jobs': open_jobs
+        })
+
+    return render_template('admin_homeowners.html', homeowners_with_jobs=homeowners_with_jobs)
+
+@app.route('/admin_jobs')
+def admin_jobs():
+    # Fetch all jobs from the database
+    jobs = Job.query.all()  # Fetch all jobs
+
+    return render_template('admin_jobs.html', jobs=jobs)
