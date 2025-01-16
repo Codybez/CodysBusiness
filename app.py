@@ -2278,3 +2278,50 @@ def update_verification(user_id):
 
     # Redirect back to the admin dashboard with updated information
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/impersonate/<int:user_id>', methods=['GET'])
+@login_required
+def impersonate(user_id):
+    for rule in app.url_map.iter_rules():
+        print(rule)
+
+    # Check if the current user is an admin
+    if not current_user.is_admin:
+        flash("You are not authorized to impersonate users.")
+        return redirect(url_for('login'))
+
+    user_to_impersonate = User.query.get(user_id)
+    if not user_to_impersonate:
+        flash("User not found.")
+        return redirect(url_for('admin_dashboard'))
+
+    # Store admin's ID in the session to revert later
+    session['admin_id'] = current_user.id
+    session['is_impersonating'] = True
+
+    # Log in as the target user
+    login_user(user_to_impersonate)
+    flash(f"You are now impersonating {user_to_impersonate.first_name}.")
+    return redirect(url_for('labourer_profile'))  # Redirect to the user's dashboard
+
+@app.route('/end_impersonation', methods=['POST'])
+def end_impersonation():
+    # Ensure the session contains impersonation data
+    if not session.get('is_impersonating'):
+        flash("You are not impersonating any user.")
+        return redirect(url_for('dashboard'))
+
+    # Get the admin's ID from the session
+    admin_id = session.pop('admin_id', None)
+    session.pop('is_impersonating', None)
+
+    # Log the admin back in
+    if admin_id:
+        admin = User.query.get(admin_id)
+        if admin:
+            login_user(admin)
+            flash("You have ended impersonation and are now back to your admin account.")
+            return redirect(url_for('admin_dashboard'))
+
+    flash("Unable to revert to admin account.")
+    return redirect(url_for('login'))

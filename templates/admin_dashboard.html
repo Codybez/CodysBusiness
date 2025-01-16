@@ -103,12 +103,111 @@
         border-radius: 4px;
         width: 100%;
       }
+
+      /* Header styles */
+#admin-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #343a40;
+    color: white;
+    padding: 10px 20px;
+    z-index: 1000; /* Ensure it's above other content */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.shortcuts {
+    display: flex;
+    gap: 15px;
+}
+
+.shortcuts a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.shortcuts a:hover {
+    text-decoration: underline;
+}
+
+#logout-btn {
+    padding: 8px 16px;
+    background-color: #f8d7da;
+    border: none;
+    color: #721c24;
+    cursor: pointer;
+    margin-right: 100px;
+}
+
+#logout-btn:hover {
+    background-color: #f5c6cb;
+}
+
+/* Content below the fixed header */
+.admin-dashboard-content {
+    margin-top: 60px; /* Adjust for the fixed header */
+    padding: 20px;
+}
+.notification-box {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  color: #333;
+  padding: 10px; /* Reduced padding for a more compact look */
+  border-radius: 5px;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  cursor: pointer;
+  display: inline-block; /* Prevents extra space from being added */
+  max-width: 40%; /* Ensures the box doesn't overflow the screen */
+  text-align: center; /* Centers the text */
+
+  overflow: hidden; /* Truncates overflow if needed */
+  text-overflow: ellipsis; /* Adds ellipsis if the text is too long */
+  animation: slideDown 1.5s ease-in-out forwards;
+}
+
+.flash {
+  margin-bottom: 5px; /* Reduce spacing between flash messages */
+}
+
+.notification-box:empty {
+  display: none; /* Hides the box when it's empty */
+}
+
     </style>
   </head>
   <body>
-    <header>
-      <h1>Admin Dashboard</h1>
+    <!-- Admin Header -->
+    <header id="admin-header">
+        <div class="header-content">
+            <!-- Add shortcuts for future use -->
+            <nav class="shortcuts">
+                <a href="#">Shortcut 1</a>
+                <a href="#">Shortcut 2</a>
+                <a href="#">Shortcut 3</a>
+            </nav>
+
+            <!-- Logout Button -->
+            <form action="{{ url_for('logout') }}" >
+                <button type="submit" id="logout-btn">Logout</button>
+            </form>
+        </div>
     </header>
+    <br><br><br>
     <div class="container">
       <!-- Overview Section -->
       <div class="overview">
@@ -244,6 +343,7 @@
       <th>Insurance Verification</th>
       <th>Actions</th>
       <th>View Profile</th>
+      <th>Impersonate</th>
     </tr>
   </thead>
   <tbody>
@@ -285,12 +385,19 @@
       </td>
       </form>
       <td>
-        <a href="">View Profile</a>
+        <a href="{{ url_for('view_tradesman_profile', user_id=user.id) }}">View Profile</a>
+      </td>
+      <td>
+        <!-- Add impersonation form -->
+        <form action="{{ url_for('impersonate', user_id=user.id) }}" method="GET">
+          <button type="submit" class="impersonate-btn">Impersonate</button>
+        </form>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
 
 
 
@@ -342,6 +449,40 @@
         </tbody>
       </table>
     </div>
+    <!-- Notification Box -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages or session.get('notification') %}
+    <div class="notification-box" id="notificationBox" onclick="this.remove(); checkNotifications()">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+      {% if session.get('notification') %}
+        {{ session.pop('notification') }}
+      {% endif %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+
+{% if session.get('notification') %}
+  <div class="notification-box" id="notificationBox" onclick="this.remove(); checkNotifications()">
+    {{ session.pop('notification') }}
+  </div>
+{% endif %}
+
+
+
+{% if session.get('notification') %}
+  <div class="notification-box" onclick="this.style.display='none'">
+    {{ session.pop('notification') }}
+  </div>
+{% endif %}
+
+
+{% if session.get('notification') %}
+    <div class="notification-box">{{ session.pop('notification') }}</div>
+{% endif %}
     <footer>
       <p>&copy; 2025 Admin Dashboard</p>
     </footer>

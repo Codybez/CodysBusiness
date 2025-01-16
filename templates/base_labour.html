@@ -274,6 +274,19 @@ footer {
     color: #ff7148; /* Highlight the text in orange */
   }
 
+#banner {
+    position: fixed; /* Fix it to the top of the page */
+    top: 10px;
+    left: 10px;
+    background-color: #ffc107;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    cursor: move; /* Change cursor to indicate that the element is draggable */
+    border-radius: 10px;
+}
+
+
+
 /* Initial state: hidden to the left */
 /* Add margin-bottom to .page-content to prevent footer overlap */
 
@@ -351,6 +364,14 @@ footer {
   </header>
 
 <body>
+{% if session.get('is_impersonating') %}
+    <div id="banner" class="banner">
+        <p>You are impersonating: {{ current_user.first_name }} (ID: {{ current_user.id }})</p>
+        <form action="{{ url_for('end_impersonation') }}" method="POST">
+            <button type="submit">End Impersonation</button>
+        </form>
+    </div>
+{% endif %}
 
 <!-- Notification Box -->
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -456,6 +477,31 @@ function checkNotifications() {
 }
 
 
+    const banner = document.getElementById('banner');
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    banner.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - banner.getBoundingClientRect().left;
+        offsetY = e.clientY - banner.getBoundingClientRect().top;
+        document.body.style.userSelect = 'none'; // Disable text selection while dragging
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            banner.style.left = e.clientX - offsetX + 'px';
+            banner.style.top = e.clientY - offsetY + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        document.body.style.userSelect = ''; // Re-enable text selection
+    });
 </script>
+
+
 
 </html>
