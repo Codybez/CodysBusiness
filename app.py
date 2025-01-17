@@ -25,8 +25,9 @@ from sqlalchemy.types import JSON
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail 
-from flask_mail import Message
+from flask_mail import Message as emailmessage
 from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
 
 
 app = Flask(__name__)
@@ -36,6 +37,7 @@ app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_database.db'
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 socketio = SocketIO(app)
 
@@ -45,7 +47,16 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)  # Create a LoginManager instance
 login_manager.login_view = 'login'  # Set the login view
 
+# Set up email configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your SMTP server
+app.config['MAIL_PORT'] = 587  # Use the appropriate port
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'cdbeznec@gmail.com'  # Your email username
+app.config['MAIL_PASSWORD'] = 'pakn jone hhup njpt'  # Your email password
+app.config['MAIL_DEFAULT_SENDER'] = 'cdbeznec@gmail.com'  # Default sender email
 
+mail = Mail(app)
 
 @app.route('/')
 def index():
@@ -264,6 +275,35 @@ def load_user(user_id):
 
 
 
+from itsdangerous import BadSignature, SignatureExpired
+
+@app.route('/verify_email/<token>')
+def verify_email(token):
+    try:
+        # Deserialize the token and get the email from it, with a 1-hour expiration time
+        email = serializer.loads(token, salt='email-verify-salt', max_age=3600)
+    except SignatureExpired:
+        flash('The verification link has expired.', 'danger')
+        return redirect(url_for('login'))
+    except BadSignature:
+        flash('Invalid or tampered verification link.', 'danger')
+        return redirect(url_for('login'))
+
+    # Find the user by the email
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        # Mark the user's email as verified
+        user.email_verified = True
+        user.verification_token = None  # Remove the token after successful verification
+        db.session.commit()
+
+        flash('Your email has been verified! You can now log in.', 'success')
+        return redirect(url_for('login'))
+    else:
+        flash('User not found.', 'danger')
+        return redirect(url_for('login'))
+
 
 def generate_verification_token(email):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -287,17 +327,16 @@ def register():
 
         if user:
             if user.soft_deleted:
-                # If the account is soft-deleted, notify the user to contact support
                 flash('This email is associated with a deactivated account. Please contact support to reactivate your account.', 'error')
             else:
-                # If the account is active, notify the user that the account already exists
                 flash('An active account already exists with this email. Please log in.', 'error')
             return redirect(url_for('login'))  # Redirect to login page if email exists
 
-        bcrypt = Bcrypt()
-
         # If the email doesn't exist, create a new user
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(password)
+
+        # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
+        token = serializer.dumps(email, salt='email-verify-salt')
 
         # Create the new user
         new_user = User(
@@ -306,7 +345,8 @@ def register():
             location=location,
             user_type=user_type,
             first_name=first_name,
-            last_name=last_name
+            last_name=last_name,
+            verification_token=token  # Store the token in the User model
         )
         db.session.add(new_user)
         db.session.commit()
@@ -319,12 +359,22 @@ def register():
             db.session.add(business_profile)
             db.session.commit()
 
-        flash('Registration successful! Please log in to begin.', 'success')
-        return redirect(url_for('login'))  # Redirect to the login page after successful registration
+        # Generate the verification link with the token
+        verification_link = url_for('verify_email', token=token, _external=True)
+
+        # Send the verification email
+        msg = emailmessage(
+            'Please verify your email',
+            sender='cdbeznec@outlook.com',
+            recipients=[email]
+        )
+        msg.body = f"Click on the following link to verify your email: {verification_link}"
+        mail.send(msg)
+
+        flash('Registration successful! A verification email has been sent to your inbox.', 'info')
+        return redirect(url_for('login'))
 
     return render_template('register.html')
-
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -334,15 +384,17 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user:
-
-            bcrypt = Bcrypt()
             # Check if the password is correct and if the account is not soft deleted
             if bcrypt.check_password_hash(user.password, password):
                 if user.soft_deleted:
                     flash('Your account has been deactivated. Please contact support.', 'error')
                     return redirect(url_for('login'))
+                
+                if not user.email_verified:
+                    flash('Please verify your email address before logging in.', 'error')
+                    return redirect(url_for('login'))
 
-                # If the account is not soft deleted, log the user in
+                # If the account is not soft deleted and the email is verified, log the user in
                 login_user(user)
 
                 # Redirect based on user type
@@ -357,7 +409,7 @@ def login():
         else:
             flash('No account found with this email address.', 'error')
 
-    return render_template('login.html')  # Make sure to return the correct template
+    return render_template('login.html')
 
 @app.route('/logout')
 @login_required
@@ -2481,10 +2533,6 @@ def list_routes():
         line = urllib.parse.unquote(f"{rule.endpoint}: {rule.rule} [{methods}]")
         output.append(line)
     return "<br>".join(output)
-
-if __name__ == '__main__':
-    # You can add additional arguments to socketio.run if needed
-    socketio.run(app, debug=True)
 
 
 
