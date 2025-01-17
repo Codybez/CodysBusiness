@@ -8,9 +8,16 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='base.css') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      body {
+        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+      }
+
       .notification-box {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         position: fixed;
         top: 20px;
         left: 50%;
@@ -72,7 +79,6 @@
 
       .header-title {
         font-size: 24px;
-        font-family: Arial, Helvetica, sans-serif;
         color: #fff;
         font-weight: normal;
         line-height: 24px;
@@ -132,8 +138,6 @@
         right: 0;
         display: flex;
         justify-content: space-between;
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
       }
     </style>
   </head>

@@ -38,7 +38,7 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)  # Create a LoginManager instance
 login_manager.login_view = 'login'  # Set the login view
 
-app.run(debug=True)
+
 
 
 @app.route('/')
@@ -253,6 +253,7 @@ def landing_page():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))  # Load a user by ID
+
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
     if current_user.is_authenticated:
@@ -490,7 +491,7 @@ def labourer_image():
         db.session.add(current_user.profile_image)
         db.session.commit()
 
-    return render_template('labourer_profile.html',is_dashboard_page=True)
+    return render_template('labourer_profile.html',is_dashboard_page=True,user=current_user)
 
 @app.route('/profile/business')
 @login_required
@@ -503,11 +504,11 @@ def business_profile():
 
     return render_template('business_profile.html', user=user, is_dashboard_page=True, business_profile=business_profile, form=UploadProfileImageForm())
 
-
-
-
 # ...
 from sqlalchemy.orm import joinedload
+
+
+
 @app.route('/profile/labourer')
 @login_required
 def labourer_profile():
@@ -521,12 +522,29 @@ def labourer_profile():
 
     # Assuming you have a user's labourer profile information
     labourer_profile = user.labourer_profile
-    
+
     # Fetch company details if available
     company_details = user.company_details
 
-    return render_template('labourer_profile.html', user=user, labourer_profile=labourer_profile, company_details=company_details,verification_ready=labourer_profile.verification_ready,
-    id_verified=labourer_profile.id_verified)
+    # Check if the labourer profile exists
+    if not labourer_profile:
+        return render_template(
+            'labourer_profile.html',
+            user=user,
+            labourer_profile=None,  # Pass None to indicate the profile needs to be created
+            company_details=company_details,
+            verification_ready=False,
+            id_verified=False
+        )
+
+    return render_template(
+        'labourer_profile.html',
+        user=user,
+        labourer_profile=labourer_profile,
+        company_details=company_details,
+        verification_ready=labourer_profile.verification_ready,
+        id_verified=labourer_profile.id_verified
+    )
 
 
 
@@ -595,10 +613,16 @@ from datetime import datetime
 @app.route('/find_a_job')
 @login_required
 def find_a_job():
-    # Check if the current user is a labourer and if their profile and company details are filled out
-    if not current_user.labourer_profile.id_verified:
-        flash("This section will be available after your profile is verified.", 'warning')
+    # Check if the current user is a labourer and if their profile exists
+    if not current_user.labourer_profile:
+        flash("Please complete your profile.")
         return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
+
+    # Check if the profile is verified
+    if not current_user.labourer_profile.id_verified:
+        flash("This section will be available once your profile is verified.")
+        return redirect(url_for('labourer_profile'))  # Redirect to profile completion page
+
     my_categories = current_user.labourer_profile.job_categories.split(', ') if current_user.labourer_profile.job_categories else []
     my_locations = current_user.labourer_profile.job_locations.split(', ') if current_user.labourer_profile.job_locations else []
 
@@ -611,7 +635,7 @@ def find_a_job():
         else:
             job.image_list = []
 
-    return render_template('find_a_job.html', job_data=job_data,my_categories=my_categories,my_locations=my_locations, is_dashboard_page=True)
+    return render_template('find_a_job.html', job_data=job_data, my_categories=my_categories, my_locations=my_locations, is_dashboard_page=True)
 
 @app.route('/create_job', methods=['GET'])
 def create_job():
@@ -1398,11 +1422,15 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
         print(f"Error creating job closure notification: {e}")
         db.session.rollback()
         return None
-
 @app.route('/find-tradies', methods=['GET', 'POST'])
 @login_required
 def find_tradies():
-    # Ensure profile and company details are completed
+    # Ensure the user has a labourer profile
+    if not current_user.labourer_profile:
+        flash("Please complete you profile.")
+        return redirect(url_for('labourer_profile'))
+
+    # Ensure profile is verified
     if not current_user.labourer_profile.id_verified:
         flash("This section will be available after your profile is verified.", 'warning')
         return redirect(url_for('labourer_profile'))
@@ -2342,17 +2370,33 @@ def end_impersonation():
     flash("Unable to revert to admin account.")
     return redirect(url_for('login'))
 
-@app.route('/admin_tradesman')
+@app.route('/admin_tradesman', methods=['GET', 'POST'])
 @login_required
 def admin_tradesman():
     if not current_user.is_admin:
         flash("You are not authorized to view this page.")
-        return redirect(url_for('dashboard'))  # Redirect to admin dashboard if not authorized
+        return redirect(url_for('dashboard'))
 
-    # Query all users who have an associated 'labourer_profile' (indicating they are tradesmen)
-    tradesman_users = User.query.filter(User.labourer_profile != None).all()
+    # Get search query from request
+    search_query = request.args.get('search', '').strip()
 
-    return render_template('admin_tradesman.html', tradesman_users=tradesman_users)
+    # Query all tradesmen, including location and email fields
+    if search_query:
+        tradesman_users = User.query.filter(
+            User.labourer_profile != None,
+            (
+                User.first_name.ilike(f"%{search_query}%") |
+                User.last_name.ilike(f"%{search_query}%") |
+                User.location.ilike(f"%{search_query}%") |  # Added location search
+                User.email.ilike(f"%{search_query}%")      # Added email search
+            )
+        ).all()
+    else:
+        tradesman_users = User.query.filter(User.labourer_profile != None).all()
+
+    return render_template('admin_tradesman.html', tradesman_users=tradesman_users, search_query=search_query)
+
+from sqlalchemy import or_
 
 @app.route('/admin_homeowners')
 @login_required
@@ -2361,8 +2405,22 @@ def admin_homeowners():
         flash("You are not authorized to view this page.")
         return redirect(url_for('login'))  # Redirect to admin dashboard if not authorized
 
+    search = request.args.get('search', '')  # Get the search term from the URL, default to empty string if not provided
+
     # Query all users who have a business profile (business users)
-    homeowners = User.query.filter(User.business_profile != None).all()
+    homeowners = User.query.filter(User.business_profile != None)
+
+    if search:
+        homeowners = homeowners.filter(
+            or_(
+                User.first_name.ilike(f'%{search}%'),
+                User.last_name.ilike(f'%{search}%'),
+                User.email.ilike(f'%{search}%'),
+                User.location.ilike(f"%{search}%") 
+            )
+        )
+
+    homeowners = homeowners.all()
 
     # Fetch all open jobs (if any) associated with each homeowner's business profile
     homeowners_with_jobs = []
@@ -2373,11 +2431,31 @@ def admin_homeowners():
             'open_jobs': open_jobs
         })
 
-    return render_template('admin_homeowners.html', homeowners_with_jobs=homeowners_with_jobs)
+    return render_template('admin_homeowners.html', homeowners_with_jobs=homeowners_with_jobs, search=search)
 
 @app.route('/admin_jobs')
 def admin_jobs():
-    # Fetch all jobs from the database
-    jobs = Job.query.all()  # Fetch all jobs
+    search = request.args.get('search', '')  # Get the search term from the URL, default to empty string if not provided
 
-    return render_template('admin_jobs.html', jobs=jobs)
+    # Query all jobs from the database
+    jobs = Job.query.join(User).filter(
+        (User.first_name.ilike(f'%{search}%')) |
+        (User.last_name.ilike(f'%{search}%')) |
+        (User.email.ilike(f'%{search}%'))  |
+        (Job.location.ilike(f'%{search}%'))       
+    ).all()
+
+    return render_template('admin_jobs.html', jobs=jobs, search=search)
+
+@app.route('/routes')
+def list_routes():
+    import urllib
+    output = []
+    for rule in app.url_map.iter_rules():
+        methods = ','.join(rule.methods)
+        line = urllib.parse.unquote(f"{rule.endpoint}: {rule.rule} [{methods}]")
+        output.append(line)
+    return "<br>".join(output)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000, debug=True)

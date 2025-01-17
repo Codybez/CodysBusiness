@@ -500,6 +500,30 @@ function checkNotifications() {
         isDragging = false;
         document.body.style.userSelect = ''; // Re-enable text selection
     });
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+  // For PWA/standalone mode, prevent address bar showing
+  window.addEventListener('scroll', function() {
+    window.scrollTo(0, 1);
+  });
+}
+// Hide the address bar on load and when the page is scrolled up
+function hideAddressBar() {
+    if (window.innerHeight < window.outerHeight) {
+        // Scroll a little bit down to hide the address bar on mobile browsers
+        window.scrollTo(0, 1);
+    }
+}
+
+window.addEventListener('load', hideAddressBar);
+window.addEventListener('resize', hideAddressBar);  // Rescale for orientation change
+window.addEventListener('scroll', function() {
+    if (window.scrollY === 0) {
+        // Prevent the address bar from appearing when the user scrolls up
+        window.scrollTo(0, 1);
+    }
+});
+
 </script>
 
 

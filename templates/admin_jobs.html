@@ -9,7 +9,7 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background-color: #f5f5f5;
     }
 
@@ -21,7 +21,7 @@
     }
 
     .container {
-      padding: 20px;
+
       background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -64,6 +64,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 30px;
+      margin-top: 20px;
     }
 
     table th,
@@ -207,9 +208,40 @@
         </form>
       </div>
     </header>
+
     <br /><br /><br />
-    <!-- Recent Jobs -->
+        <!-- Jobs Table -->
     <h2>All Jobs</h2>
+
+    <!-- Search Form -->
+    <form method="get" action="{{ url_for('admin_jobs') }}">
+      <input
+        type="text"
+        name="search"
+        value="{{ search }}"
+        placeholder="Search by name, email or location"
+        style="
+          padding: 10px;
+          width: 50%;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        "
+      />
+      <button
+        type="submit"
+        style="
+          padding: 10px;
+          background-color: #28a745;
+          color: white;
+          border: none;
+          border-radius: 5px;
+        "
+      >
+        Search
+      </button>
+
+
+
     <table>
       <thead>
         <tr>
@@ -226,7 +258,6 @@
       </thead>
       <tbody>
         {% for job in jobs %}
-
         <tr>
           <td>{{ job.job_name }}</td>
           <td>{{ job.location }}</td>

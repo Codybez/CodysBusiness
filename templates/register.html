@@ -16,6 +16,7 @@
         align-items: center; /* Vertically center */
         height: 100vh; /* Take full height of the viewport */
         margin: 0; /* Remove default margin */
+        margin-top: 40px;
         background-color: #ffffff; /* Optional, for better visibility */
         min-height: 100vh; /* Ensure that the body is at least 100% of the viewport height */
       }
@@ -222,7 +223,10 @@
       </form>
 
       <div>
-        <p>Already registered? <a href="{{ url_for('login') }}">Login</a></p>
+        <p>
+          Have you already registered?
+          <a href="{{ url_for('login') }}">Login</a>
+        </p>
       </div>
     </div>
     {% endblock %}

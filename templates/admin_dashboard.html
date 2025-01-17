@@ -9,7 +9,7 @@
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f5f5f5;
+        background-color: #fff;
       }
 
       header {
@@ -189,6 +189,11 @@
       margin-right: 30px;
     }
 
+    .bordered {
+  border: 2px solid #ff7148;
+}
+
+
     </style>
   </head>
   <body>
@@ -222,10 +227,11 @@
           <h3>{{ jobs|length }}</h3>
           <p>Jobs</p>
         </div>
-        <div class="card">
-          <h3>{{ pending_verifications|length }}</h3>
-          <p>Pending Verifications</p>
+        <div class="card {% if pending_verifications|length > 0 %}bordered{% endif %}">
+         <h3>{{ pending_verifications|length }}</h3>
+         <p>Pending Verifications</p>
         </div>
+
         <div class="card">
           <h3>{{ total_job_contacts }}</h3>
           <p>Job Contacts</p>

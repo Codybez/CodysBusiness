@@ -9,7 +9,7 @@
         background-color: #ffffff;
         margin: 0;
         padding: 0;
-        margin-bottom: 50px;
+        margin-bottom: 70px;
       }
 
       /* Profile container */
@@ -54,8 +54,6 @@
         border-radius: 5px;
         margin-bottom: 10px;
         font-size: 14px;
-        display: -webkit-box;
-        -webkit-box-orient: horizontal; /* Ensures content is laid out in a single row */
         overflow: hidden; /* Hides overflowed content */
         white-space: nowrap; /* Prevents text from wrapping */
         text-overflow: ellipsis; /* Adds ellipsis when text overflows */
@@ -64,26 +62,31 @@
       .info-item strong {
         color: #333;
         font-weight: bold;
-        margin-right: 5px;
+        margin-right: 20px;
       }
 
       .info-item span {
         color: #555;
+        overflow: hidden; /* Hides overflowed content */
+        white-space: nowrap; /* Prevents text from wrapping */
+        text-overflow: ellipsis; /* Adds ellipsis when text overflows */
       }
 
       /* Edit button */
       .edit-button {
         text-align: center;
-        margin-top: 20px;
+        margin-bottom: 10px;
+        margin-top: 25px;
       }
 
       .edit-button a {
         color: #ffffff;
         background-color: #333;
-        border-radius: 25px;
+        border-radius: 5px;
         padding: 10px 20px;
         text-decoration: none;
         font-size: 14px;
+        margin-top: 10px;
       }
 
       /* User location */
@@ -521,7 +524,7 @@
           <span>{{ current_user.labourer_profile.user_blurb }}</span>
         </div>
         <div class="edit-button">
-          <a href="{{ url_for('edit_labourer_profile') }}">Add/Edit</a>
+          <a href="{{ url_for('edit_labourer_profile') }}">Update Basic Information</a>
         </div>
       </div>
 
@@ -608,7 +611,7 @@
         </div>
 
         <div class="edit-button">
-          <a href="{{ url_for('edit_tradesman_profile') }}">Add/Edit</a>
+          <a href="{{ url_for('edit_tradesman_profile') }}">Update Business Details</a>
         </div>
       </div>
       <div class="social-links-info">
@@ -640,7 +643,7 @@
         </div>
 
         <div class="edit-button">
-          <a href="{{ url_for('edit_social_links') }}">Add/Edit</a>
+          <a href="{{ url_for('edit_social_links') }}">Update Social Links</a>
         </div>
       </div>
       <div class="social-links-info">

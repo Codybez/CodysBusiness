@@ -191,93 +191,99 @@
 }
 </style>
 <body>
-      <!-- Admin Header -->
+    <!-- Admin Header -->
     <header id="admin-header">
         <div class="header-content">
-            <!-- Add shortcuts for future use -->
             <nav class="shortcuts">
-          <a href="{{ url_for('admin_dashboard')}}">Dashboard</a>
-          <a href="{{ url_for('admin_tradesman') }}">Tradesman</a>
-          <a href="{{ url_for('admin_homeowners') }}">Homeowners</a>
-          <a href="{{ url_for('admin_jobs') }}">Jobs</a>
-              
+                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('admin_tradesman') }}">Tradesman</a>
+                <a href="{{ url_for('admin_homeowners') }}">Homeowners</a>
+                <a href="{{ url_for('admin_jobs') }}">Jobs</a>
             </nav>
 
-            <!-- Logout Button -->
-            <form action="{{ url_for('logout') }}" >
+            <form action="{{ url_for('logout') }}">
                 <button type="submit" id="logout-btn">Logout</button>
             </form>
         </div>
     </header>
-    <br><br><br>
-  <!-- tradesman_users.html -->
-<h2>Tradesman Users</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Full Name</th>
-      <th>ID Image</th>
-      <th>ID Verification</th>
-      <th>Insurance Image</th>
-      <th>Insurance Verification</th>
-      <th>Actions</th>
-      <th>View Profile</th>
-      <th>Impersonate</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in tradesman_users %}
-    <tr>
-      <td>{{ user.email }}</td>
-      <td>{{ user.first_name }} {{ user.last_name }}</td>
-      <td>
-        {% if user.labourer_profile.id_image %}
-        <a href="{{ url_for('static', filename='id_images/' + user.labourer_profile.id_image) }}" target="_blank">
-          View ID Image
-        </a>
-        {% else %} No ID image uploaded {% endif %}
-      </td>
-      <td>
-        <form method="POST" action="{{ url_for('update_verification', user_id=user.id) }}">
-          <select name="id_verified">
-            <option value="true" {% if user.labourer_profile.id_verified %}selected{% endif %}>Verified</option>
-            <option value="false" {% if not user.labourer_profile.id_verified %}selected{% endif %}>Not Verified</option>
-          </select>
-      </td>
-      <td>
-        {% if user.labourer_profile.insurance_image %}
-          {% for file in user.labourer_profile.insurance_image.split(',') %}
-            <a href="{{ url_for('static', filename='insurance_images/' + file) }}" target="_blank">
-              View Insurance Image
-            </a><br />
-          {% endfor %}
-        {% else %} No insurance image uploaded {% endif %}
-      </td>
-      <td>
-        <select name="insurance_verified">
-          <option value="true" {% if user.labourer_profile.insurance_verified %}selected{% endif %}>Verified</option>
-          <option value="false" {% if not user.labourer_profile.insurance_verified %}selected{% endif %}>Not Verified</option>
-        </select>
-      </td>
-      <td class="actions">
-        <button type="submit" class="verify-btn">Update</button>
-      </td>
-      </form>
-      <td>
-        <a href="{{ url_for('view_tradesman_profile', user_id=user.id) }}">View Profile</a>
-      </td>
-      <td>
-        <!-- Impersonation Button -->
-        <form action="{{ url_for('impersonate', user_id=user.id) }}" method="GET">
-          <button type="submit" class="impersonate-btn">Impersonate</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
 
-  
+    <div class="admin-dashboard-content">
+        <h2>Tradesman Users</h2>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{{ url_for('admin_tradesman') }}" style="margin-bottom: 20px;">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search by name, email or location" 
+                style="padding: 10px; width: 50%; border: 1px solid #ccc; border-radius: 5px;">
+            <button type="submit" style="padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px;">
+                Search
+            </button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                    <th>ID Image</th>
+                    <th>ID Verification</th>
+                    <th>Insurance Image</th>
+                    <th>Insurance Verification</th>
+                    <th>Actions</th>
+                    <th>View Profile</th>
+                    <th>Impersonate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in tradesman_users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    <td>
+                        {% if user.labourer_profile.id_image %}
+                        <a href="{{ url_for('static', filename='id_images/' + user.labourer_profile.id_image) }}" target="_blank">
+                            View ID Image
+                        </a>
+                        {% else %} No ID image uploaded {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('update_verification', user_id=user.id) }}">
+                            <select name="id_verified">
+                                <option value="true" {% if user.labourer_profile.id_verified %}selected{% endif %}>Verified</option>
+                                <option value="false" {% if not user.labourer_profile.id_verified %}selected{% endif %}>Not Verified</option>
+                            </select>
+                    </td>
+                    <td>
+                        {% if user.labourer_profile.insurance_image %}
+                        {% for file in user.labourer_profile.insurance_image.split(',') %}
+                        <a href="{{ url_for('static', filename='insurance_images/' + file) }}" target="_blank">
+                            View Insurance Image
+                        </a><br />
+                        {% endfor %}
+                        {% else %} No insurance image uploaded {% endif %}
+                    </td>
+                    <td>
+                        <select name="insurance_verified">
+                            <option value="true" {% if user.labourer_profile.insurance_verified %}selected{% endif %}>Verified</option>
+                            <option value="false" {% if not user.labourer_profile.insurance_verified %}selected{% endif %}>Not Verified</option>
+                        </select>
+                    </td>
+                    <td class="actions">
+                        <button type="submit" class="verify-btn">Update</button>
+                    </td>
+                    </form>
+                    <td>
+                        <a href="{{ url_for('view_tradesman_profile', user_id=user.id) }}">View Profile</a>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('impersonate', user_id=user.id) }}" method="GET">
+                            <button type="submit" class="impersonate-btn">Impersonate</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
+
 </html>

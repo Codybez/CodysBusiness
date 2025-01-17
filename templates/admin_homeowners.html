@@ -9,7 +9,7 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background-color: #f5f5f5;
     }
 
@@ -64,6 +64,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 30px;
+      margin-top: 20px;
     }
 
     table th,
@@ -208,7 +209,37 @@
       </div>
     </header>
     <br /><br /><br />
-    <h2>Homeowners (Business Users)</h2>
+
+    <h2>Homeowners</h2>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('admin_homeowners') }}">
+      <input
+        type="text"
+        name="search"
+        value="{{ search_query }}"
+        placeholder="Search by name, email or location"
+        style="
+          padding: 10px;
+          width: 50%;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        "
+      />
+      <button
+        type="submit"
+        style="
+          padding: 10px;
+          background-color: #28a745;
+          color: white;
+          border: none;
+          border-radius: 5px;
+        "
+      >
+        Search
+      </button>
+    </form>
+
     <table>
       <thead>
         <tr>
@@ -217,7 +248,6 @@
           <th>Open Jobs</th>
           <th>Actions</th>
           <th>Impersonate</th>
-          <!-- Add Impersonate Column -->
         </tr>
       </thead>
       <tbody>
@@ -227,27 +257,23 @@
           <td>
             {{ homeowner.user.first_name }} {{ homeowner.user.last_name }}
           </td>
-
           <td>
             {% if homeowner.open_jobs %}
             <ul>
               {% for job in homeowner.open_jobs %}
               <li>
-                <a href="{{ url_for('business_display_jobs', job_id=job.id) }}">
-                  {{ job.job_name }}
-                </a>
+                <a href="{{ url_for('business_display_jobs', job_id=job.id) }}"
+                  >{{ job.job_name }}</a
+                >
               </li>
               {% endfor %}
             </ul>
             {% else %} No open jobs {% endif %}
           </td>
-
           <td>
             <!-- You can add actions here like view profile, edit, or other admin-specific actions -->
             <a href="">View Profile</a>
           </td>
-
-          <!-- Impersonate Button -->
           <td>
             <a
               href="{{ url_for('impersonate', user_id=homeowner.user.id) }}"
