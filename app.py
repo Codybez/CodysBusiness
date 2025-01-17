@@ -22,8 +22,15 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import and_
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.types import JSON
+from flask import Flask
+from flask_bcrypt import Bcrypt
+from flask_mail import Mail 
+from flask_mail import Message
+from itsdangerous import URLSafeTimedSerializer
+
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_database.db'
@@ -40,7 +47,6 @@ login_manager.login_view = 'login'  # Set the login view
 
 
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -49,6 +55,8 @@ def index():
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     soft_deleted = db.Column(db.Boolean, default=False)  # New column for soft delete
+    email_verified = db.Column(db.Boolean, default=False)  # Column to track if email is verified
+    verification_token = db.Column(db.String(200), nullable=True)  # New column for verification token
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
     location = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
@@ -254,6 +262,113 @@ def landing_page():
 def load_user(user_id):
     return User.query.get(int(user_id))  # Load a user by ID
 
+
+
+
+def generate_verification_token(email):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt='email-verification-salt')
+
+
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        user_type = request.form.get('userType')
+        location = request.form.get('location')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+
+        # Check if the email already exists in the database
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            if user.soft_deleted:
+                # If the account is soft-deleted, notify the user to contact support
+                flash('This email is associated with a deactivated account. Please contact support to reactivate your account.', 'error')
+            else:
+                # If the account is active, notify the user that the account already exists
+                flash('An active account already exists with this email. Please log in.', 'error')
+            return redirect(url_for('login'))  # Redirect to login page if email exists
+
+        bcrypt = Bcrypt()
+
+        # If the email doesn't exist, create a new user
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # Create the new user
+        new_user = User(
+            email=email,
+            password=hashed_password,
+            location=location,
+            user_type=user_type,
+            first_name=first_name,
+            last_name=last_name
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        # If the user is a business, create a BusinessProfile with the user_id automatically
+        if user_type == 'Business':
+            business_profile = BusinessProfile(
+                user_id=new_user.id  # Link the new business profile to the user
+            )
+            db.session.add(business_profile)
+            db.session.commit()
+
+        flash('Registration successful! Please log in to begin.', 'success')
+        return redirect(url_for('login'))  # Redirect to the login page after successful registration
+
+    return render_template('register.html')
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+
+            bcrypt = Bcrypt()
+            # Check if the password is correct and if the account is not soft deleted
+            if bcrypt.check_password_hash(user.password, password):
+                if user.soft_deleted:
+                    flash('Your account has been deactivated. Please contact support.', 'error')
+                    return redirect(url_for('login'))
+
+                # If the account is not soft deleted, log the user in
+                login_user(user)
+
+                # Redirect based on user type
+                if user.is_admin:
+                    return redirect(url_for('admin_dashboard'))  # Admins go to admin dashboard
+                elif user.user_type == 'Business':
+                    return redirect(url_for('business_created_jobs'))
+                else:
+                    return redirect(url_for('find_a_job'))
+            else:
+                flash('Invalid password. Please try again.', 'error')
+        else:
+            flash('No account found with this email address.', 'error')
+
+    return render_template('login.html')  # Make sure to return the correct template
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+
+   
+    return redirect(url_for('login'))  # Redirect to the login page after logout
+
+
+
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
     if current_user.is_authenticated:
@@ -335,97 +450,6 @@ def display_job(job_id):
     else:
         return "Job not found", 404
 
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        user_type = request.form.get('userType')
-        location = request.form.get('location')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-
-        # Check if the email already exists in the database
-        user = User.query.filter_by(email=email).first()
-
-        if user:
-            if user.soft_deleted:
-                # If the account is soft-deleted, notify the user to contact support
-                flash('This email is associated with a deactivated account. Please contact support to reactivate your account.', 'error')
-            else:
-                # If the account is active, notify the user that the account already exists
-                flash('An active account already exists with this email. Please log in.', 'error')
-            return redirect(url_for('login'))  # Redirect to login page if email exists
-
-        # If the email doesn't exist, create a new user
-        hashed_password = generate_password_hash(password, method='sha256')
-
-        # Create the new user
-        new_user = User(
-            email=email,
-            password=hashed_password,
-            location=location,
-            user_type=user_type,
-            first_name=first_name,
-            last_name=last_name
-        )
-        db.session.add(new_user)
-        db.session.commit()
-
-        # If the user is a business, create a BusinessProfile with the user_id automatically
-        if user_type == 'Business':
-            business_profile = BusinessProfile(
-                user_id=new_user.id  # Link the new business profile to the user
-            )
-            db.session.add(business_profile)
-            db.session.commit()
-
-        flash('Registration successful! Please log in to begin.', 'success')
-        return redirect(url_for('login'))  # Redirect to the login page after successful registration
-
-    return render_template('register.html')
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
-
-        if user:
-            # Check if the password is correct and if the account is not soft deleted
-            if check_password_hash(user.password, password):
-                if user.soft_deleted:
-                    flash('Your account has been deactivated. Please contact support.', 'error')
-                    return redirect(url_for('login'))
-
-                # If the account is not soft deleted, log the user in
-                login_user(user)
-
-                # Redirect based on user type
-                if user.is_admin:
-                    return redirect(url_for('admin_dashboard'))  # Admins go to admin dashboard
-                elif user.user_type == 'Business':
-                    return redirect(url_for('business_created_jobs'))
-                else:
-                    return redirect(url_for('find_a_job'))
-            else:
-                flash('Invalid password. Please try again.', 'error')
-        else:
-            flash('No account found with this email address.', 'error')
-
-    return render_template('login.html')
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-
-   
-    return redirect(url_for('login'))  # Redirect to the login page after logout
 
 @app.route('/labourer/dashboard')
 @login_required
@@ -2111,18 +2135,19 @@ def change_email():
         new_email = request.form.get('new_email')
         password = request.form.get('password')
 
-        # Verify the password
-        if not check_password_hash(current_user.password, password):
+        # Verify the password using bcrypt
+        if not bcrypt.check_password_hash(current_user.password, password):
             flash('Incorrect password. Please try again.', 'danger')
             return redirect(url_for('change_email'))
 
-        # Update email
+        # Update the user's email
         current_user.email = new_email
         db.session.commit()
         flash('Your email has been updated successfully.', 'success')
         return redirect(url_for('business_profile'))
 
     return render_template('business_profile.html')
+
 
 
 
@@ -2136,7 +2161,7 @@ def change_password():
         confirm_password = request.form.get('confirm_password')
 
         # Verify current password
-        if not check_password_hash(current_user.password, current_password):
+        if not bcrypt.check_password_hash(current_user.password, current_password):
             flash('Incorrect current password. Please try again.', 'danger')
             return redirect(url_for('business_profile'))
 
@@ -2146,7 +2171,7 @@ def change_password():
             return redirect(url_for('business_profile'))
 
         # Update password
-        current_user.password = generate_password_hash(new_password)
+        current_user.password = bcrypt.generate_password_hash(new_password)
         db.session.commit()
         flash('Your password has been updated successfully.', 'success')
         return redirect(url_for('business_profile'))
@@ -2174,7 +2199,7 @@ def labourer_change_email():
         password = request.form.get('password')
 
         # Verify the password
-        if not check_password_hash(current_user.password, password):
+        if not bcrypt.check_password_hash(current_user.password, password):
             flash('Incorrect password. Please try again.', 'danger')
             return redirect(url_for('labourer_profile'))
 
@@ -2196,7 +2221,7 @@ def labourer_change_password():
         confirm_password = request.form.get('confirm_password')
 
         # Verify current password
-        if not check_password_hash(current_user.password, current_password):
+        if not bcrypt.check_password_hash(current_user.password, current_password):
             flash('Incorrect current password. Please try again.', 'danger')
             return redirect(url_for('labourer_profile'))
 
@@ -2206,7 +2231,7 @@ def labourer_change_password():
             return redirect(url_for('labourer_profile'))
 
         # Update password
-        current_user.password = generate_password_hash(new_password)
+        current_user.password = bcrypt.generate_password_hash(new_password)
         db.session.commit()
         flash('Your password has been updated successfully.', 'success')
         return redirect(url_for('labourer_profile'))  # Redirect to labourer profile
@@ -2457,5 +2482,12 @@ def list_routes():
         output.append(line)
     return "<br>".join(output)
 
+if __name__ == '__main__':
+    # You can add additional arguments to socketio.run if needed
+    socketio.run(app, debug=True)
+
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+
