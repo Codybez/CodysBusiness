@@ -307,7 +307,7 @@ def verify_email(token):
 
 def generate_verification_token(email):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-    return serializer.dumps(email, salt='email-verification-salt')
+    return serializer.dumps(email, salt='email-verify-salt')
 
 
 
@@ -334,6 +334,8 @@ def register():
 
         # If the email doesn't exist, create a new user
         hashed_password = bcrypt.generate_password_hash(password)
+
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
         # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
         token = serializer.dumps(email, salt='email-verify-salt')
@@ -2362,7 +2364,6 @@ def verify_profile():
         flash('Please confirm that your information is correct.', 'error')
     return redirect(url_for('labourer_profile'))
 
-
 @app.route('/update_verification/<int:user_id>', methods=['POST'])
 @login_required
 @admin_required
@@ -2383,6 +2384,21 @@ def update_verification(user_id):
 
     # Commit the changes to the database
     db.session.commit()
+
+    # Send verification email if the profile is fully verified
+    if id_verified and insurance_verified:
+        # Create email
+        msg = emailmessage('Your Profile Has Been Verified!',
+                      recipients=[user.email])
+        msg.body = f"Hello {user.first_name},\n\nYour profile has been verified! You can now access all the features of the app."
+        msg.html = render_template('email/verified_profile.html', user=user)
+
+        # Send email
+        try:
+            mail.send(msg)
+            flash("Verification email sent to the user.", "success")
+        except Exception as e:
+            flash(f"Failed to send verification email: {str(e)}", "danger")
 
     # Redirect back to the admin dashboard with updated information
     return redirect(url_for('admin_dashboard'))

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Your Profile Has Been Verified!</title>
+  </head>
+  <body>
+    <p>Hello {{ user.first_name }},</p>
+    <p>Your profile has been successfully verified!</p>
+    <p>
+      You can now access all the full features of the app, including posting
+      jobs and applying for trades.
+    </p>
+    <p>
+      To get started, please
+      <a href="{{ url_for('login', _external=True) }}">log in</a> to your
+      account.
+    </p>
+    <p>Best regards,<br />Your Company Name</p>
+    <p>Best regards,<br />Cody from Openwork</p>
+  </body>
+</html>
