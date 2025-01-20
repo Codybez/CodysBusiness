@@ -268,13 +268,19 @@
             <td>{{ user.first_name }} {{ user.last_name }}</td>
             <td>
               {% if user.labourer_profile.id_image %}
-              <a
-                href="{{ url_for('static', filename='id_images/' + user.labourer_profile.id_image) }}"
-                target="_blank"
-              >
-                View ID Image
-              </a>
-              {% else %} No ID image uploaded {% endif %}
+                {% set images = user.labourer_profile.id_image.split(',') %}
+                <ul>
+                  {% for image in images %}
+                    <li>
+                      <a href="{{ url_for('static', filename='id_images/' + image) }}" target="_blank">
+                        Image
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                No ID image uploaded
+              {% endif %}
             </td>
             <td>
               <form
@@ -314,7 +320,7 @@
                 href="{{ url_for('static', filename='insurance_images/' + file) }}"
                 target="_blank"
               >
-                View Insurance Image </a
+                Image </a
               ><br />
               {% endfor %} {% else %} No insurance image uploaded {% endif %}
             </td>

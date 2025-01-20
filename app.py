@@ -28,6 +28,8 @@ from flask_mail import Mail
 from flask_mail import Message as emailmessage
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
+from threading import Thread
+
 
 
 app = Flask(__name__)
@@ -364,13 +366,13 @@ def register():
         # Generate the verification link with the token
         verification_link = url_for('verify_email', token=token, _external=True)
 
-        # Send the verification email
+        # Send the verification email using the HTML template
         msg = emailmessage(
             'Please verify your email',
             sender='cdbeznec@outlook.com',
             recipients=[email]
         )
-        msg.body = f"Click on the following link to verify your email: {verification_link}"
+        msg.html = render_template('email/email_verification.html', user=new_user, verification_link=verification_link)
         mail.send(msg)
 
         flash('Registration successful! A verification email has been sent to your inbox.', 'info')
@@ -1724,6 +1726,19 @@ def get_messages(job_application_id):
     ]
     return jsonify(messages_data)
 
+def send_email_async(app, to, subject, body):
+    with app.app_context():
+        msg = emailmessage(
+            subject=subject,
+            recipients=[to],
+            body=body
+        )
+        mail.send(msg)
+
+def send_async_email(to, subject, body):
+    thread = Thread(target=send_email_async, args=(current_app._get_current_object(), to, subject, body))
+    thread.start()
+
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def chat(job_id, user_id):
@@ -1738,59 +1753,44 @@ def chat(job_id, user_id):
         if not job:
             return jsonify({"error": "Job not found"}), 404
 
-        room = f"job_{job_id}_user_{user_id}"  # room is based on the job_id and applicant's user_id
+        room = f"job_{job_id}_user_{user_id}"
 
-        # Fetch the trading name of the applicant (labourer) from CompanyDetails
         labourer_trading_name = job_application.user.company_details.trading_name if job_application.user.company_details else None
-
-        # Fetch the first name of the job poster (business)
         job_poster_first_name = job.user.first_name
-
         applicant_profile_image = job_application.user.profile_image.filename if job_application.user.profile_image else 'orange.jpg'
 
         if job.image_paths:
-            job_image_paths = job.image_paths.split(',')  # Assuming it's a comma-separated list
-            job_image_path = job_image_paths[0]  # Take the first image
+            job_image_paths = job.image_paths.split(',')
+            job_image_path = job_image_paths[0]
         else:
             job_image_path = 'default-job.jpg'
 
-        # Check if the applicant's profile is soft-deleted
         profile_deleted_note = None
-
-        # Check for the applicant
         if job_application.user.soft_deleted:
-            profile_deleted_note = f"The applicant's profile has been deleted."
-
-        # Check for the job poster
+            profile_deleted_note = "The applicant's profile has been deleted."
         elif job.user.soft_deleted:
-            profile_deleted_note = f"The job poster's profile has been deleted."
+            profile_deleted_note = "The job poster's profile has been deleted."
 
-
-        # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
             if not content:
                 return jsonify({"error": "Message content cannot be empty"}), 400
 
-            # Determine the receiver (either the job poster or the applicant)
             if current_user.id == job_application.user_id:
-                receiver_id = job.user_id  # Receiver is the job poster
+                receiver_id = job.user_id
             else:
-                receiver_id = job_application.user_id  # Receiver is the applicant
+                receiver_id = job_application.user_id
 
-            # Create and save a new message
             message = Message(
                 sender_id=current_user.id,
                 receiver_id=receiver_id,
                 content=content,
                 job_application_id=job_application.id,
                 room=room,
-                
             )
             db.session.add(message)
             db.session.commit()
 
-            # Create a notification for the receiver
             create_message_notification(
                 receiver_id=receiver_id,
                 message_content=f"New message from {current_user.first_name} regarding job '{job.job_name}'",
@@ -1798,10 +1798,22 @@ def chat(job_id, user_id):
                 job_id=job.id
             )
 
-        # Fetch all messages for this JobApplication
+            receiver_user = User.query.get(receiver_id)
+            if receiver_user:
+                email_subject = f"New Message Regarding Job: {job.job_name}"
+                email_body = (
+                    f"Hello {receiver_user.first_name},\n\n"
+                    f"You have received a new message from {current_user.first_name} regarding the job '{job.job_name}'.\n\n"
+                    f"Message content:\n\n"
+                    f"{content}\n\n"
+                    f"Please log in to your account to view and respond to this message.\n\n"
+                    "Best regards,\n"
+                    "Your Platform Team"
+                )
+                send_async_email(receiver_user.email, email_subject, email_body)
+
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
 
-        # Mark all unread messages as read for the current user
         Message.query.filter_by(
             job_application_id=job_application.id,
             receiver_id=current_user.id,
@@ -1809,8 +1821,6 @@ def chat(job_id, user_id):
         ).update({"is_read": True})
         db.session.commit()
 
-    
-        # Render the chat template
         return render_template(
             'chat_business.html',
             messages=messages,
@@ -1824,7 +1834,8 @@ def chat(job_id, user_id):
             user_id=job_application.user.id,
             user=current_user,
             applicant_profile_image=applicant_profile_image,
-            job_image_path=job_image_path, profile_deleted_note=profile_deleted_note
+            job_image_path=job_image_path,
+            profile_deleted_note=profile_deleted_note
         )
 
     except Exception as e:
@@ -2072,30 +2083,31 @@ from werkzeug.utils import secure_filename
 @app.route('/upload_id_image', methods=['POST'])
 @login_required
 def upload_id_image():
-    # Check if a file is uploaded
     if 'id_image' not in request.files:
         return jsonify({"error": "No file part"}), 400
-    
+
     file = request.files['id_image']
-    
-    # If no file is selected
+
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
-    
-    # Allowed file extensions
+
     allowed_extensions = {'png', 'jpg', 'jpeg'}
-    
-    # Ensure the file has a valid extension
+
     if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
-        # Secure the filename and save it
         filename = secure_filename(file.filename)
         upload_path = os.path.join('static', 'id_images', filename)
         file.save(upload_path)
-        
-        # Store only the filename in the database (relative path)
-        current_user.labourer_profile.id_image = filename
+
+        # Append to the existing ID image path
+        current_images = current_user.labourer_profile.id_image
+        if current_images:
+            updated_images = ','.join([current_images, filename])  # Add new file to existing paths
+        else:
+            updated_images = filename  # First file upload
+
+        current_user.labourer_profile.id_image = updated_images
         db.session.commit()
-        
+
         return jsonify({"message": "ID Image uploaded successfully!"}), 200
     else:
         return jsonify({"error": "Invalid file format. Only PNG, JPG, and JPEG are allowed."}), 400
@@ -2103,20 +2115,16 @@ def upload_id_image():
 @app.route('/upload_liability_insurance', methods=['POST'])
 @login_required
 def upload_liability_insurance():
-    # Check if any files are uploaded
     if 'liability_insurance' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
     files = request.files.getlist('liability_insurance')
-    
-    # If no files are selected
+
     if not files or all(file.filename == '' for file in files):
         return jsonify({"error": "No selected files"}), 400
-    
-    # Allowed file extensions for images and documents
+
     allowed_extensions = {'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'ods', 'txt'}
-    
-    # Ensure labourer_profile exists
+
     if not current_user.labourer_profile:
         return jsonify({"error": "Labourer profile not found"}), 400
 
@@ -2127,19 +2135,26 @@ def upload_liability_insurance():
             filename = secure_filename(file.filename)
             file_path = os.path.join('static', 'insurance_images', filename)
             file.save(file_path)
-            file_paths.append(filename)  # Save only the filename in the database
+            file_paths.append(filename)
         else:
             return jsonify({"error": "Invalid file format. Only images and PDFs are allowed."}), 400
 
-    # Update the database with the filenames (not the full paths)
-    current_user.labourer_profile.insurance_image = ','.join(file_paths)  # Save multiple file names as a comma-separated string
+    # Append new file paths to the existing ones
+    current_files = current_user.labourer_profile.insurance_image
+    if current_files:
+        updated_files = ','.join([current_files] + file_paths)  # Append new files to existing
+    else:
+        updated_files = ','.join(file_paths)  # First upload
+
+    current_user.labourer_profile.insurance_image = updated_files
     try:
         db.session.commit()
     except Exception as e:
-        db.session.rollback()  # Rollback in case of error
+        db.session.rollback()
         return jsonify({"error": f"Database error: {str(e)}"}), 500
-    
+
     return jsonify({"message": "Liability insurance uploaded successfully!"}), 200
+
 
 @app.route('/reviews/<int:user_id>')
 def reviews_page(user_id):
@@ -2549,6 +2564,12 @@ def list_routes():
         line = urllib.parse.unquote(f"{rule.endpoint}: {rule.rule} [{methods}]")
         output.append(line)
     return "<br>".join(output)
+@app.route('/preview_email')
+def preview_email():
+    user = {
+        'first_name': 'John',  # Example user data
+    }
+    return render_template('verified_profile.html', user=user)
 
 
 

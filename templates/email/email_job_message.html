@@ -3,9 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Profile Has Been Verified!</title>
+    <title>New Message Notification</title>
     <style>
-      /* Ensure no overflow on the page */
       html,
       body {
         margin: 0;
@@ -30,7 +29,7 @@
         margin-top: 30px;
         margin-bottom: 30px;
         border: 5px #ff7148 solid;
-        box-sizing: border-box; /* Includes padding and border in total width */
+        box-sizing: border-box;
       }
 
       .header {
@@ -104,29 +103,24 @@
     </div>
     <div class="container">
       <div class="header">
-        <h1>Your Profile Has Been Verified!</h1>
-        <h2>Thank you</h2>
+        <h1>New Message Regarding {{ job_title }}</h1>
       </div>
       <div class="content">
         <p>Dear {{ user.first_name }},</p>
         <p>
-          We are pleased to inform you that your profile has been successfully
-          verified. You can now enjoy full access to all features of our app,
-          including looking for jobs and communicating with tradesmen on posts.
+          You have received a new message related to the job:
+          <strong>{{ job_title }}</strong>.
         </p>
+        <p>Please log in to your account to view the message and respond:</p>
         <p>
-          To get started, please
-          <a href="{{ url_for('login', _external=True) }}">log in</a>
-          to your account.
+          <a href="{{ message_link }}" target="_blank">View Message</a>
         </p>
+        <p>If you have any questions or concerns, feel free to contact us.</p>
       </div>
       <div class="footer">
         <p>Best regards,</p>
         <p><strong>The team at Openwork</strong></p>
-        <p>
-          If you have any questions or need assistance, feel free to contact our
-          support team.
-        </p>
+        <p>Need help? Contact our support team anytime.</p>
       </div>
     </div>
   </body>

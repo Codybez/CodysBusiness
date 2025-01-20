@@ -12,6 +12,11 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+
     <style>
       body {
         font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
@@ -55,7 +60,7 @@
       }
 
       header {
-        background-color: #cccccca3;
+        background-color: #ffffffa3;
         color: #fff;
         text-align: center;
         padding: 10px;
@@ -79,10 +84,11 @@
 
       .header-title {
         font-size: 24px;
-        color: #fff;
+        color: #333;
         font-weight: normal;
         line-height: 24px;
         display: inline-block;
+        letter-spacing: -1px;
       }
 
       .orange-letter {
@@ -139,6 +145,51 @@
         display: flex;
         justify-content: space-between;
       }
+      .hamburger-menu {
+        position: relative;
+        cursor: pointer;
+      }
+
+      #menu-icon {
+        font-size: 24px;
+        color: #333;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 60px; /* Adjust based on your header height */
+        right: 10px;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        z-index: 1000;
+        display: none;
+      }
+
+      .dropdown-menu ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dropdown-menu ul li {
+        padding: 10px 20px;
+      }
+
+      .dropdown-menu ul li a {
+        color: #333;
+        text-decoration: none;
+      }
+
+      .dropdown-menu ul li:hover {
+        background-color: #f9f9f9;
+      }
+
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -159,25 +210,25 @@
 
       <!-- Navigation -->
       <nav>
-        <!-- Notifications Icon with Badge -->
-        <a
-          href="{{ url_for('notifications') }}"
-          class="header-button"
-          style="position: relative"
-        >
-          <i class="fas fa-bell"></i>
-          {% if unread_notifications_count > 0 %}
-          <span class="notification-badge"
-            >{{ unread_notifications_count }}</span
-          >
-          {% endif %}
-        </a>
-
         <!-- Home Button -->
         <a href="{{ url_for('business_dashboard') }}" class="header-button">
           <i class="fas fa-home"></i>
         </a>
+
+        <!-- Hamburger Menu -->
+        <div class="hamburger-menu" id="hamburger-menu">
+          <i id="menu-icon" class="fas fa-bars"></i>
+        </div>
       </nav>
+
+      <!-- Dropdown Menu -->
+      <div id="dropdown-menu" class="dropdown-menu hidden">
+        <ul>
+          <li><a href="{{ url_for('profile') }}">Profile</a></li>
+          <li><a href="{{ url_for('notifications') }}">Notifications</a></li>
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+      </div>
     </header>
 
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -196,14 +247,30 @@
 
     <main>{% block content %}{% endblock %}</main>
     <script>
-      // JavaScript to hide the notification box when clicked
       document.addEventListener("DOMContentLoaded", function () {
-        const notificationBox = document.getElementById("notification-box");
-        if (notificationBox) {
-          notificationBox.addEventListener("click", function () {
-            notificationBox.style.display = "none";
-          });
-        }
+        const menuIcon = document.getElementById("menu-icon");
+        const dropdownMenu = document.getElementById("dropdown-menu");
+
+        menuIcon.addEventListener("click", function () {
+          if (dropdownMenu.classList.contains("hidden")) {
+            dropdownMenu.classList.remove("hidden");
+            dropdownMenu.style.display = "block";
+          } else {
+            dropdownMenu.classList.add("hidden");
+            dropdownMenu.style.display = "none";
+          }
+        });
+
+        // Hide dropdown if clicked outside
+        document.addEventListener("click", function (event) {
+          if (
+            !menuIcon.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.classList.add("hidden");
+            dropdownMenu.style.display = "none";
+          }
+        });
       });
     </script>
   </body>

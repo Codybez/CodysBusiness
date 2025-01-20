@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Profile Has Been Verified!</title>
+    <title>Email Verification</title>
     <style>
       /* Ensure no overflow on the page */
       html,
@@ -104,20 +104,21 @@
     </div>
     <div class="container">
       <div class="header">
-        <h1>Your Profile Has Been Verified!</h1>
-        <h2>Thank you</h2>
+        <h1>Verify Your Email Address</h1>
       </div>
       <div class="content">
         <p>Dear {{ user.first_name }},</p>
         <p>
-          We are pleased to inform you that your profile has been successfully
-          verified. You can now enjoy full access to all features of our app,
-          including looking for jobs and communicating with tradesmen on posts.
+          Thank you for registering with Openwork. To complete your registration
+          and start using our platform, we need you to verify your email
+          address.
+        </p>
+        <p>Please click the link below to verify your email:</p>
+        <p>
+          <a href="{{ verification_link }}" target="_blank">Verify My Email</a>
         </p>
         <p>
-          To get started, please
-          <a href="{{ url_for('login', _external=True) }}">log in</a>
-          to your account.
+          If you did not register with Openwork, please disregard this email.
         </p>
       </div>
       <div class="footer">
