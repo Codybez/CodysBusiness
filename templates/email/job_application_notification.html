@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Message Notification</title>
+    <title>New Job Application</title>
     <style>
       html,
       body {
@@ -103,15 +103,18 @@
     </div>
     <div class="container">
       <div class="header">
-        <h1>New Message Regarding '{{ job_title }}'</h1>
+        <h1>New Job Application for '{{ job_title }}'</h1>
       </div>
       <div class="content">
-        <p>Dear {{ user.first_name }},</p>
+        <p>Hi {{ job_poster_name }},</p>
         <p>
-          You have received a new message related to the job:
+          {{ applicant_name }} from {{ trading_name }} has applied for your job
           <strong>'{{ job_title }}'</strong>.
         </p>
-        <p>Please log in to your account to view the message and respond:</p>
+        <p>
+          Please log in to your account to view their profile. You can send them
+          a message or you will be notified when they make contact with you.
+        </p>
         <p>
           <a href="{{ message_link }}" target="_blank">Log In</a>
         </p>

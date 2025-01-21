@@ -29,6 +29,7 @@ from flask_mail import Message as emailmessage
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
+from flask import render_template_string
 
 
 
@@ -754,6 +755,22 @@ def apply_for_job(job_id):
             job_id=job.id,
             trading_name=f"{current_user.company_details.trading_name}",
             applicant_name=f"{current_user.first_name}"
+        )
+
+                # Prepare email context
+        email_context = {
+            "job_poster_name": job.user.first_name,  # Assuming `job.user` is the job poster
+            "job_title": job.job_name,
+            "applicant_name": current_user.first_name,
+            "trading_name": current_user.company_details.trading_name,                 "message_link": f"{request.url_root}login"  # Generate message link
+        }
+
+        # Send email notification
+        send_async_email(
+            to=job.user.email,  # Job poster's email
+            subject="New Job Application",
+            template_name="email/job_application_notification.html",  # Path to your HTML email template
+            context=email_context
         )
 
 
@@ -1726,17 +1743,19 @@ def get_messages(job_application_id):
     ]
     return jsonify(messages_data)
 
-def send_email_async(app, to, subject, body):
+def send_email_async(app, to, subject, html_body):
     with app.app_context():
         msg = emailmessage(
             subject=subject,
             recipients=[to],
-            body=body
+            html=html_body  # Set HTML body here
         )
         mail.send(msg)
 
-def send_async_email(to, subject, body):
-    thread = Thread(target=send_email_async, args=(current_app._get_current_object(), to, subject, body))
+def send_async_email(to, subject, template_name, context):
+    """Send an email asynchronously using a rendered HTML template."""
+    html_body = render_template(template_name, **context)
+    thread = Thread(target=send_email_async, args=(current_app._get_current_object(), to, subject, html_body))
     thread.start()
 
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
@@ -1798,19 +1817,16 @@ def chat(job_id, user_id):
                 job_id=job.id
             )
 
+            # Email notification
             receiver_user = User.query.get(receiver_id)
             if receiver_user:
                 email_subject = f"New Message Regarding Job: {job.job_name}"
-                email_body = (
-                    f"Hello {receiver_user.first_name},\n\n"
-                    f"You have received a new message from {current_user.first_name} regarding the job '{job.job_name}'.\n\n"
-                    f"Message content:\n\n"
-                    f"{content}\n\n"
-                    f"Please log in to your account to view and respond to this message.\n\n"
-                    "Best regards,\n"
-                    "Your Platform Team"
-                )
-                send_async_email(receiver_user.email, email_subject, email_body)
+                email_context = {
+                    "user": receiver_user,
+                    "job_title": job.job_name,
+                    "message_link": f"{request.url_root}login"  # Generate message link
+        }
+                send_async_email(receiver_user.email, email_subject, "email/email_job_message.html", email_context)
 
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
 
