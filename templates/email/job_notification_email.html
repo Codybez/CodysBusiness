@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Job Application</title>
+    <title>New Job Notification</title>
     <style>
       html,
       body {
@@ -35,13 +35,6 @@
       .header {
         text-align: center;
         margin-bottom: 20px;
-      }
-
-      .header h2 {
-        color: #555;
-        font-weight: normal;
-        margin-bottom: 30px;
-        margin-top: 30px;
       }
 
       .header h1 {
@@ -103,22 +96,21 @@
     </div>
     <div class="container">
       <div class="header">
-        <h1>New Application for '{{ job_title }}'</h1>
+        <h1>{{ employer_name }} is after tradies to '{{ job_name }}'</h1>
       </div>
       <div class="content">
-        <p>Hi {{ job_poster_name }},</p>
+        <p>Hi {{ first_name }},</p>
+        <p>A new {{ job_category }} job has been posted in {{ location }}.</p>
+        <ul>
+          <li><strong>Tasks:</strong> {{ tasks }}</li>
+        </ul>
         <p>
-          {{ applicant_name }} from {{ trading_name }} has applied for your job
-          <strong>'{{ job_title }}'</strong>.
-        </p>
-        <p>
-          Please log in to your account to view their profile. You can send them
-          a message or you will be notified when they make contact with you.
+          Please log in to your account to view the job details and make
+          contact.
         </p>
         <p>
           <a href="{{ message_link }}" target="_blank">Log In</a>
         </p>
-        <p>If you have any questions or concerns, feel free to contact us.</p>
       </div>
       <div class="footer">
         <p>Best regards,</p>

@@ -29,7 +29,7 @@ from flask_mail import Message as emailmessage
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
-from flask import render_template_string
+
 
 
 
@@ -425,6 +425,34 @@ def logout():
     return redirect(url_for('login'))  # Redirect to the login page after logout
 
 
+def notify_matching_tradesmen_async(category, location, job_name, tasks, job_id):
+    # Fetch users with matching preferences from LabourerProfile
+    matching_users = User.query.join(LabourerProfile).filter(
+        LabourerProfile.job_categories.ilike(f"%{category}%"),
+        LabourerProfile.job_locations.ilike(f"%{location}%")
+    ).all()
+
+    # Get the employer's name
+    employer_name = current_user.first_name  # Assuming `current_user` is the employer who posted the job
+
+    # Send emails asynchronously to the matching users
+    for user in matching_users:
+        send_job_notification_email_async(user, job_name, tasks, job_id, employer_name, category, location)
+
+def send_job_notification_email_async(user, job_name, tasks, job_id, employer_name, job_category, location):
+    subject = f"New Job Opportunity: {job_name} in {location}"
+    template_name = 'email/job_notification_email.html'
+    context = {
+        'first_name': user.first_name,
+        'job_name': job_name,
+        'tasks': tasks,
+        'job_id': job_id,
+        'employer_name': employer_name,  # Include employer's name here
+        'job_category': job_category,  # Include job category here
+        'location': location,  # Include location here
+        'message_link': url_for('login', job_id=job_id, _external=True)
+    }
+    send_async_email(user.email, subject, template_name, context)
 
 @app.route('/submit_job', methods=['POST'])
 def submit_job():
@@ -482,6 +510,9 @@ def submit_job():
             # Save the job to the database
             db.session.add(job)
             db.session.commit()
+
+            # Notify tradesmen matching the job category and location
+            notify_matching_tradesmen_async(job_category, location, job_name, tasks, job.id)
 
             flash('Job submitted successfully!', 'success')
             return redirect(url_for('business_created_jobs'))
@@ -768,7 +799,7 @@ def apply_for_job(job_id):
         # Send email notification
         send_async_email(
             to=job.user.email,  # Job poster's email
-            subject="New Job Application",
+            subject=f"New Application for '{job.job_name}'",
             template_name="email/job_application_notification.html",  # Path to your HTML email template
             context=email_context
         )
