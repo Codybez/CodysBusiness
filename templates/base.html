@@ -38,16 +38,8 @@
         animation: slideDown 3s forwards;
       }
 
-      .notification-box .close-btn {
-        position: absolute;
-        top: 5px;
-        right: 10px;
-        font-size: 20px;
-        color: #333;
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-weight: bold;
+      .notification-box.hidden {
+        display: none;
       }
 
       @keyframes slideDown {
@@ -246,31 +238,27 @@
     {% endif %}
 
     <main>{% block content %}{% endblock %}</main>
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const menuIcon = document.getElementById("menu-icon");
-        const dropdownMenu = document.getElementById("dropdown-menu");
+        const notificationBox = document.getElementById("notification-box");
+        const closeButton = document.getElementById("close-btn");
 
-        menuIcon.addEventListener("click", function () {
-          if (dropdownMenu.classList.contains("hidden")) {
-            dropdownMenu.classList.remove("hidden");
-            dropdownMenu.style.display = "block";
-          } else {
-            dropdownMenu.classList.add("hidden");
-            dropdownMenu.style.display = "none";
-          }
-        });
+        // Close notification when clicking on close button
+        if (closeButton) {
+          closeButton.addEventListener("click", function () {
+            notificationBox.classList.add("hidden");
+          });
+        }
 
-        // Hide dropdown if clicked outside
-        document.addEventListener("click", function (event) {
-          if (
-            !menuIcon.contains(event.target) &&
-            !dropdownMenu.contains(event.target)
-          ) {
-            dropdownMenu.classList.add("hidden");
-            dropdownMenu.style.display = "none";
-          }
-        });
+        // Close notification when clicking anywhere on the box
+        if (notificationBox) {
+          notificationBox.addEventListener("click", function (e) {
+            if (e.target !== closeButton) {
+              notificationBox.classList.add("hidden");
+            }
+          });
+        }
       });
     </script>
   </body>

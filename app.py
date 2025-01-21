@@ -116,6 +116,7 @@ class LabourerProfile(db.Model):
     insurance_image = db.Column(db.String(120),nullable=True)
     id_verified = db.Column(db.Boolean, default=False)
     insurance_verified = db.Column(db.Boolean, default=False) 
+    company_details_locked = db.Column(db.Boolean, default=False) 
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -188,6 +189,7 @@ class CompanyDetails(db.Model):
     unit_no = db.Column(db.String(10))
     trading_name = db.Column(db.String(100), nullable=False)
     established = db.Column(db.String(100), nullable=True)
+
     
 
 class SocialLinks(db.Model):
@@ -367,14 +369,20 @@ def register():
         # Generate the verification link with the token
         verification_link = url_for('verify_email', token=token, _external=True)
 
-        # Send the verification email using the HTML template
-        msg = emailmessage(
-            'Please verify your email',
-            sender='cdbeznec@outlook.com',
-            recipients=[email]
+        # Prepare the context for the email
+        email_context = {
+            'user': new_user,
+            'verification_link': verification_link
+        }
+
+        # Send the email asynchronously
+        send_async_email(
+            to=email,
+            subject='Please verify your email',
+            template_name='email/email_verification.html',
+            context=email_context
         )
-        msg.html = render_template('email/email_verification.html', user=new_user, verification_link=verification_link)
-        mail.send(msg)
+
 
         flash('Registration successful! A verification email has been sent to your inbox.', 'info')
         return redirect(url_for('login'))
@@ -1555,7 +1563,7 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
 def find_tradies():
     # Ensure the user has a labourer profile
     if not current_user.labourer_profile:
-        flash("Please complete you profile.")
+        flash("Please complete your profile.")
         return redirect(url_for('labourer_profile'))
 
     # Ensure profile is verified
@@ -2420,6 +2428,7 @@ def verify_profile():
     if confirmation:
         # Set the verification_ready flag to True
         current_user.labourer_profile.verification_ready = True
+        current_user.labourer_profile.company_details_locked = True
         db.session.commit()
         flash('Your profile has been marked as complete and is ready for validation.', 'success')
     else:

@@ -46,11 +46,10 @@
       }
 
       .header h1 {
-        font-size: 24px;
-        color: #333;
-        margin: 0;
-        font-weight: normal;
-        margin-bottom: -30px;
+        font-size: 17px !important; /* Add !important if you need to force this */
+        color: #333 !important; /* Force the color */
+        text-align: center;
+        margin-top: 30px;
       }
 
       .logo {
@@ -102,10 +101,8 @@
         <span class="orange-letter">o</span>penwork
       </span>
     </div>
+    <div class="header"><h1>Verify Your Email Address</h1></div>
     <div class="container">
-      <div class="header">
-        <h1>Verify Your Email Address</h1>
-      </div>
       <div class="content">
         <p>Dear {{ user.first_name }},</p>
         <p>
