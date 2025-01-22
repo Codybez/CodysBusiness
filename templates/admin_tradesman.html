@@ -241,7 +241,7 @@
                     <td>
                         {% if user.labourer_profile.id_image %}
                         <a href="{{ url_for('static', filename='id_images/' + user.labourer_profile.id_image) }}" target="_blank">
-                            View ID Image
+                            View ID
                         </a>
                         {% else %} No ID image uploaded {% endif %}
                     </td>
@@ -256,7 +256,7 @@
                         {% if user.labourer_profile.insurance_image %}
                         {% for file in user.labourer_profile.insurance_image.split(',') %}
                         <a href="{{ url_for('static', filename='insurance_images/' + file) }}" target="_blank">
-                            View Insurance Image
+                            View Ins
                         </a><br />
                         {% endfor %}
                         {% else %} No insurance image uploaded {% endif %}

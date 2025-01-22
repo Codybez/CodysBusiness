@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Profile Has Been Verified!</title>
+    <style>
+      /* Ensure no overflow on the page */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #ffffff;
+        color: #333;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border: 5px #ff7148 solid;
+        box-sizing: border-box; /* Includes padding and border in total width */
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h2 {
+        color: #555;
+        font-weight: normal;
+        margin-bottom: 30px;
+        margin-top: 30px;
+      }
+
+      .header h1 {
+        font-size: 19px;
+        color: #333;
+        margin: 0;
+        font-weight: normal;
+        margin-bottom: -30px;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .logo-title {
+        margin-top: 20px;
+        display: inline-block;
+        font-size: 35px;
+        color: #333;
+        font-weight: normal;
+        line-height: 24px;
+        letter-spacing: -2px;
+      }
+
+      .orange-letter {
+        color: #ff7148;
+      }
+
+      .content {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .content a {
+        color: #ff7148;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+
+      .footer {
+        font-size: 14px;
+        text-align: center;
+        color: #777;
+        margin-top: 30px;
+      }
+
+      .footer p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Logo -->
+    <div class="logo">
+      <span class="logo-title">
+        <span class="orange-letter">o</span>penwork
+      </span>
+    </div>
+    <div class="header"><h1>Profile Verification Unsuccessful</h1></div>
+    <div class="container">
+      <div class="content">
+        <p>Dear {{ user.first_name }},</p>
+        <p>
+          We regret to inform you that your profile verification was
+          unsuccessful. Unfortunately, the information provided did not meet our
+          verification criteria.
+        </p>
+        <p>
+          Please review your submitted documents and ensure that they meet the
+          required standards. You can update and resubmit your documents in your
+          account section.
+        </p>
+        <p>
+          To update your information, please
+          <a href="{{ url_for('login', _external=True) }}">log in</a>
+          to your account.
+        </p>
+        <p>
+          If you have any questions or need further assistance, feel free to
+          contact our support team.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>Best regards,</p>
+        <p><strong>The team at Openwork</strong></p>
+        <p>
+          If you have any questions or need assistance, feel free to contact our
+          support team.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

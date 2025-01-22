@@ -706,23 +706,33 @@ def edit_labourer_profile():
     form = EditLabourerProfileForm()
 
     if form.validate_on_submit():
-        # Manually populate laborer_profile attributes from form data
+        # Ensure that the first_name and last_name are populated before committing
         if user.labourer_profile is None:
-            user.labourer_profile = LabourerProfile()  # Create a new LaborerProfile object
+            user.labourer_profile = LabourerProfile()  # Create a new LabourerProfile object if it doesn't exist
 
-        user.labourer_profile.first_name = form.first_name.data
-        user.labourer_profile.last_name = form.last_name.data
+        # Manually populate labourer_profile attributes from form data
         user.labourer_profile.phone_number = form.phone_number.data
         user.labourer_profile.user_blurb = form.user_blurb.data
-        current_user.labourer_profile.date_of_birth = form.date_of_birth.data
+        user.labourer_profile.date_of_birth = form.date_of_birth.data
 
+        # Set the first_name and last_name on both the User and LabourerProfile models
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.labourer_profile.first_name = form.first_name.data
+        user.labourer_profile.last_name = form.last_name.data
+
+        # Commit changes to the database
         db.session.commit()
         flash('User info updated successfully', 'success')
         return redirect(url_for('labourer_profile'))
 
-    # Pre-fill the form with existing laborer profile data
+    # Pre-fill the form with existing data from both User and LabourerProfile models
+    form.first_name.data = user.first_name
+    form.last_name.data = user.last_name
     if user.labourer_profile:
-        form.process(obj=user.labourer_profile)
+        form.phone_number.data = user.labourer_profile.phone_number
+        form.user_blurb.data = user.labourer_profile.user_blurb
+        form.date_of_birth.data = user.labourer_profile.date_of_birth
 
     return render_template('edit_profile_labourer.html', form=form)
 
@@ -2161,7 +2171,16 @@ def upload_id_image():
             updated_images = filename  # First file upload
 
         current_user.labourer_profile.id_image = updated_images
-        db.session.commit()
+
+        # Check if the user is already ID verified, and if so, set verification_ready to True
+        if current_user.labourer_profile.id_verified:
+            current_user.labourer_profile.verification_ready = True
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Database error: {str(e)}"}), 500
 
         return jsonify({"message": "ID Image uploaded successfully!"}), 200
     else:
@@ -2202,6 +2221,11 @@ def upload_liability_insurance():
         updated_files = ','.join(file_paths)  # First upload
 
     current_user.labourer_profile.insurance_image = updated_files
+
+    # Check if the user is ID verified, and if so, set verification_ready to True
+    if current_user.labourer_profile.id_verified:
+        current_user.labourer_profile.verification_ready = True
+
     try:
         db.session.commit()
     except Exception as e:
@@ -2209,6 +2233,7 @@ def upload_liability_insurance():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     return jsonify({"message": "Liability insurance uploaded successfully!"}), 200
+
 
 
 @app.route('/reviews/<int:user_id>')
@@ -2398,8 +2423,7 @@ def admin_dashboard():
     jobs = Job.query.all()  # Assuming you have a Job model
     pending_verifications = User.query.filter(
         User.labourer_profile.has(
-            (LabourerProfile.verification_ready == True) & 
-            (LabourerProfile.id_verified == False)
+            LabourerProfile.verification_ready == True
         )
     ).all()
 
@@ -2441,37 +2465,48 @@ def verify_profile():
 def update_verification(user_id):
     user = User.query.get_or_404(user_id)
 
-    # Get the checkbox values from the form
+    # Get checkbox values from the form
     id_verified = request.form.get('id_verified') == 'true'
     insurance_verified = request.form.get('insurance_verified') == 'true'
 
-    # Debug: Print the values to the console
-    print("ID Verified:", id_verified)
-    print("Insurance Verified:", insurance_verified)
-
-    # Update the labourer profile with the verification statuses
+    # Update the labourer profile with verification statuses
     user.labourer_profile.id_verified = id_verified
     user.labourer_profile.insurance_verified = insurance_verified
+    db.session.commit()  # Commit changes to the database
 
-    # Commit the changes to the database
-    db.session.commit()
+    # Determine email content based on verification status
+    if id_verified:
+        # ID verified, check insurance status
+        subject = 'Your Profile Has Been Verified!'
+        insurance_uploaded = insurance_verified
+        email_template = 'email/verified_profile.html'
 
-    # Send verification email if the profile is fully verified
-    if id_verified and insurance_verified:
-        # Create email
-        msg = emailmessage('Your Profile Has Been Verified!',
-                      recipients=[user.email])
-        msg.body = f"Hello {user.first_name},\n\nYour profile has been verified! You can now access all the features of the app."
-        msg.html = render_template('email/verified_profile.html', user=user)
+        user.labourer_profile.verification_ready = False
+    else:
+        # ID not verified
+        subject = 'Verification Unsuccessful'
+        insurance_uploaded = None
+        email_template = 'email/verification_failed.html'
 
-        # Send email
-        try:
-            mail.send(msg)
-            flash("Verification email sent to the user.", "success")
-        except Exception as e:
-            flash(f"Failed to send verification email: {str(e)}", "danger")
+        user.labourer_profile.verification_ready = False
+        user.labourer_profile.company_details_locked = False
 
-    # Redirect back to the admin dashboard with updated information
+    db.session.commit()  # Commit changes to the database
+
+
+
+
+    # Create and send the email
+    msg = emailmessage(subject, recipients=[user.email])
+    msg.html = render_template(email_template, user=user, insurance_uploaded=insurance_uploaded)
+
+    try:
+        mail.send(msg)
+        flash("Verification email sent to the user.", "success")
+    except Exception as e:
+        flash(f"Failed to send verification email: {str(e)}", "danger")
+
+    # Redirect back to the admin dashboard
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/impersonate/<int:user_id>', methods=['GET'])

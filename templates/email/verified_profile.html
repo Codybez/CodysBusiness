@@ -46,7 +46,7 @@
       }
 
       .header h1 {
-        font-size: 24px;
+        font-size: 19px;
         color: #333;
         margin: 0;
         font-weight: normal;
@@ -102,24 +102,36 @@
         <span class="orange-letter">o</span>penwork
       </span>
     </div>
+    <div class="header"><h1>Your Profile Has Been Verified!</h1></div>
     <div class="container">
-      <div class="header">
-        <h1>Your Profile Has Been Verified!</h1>
-        <h2>Thank you</h2>
-      </div>
       <div class="content">
         <p>Dear {{ user.first_name }},</p>
+        {% if insurance_uploaded is not none %} {% if insurance_uploaded %}
         <p>
           We are pleased to inform you that your profile has been successfully
           verified. You can now enjoy full access to all features of our app,
           including looking for jobs and communicating with tradesmen on posts.
         </p>
         <p>
-          To get started, please
+          To get started now
           <a href="{{ url_for('login', _external=True) }}">log in</a>
           to your account.
         </p>
+        {% else %}
+        <p>
+          Your ID has been successfully verified! However, we noticed that your
+          insurance details have not been uploaded yet. You can still use the
+          app, but we recommend uploading your insurance information in your
+          account section for better opportunities in the future.
+        </p>
+        <p>
+          To upload your insurance details, please
+          <a href="{{ url_for('login', _external=True) }}">log in</a>
+          to your account.
+        </p>
+        {% endif %} {% endif %}
       </div>
+
       <div class="footer">
         <p>Best regards,</p>
         <p><strong>The team at Openwork</strong></p>

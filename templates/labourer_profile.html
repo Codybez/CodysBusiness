@@ -520,11 +520,11 @@
         <h2>Basic Information*</h2>
         <div class="info-item">
           <strong>First Name:</strong>
-          <span>{{ current_user.labourer_profile.first_name }}</span>
+          <span>{{ current_user.first_name }}</span>
         </div>
         <div class="info-item">
           <strong>Last Name:</strong>
-          <span>{{ current_user.labourer_profile.last_name }}</span>
+          <span>{{ current_user.last_name }}</span>
         </div>
         <div class="info-item">
           {% if current_user.labourer_profile.date_of_birth %}
@@ -776,7 +776,7 @@
       </div>
 
       <div class="verification-container">
-        {% if current_user.labourer_profile.verification_ready == False %}
+        {% if current_user.labourer_profile.verification_ready == False and current_user.labourer_profile.id_verified == False %}
         <h3>Profile Completion</h3>
         <p>
           Please confirm that all your information is correct and up-to-date

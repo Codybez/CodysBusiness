@@ -269,10 +269,7 @@
           class="profile-pic"
         />
         <h1>{{ user.company_details.trading_name }}</h1>
-        <h2>
-          {{ user.labourer_profile.first_name }} {{
-          user.labourer_profile.last_name }}
-        </h2>
+        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
         <p class="user-location">
           <i class="fas fa-map-marker-alt"></i> {{ user.location }}
         </p>
