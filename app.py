@@ -430,7 +430,7 @@ def logout():
     logout_user()
 
    
-    return redirect(url_for('login'))  # Redirect to the login page after logout
+    return redirect(url_for('index'))  # Redirect to the login page after logout
 
 
 def notify_matching_tradesmen_async(category, location, job_name, tasks, job_id):
@@ -2045,25 +2045,28 @@ def labourer_chat(user2_id):
         if not current_user.labourer_profile:
             return jsonify({"error": "You are not authorized to use this feature."}), 403
 
-      # Check for soft-deleted profile of the other user
-        profile_deleted_note = None
-        other_user = User.query.get(user2_id)  # Fetch the other user's details
+        # Fetch the other user's details
+        other_user = User.query.get(user2_id)
         if not other_user:
             return jsonify({"error": "The user does not exist."}), 404
 
+        # Check if the other user's profile is soft-deleted
+        profile_deleted_note = None
         if other_user.soft_deleted:
-            profile_deleted_note = f"{other_user.first_name}'s profile has been deleted."  
+            profile_deleted_note = f"{other_user.first_name}'s profile has been deleted."
 
-        # Get or create the room
+        # Get or create the chat room
         room = get_or_create_labourer_chat_room(current_user.id, user2_id)
+        if not room:
+            return jsonify({"error": "Chat room could not be created."}), 500
 
-        # Handle POST: Send a new message
+        # Handle POST request: Sending a message
         if request.method == 'POST':
             content = request.form.get('message')
             if not content:
                 return jsonify({"error": "Message content cannot be empty."}), 400
 
-            # Create and save the message
+            # Save the message
             message = Message(
                 sender_id=current_user.id,
                 receiver_id=user2_id,
@@ -2073,29 +2076,39 @@ def labourer_chat(user2_id):
             db.session.add(message)
             db.session.commit()
 
+            # Create notification
+            create_trade_message_notification(user2_id)
 
-            create_trade_message_notification(user2_id) 
+            # Send an email to the receiver
+            receiver_user = User.query.get(user2_id)
+            if receiver_user and receiver_user.email:
+                email_subject = f"You Have A New Message From {current_user.first_name}"
+                email_context = {
+                    "receiver_first_name": receiver_user.first_name or "Valued User",
+                    "sender_first_name": current_user.first_name,
+                    "sender_trading_name": current_user.company_details.trading_name or "Your Company",
+                    "message_link": f"{request.url_root}login"  # Replace with actual chat link if available
+                }
+                send_async_email(receiver_user.email, email_subject, "email/email_labourer_message.html", email_context)
 
-
-
-        # Fetch all messages in this room
+        # Fetch all messages in the chat room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
 
-        # Mark all unread messages in this room as read for the current user
+        # Mark all unread messages as read for the current user
         Message.query.filter_by(room=room, receiver_id=current_user.id, is_read=False).update({"is_read": True})
         db.session.commit()
 
-
-        # Render the chat template
+        # Render the chat page
         return render_template(
             'chat_labourer.html',
             messages=messages,
-            room=room, profile_deleted_note=profile_deleted_note, 
-            other_user=User.query.get(user2_id)  # Fetch the other user's details
+            room=room,
+            profile_deleted_note=profile_deleted_note,
+            other_user=other_user
         )
 
     except Exception as e:
-        print(f"Error in labourer route for user2_id={user2_id}: {e}")
+        print(f"Error in labourer_chat for user2_id={user2_id}: {e}")
         return jsonify({"error": "An unexpected error occurred."}), 500
 
 def create_trade_message_notification(user2_id):

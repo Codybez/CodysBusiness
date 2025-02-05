@@ -3,101 +3,1263 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Main Page</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        background-color: #ffffff;
-        color: #333;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
-
-      .container {
-        max-width: 1200px;
-        color: #333;
-        border-radius: 8px;
-        overflow: hidden;
-        text-align: center;
-        background-image: url("{{ url_for('static', filename='profile_pics/main-image.jpg') }}");
-        background-size: cover;
-        background-position: center;
-        padding: 20px;
-        padding-top: 150px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      }
-
-      h1 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
-        color: #333;
-      }
-
-      p {
-        font-size: 1.1em;
-        color: #fff; /* Ensure text is readable over the image */
-        margin-bottom: 30px;
-      }
-
-      .button-container {
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 15px 30px;
-        font-size: 1em;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-        font-weight: bold;
-        margin-top: 10px;
-      }
-
-      .btn-join {
-        background-color: #ff7148;
-      }
-
-      .btn-join:hover {
-        background-color: #e55a33;
-      }
-
-      .btn-post {
-        background-color: #ffffff;
-        border: 2px solid #ff7148;
-        color: #ff7148;
-        padding: 13px 28px;
-      }
-
-      .btn-post:hover {
-        background-color: #ffffff;
-        border: 2px solid #ff7148;
-      }
-    </style>
+    <title>Index Page</title>
   </head>
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+        /*-- -------------------------- -->
+    <---           Hero             -->
+    <--- -------------------------- -*/
+
+        /* Mobile - 360px */
+        @media only screen and (min-width: 0rem) {
+          #hero-143 {
+            /* Centers button */
+            text-align: center;
+            /* 144px - 300px - leaving extra space for the navigation */
+            padding: clamp(9rem, 25.95vw, 18.75rem) 1rem 0;
+            /* 130px - 450px */
+            padding-bottom: clamp(12.125rem, 30.95vw, 28.125rem);
+            position: relative;
+            z-index: 1;
+            /* Prevents white rectangle pseudos from overlapping the sections below */
+            overflow: hidden;
+          }
+          #hero-143:before {
+            /* Left side of the triangle */
+            content: "";
+            width: 31.25rem;
+            /* make really long so it covers the whole screen all the way to desktop */
+            height: 250rem;
+            background: #fff;
+            opacity: 1;
+            transform: rotate(-67deg);
+            transform-origin: center;
+            position: absolute;
+            display: block;
+            bottom: -139.6875rem;
+            /* this makes the right edge sit at the 50% line at all times */
+            right: 50%;
+            z-index: 0;
+          }
+          #hero-143:after {
+            /* Right side of the triangle */
+            content: "";
+            width: 31.25rem;
+            height: 250rem;
+            background: #fff;
+            opacity: 1;
+            transform: rotate(67deg);
+            transform-origin: center;
+            position: absolute;
+            display: block;
+            bottom: -139.6875rem;
+            /* this makes the left edge sit at the 50% line at all times */
+            left: 50%;
+            z-index: 0;
+          }
+          #hero-143 .cs-background {
+            width: 100%;
+            height: 100%;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -2;
+          }
+          #hero-143 .cs-background:before {
+            /* Overlay */
+            content: "";
+            width: 100%;
+            height: 100%;
+            background: #000;
+            opacity: 0.3;
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            /* prevents the cursor from interacting with it */
+            pointer-events: none;
+          }
+          #hero-143 .cs-background img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+          }
+          #hero-143 .cs-container {
+            width: 100%;
+            max-width: 80rem;
+            margin: auto;
+          }
+          #hero-143 .cs-title {
+            /* 39px - 61px */
+            font-size: clamp(2.4375rem, 6.4vw, 3.8125rem);
+            font-weight: 700;
+            line-height: 1.2em;
+            text-align: center;
+            max-width: 51.8125rem;
+            /* 16px - 24px */
+            margin: 0 auto clamp(1rem, 4vw, 1.5rem);
+            color: #fff;
+            position: relative;
+          }
+
+          #hero-143 .cs-title span {
+            color: #ff7148;
+          }
+          #hero-143 .cs-title:after {
+            /* Divider Line */
+            content: "";
+            /* 60px - 100px */
+            width: clamp(3.75rem, 9.5vw, 6.25rem);
+            /* 4px - 8px */
+            height: clamp(0.25rem, 0.8vw, 0.5rem);
+            /* 16px - 24px */
+            margin: clamp(1rem, 4vw, 1.5rem) auto clamp(1rem, 4vw, 1.5rem);
+            background: var(--primary);
+            opacity: 1;
+            position: relative;
+            display: block;
+          }
+          #hero-143 .cs-text {
+            /* 16px - 25px */
+            font-size: clamp(1rem, 1.95vw, 1.5625rem);
+            line-height: 1.5em;
+            text-align: center;
+            width: 100%;
+            /* 464px - 800px */
+            max-width: clamp(29rem, 60vw, 50rem);
+            margin: 0 auto;
+            /* 40px - 48px */
+            margin-bottom: clamp(2.5rem, 4vw, 3rem);
+            color: #fff;
+          }
+          #hero-143 .cs-button-solid {
+            font-size: 1rem;
+            /* 46px - 56px */
+            line-height: clamp(2.875rem, 5.5vw, 3.5rem);
+            text-decoration: none;
+            font-weight: 700;
+            margin: auto;
+            color: whitesmoke;
+            min-width: 9.375rem;
+            padding: 0 1.5rem;
+            background-color: var(--primary);
+            border-radius: 0.25rem;
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s;
+            margin-top: 10px;
+          }
+          #hero-143 .cs-button-solid:before {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            opacity: 1;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            border-radius: 0.25rem;
+            transition: width 0.3s;
+          }
+          #hero-143 .cs-button-solid:hover {
+            color: #ff7148;
+          }
+          #hero-143 .cs-button-solid:hover:before {
+            width: 100%;
+          }
+        }
+        /* Desktop - 1300px (To make image background parallax) */
+        @media only screen and (min-width: 81.25rem) {
+          #hero-143 {
+            background: url("https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* makes the parallax effect */
+            background-attachment: fixed;
+          }
+          #hero-143 .cs-background img {
+            display: none;
+          }
+        }
+
+        /*-- -------------------------- -->
+    <---         Services           -->
+    <--- -------------------------- -*/
+
+        /* Mobile - 360px */
+        @media only screen and (min-width: 0rem) {
+          #h-services-143 {
+            /* 40px - 100px */
+            padding: 0 1em clamp(2.5rem, 7.9vw, 6.25rem) 1rem;
+            position: relative;
+            /* give a higher z index than the hero so it can sit on top */
+            z-index: 10;
+          }
+          #h-services-143 .cs-card-group {
+            width: 100%;
+            max-width: 29.0625rem;
+            margin: 0 auto 0;
+            /* negative margin pulls it up on top of the hero section */
+            /* -46px to -76px - we're calculating whatever clamp is and multiplying by -1
+                to make the value negative since clamp doesn't work with negative values */
+            margin-top: calc(clamp(5rem, 13vw, 4.75rem) * -1);
+            /* 40px - 60px top and bottom, 16px - 44px left & right */
+            padding: clamp(2.5rem, 4.7vw, 3.75rem) clamp(1rem, 5.3vw, 2.75rem);
+            box-shadow: 0px 20px 40px 0px rgba(0, 0, 0, 0.05);
+            border-radius: 0.3125rem;
+            border-top: 8px solid var(--primary);
+            background-color: #fff;
+            /* prevents padding and border from affecting height and width */
+            box-sizing: border-box;
+          }
+          #h-services-143 .cs-item {
+            list-style: none;
+            margin: 0 auto 2rem;
+            width: 100%;
+            max-width: 22.5rem;
+          }
+          #h-services-143 .cs-item:last-of-type {
+            margin-bottom: 0;
+          }
+          #h-services-143 .cs-icon {
+            /* 68px - 88px */
+            width: clamp(4.25rem, 8.8vw, 5.5rem);
+            /* 68px - 88px */
+            height: clamp(4.25rem, 8.8vw, 5.5rem);
+            margin: auto;
+            /* 20px - 24px */
+            margin-bottom: clamp(1.25rem, 5vw, 1.5rem);
+            background: white;
+            border-radius: 50%;
+            border: 2px solid #ff7148;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          #h-services-143 .cs-icon img {
+            /* 44px - 52px */
+            width: clamp(2.75rem, 5.8vw, 3.25rem);
+            height: auto;
+          }
+          #h-services-143 .cs-title {
+            font-size: 1.25rem;
+            line-height: 1.2em;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 0 auto 0.5rem;
+            color: var(--headerColor);
+          }
+          #h-services-143 .cs-text {
+            font-size: 1rem;
+            text-align: center;
+            line-height: 1.5em;
+            max-width: 22.5rem;
+            margin: 0 auto;
+            color: var(--bodyTextColor);
+          }
+        }
+        /* Tablet - 768px */
+        @media only screen and (min-width: 48rem) {
+          #h-services-143 .cs-card-group {
+            max-width: 49rem;
+            /* -76px to -320px - we're calculating whatever clamp is and multiplying by -1
+                   to make the value negative since clamp doesn't work with negative values */
+            margin-top: calc(clamp(4.75rem, 20vw, 20rem) * -1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            column-gap: 2.5rem;
+          }
+          #h-services-143 .cs-item {
+            width: 45%;
+            max-width: 19.625rem;
+          }
+          #h-services-143 .cs-item:last-of-type {
+            margin-bottom: 2rem;
+          }
+        }
+        /* Desktop - 1300px */
+        @media only screen and (min-width: 81.25rem) {
+          #h-services-143 .cs-card-group {
+            max-width: 80rem;
+            flex-wrap: nowrap;
+          }
+          #h-services-143 .cs-item {
+            margin: 0;
+          }
+          #h-services-143 .cs-item:last-of-type {
+            margin-bottom: 0;
+          }
+        }
+        :root {
+          /* Add these styles to your global stylesheet, which is used across all site pages. You only need to do this once. All elements in the library derive their variables and base styles from this central sheet, simplifying site-wide edits. For instance, if you want to modify how your h2's appear across the site, you just update it once in the global styles, and the changes apply everywhere. */
+          --primary: #ff6a3e;
+          --primaryLight: #ffba43;
+          --secondary: #ffba43;
+          --secondaryLight: #ffba43;
+          --headerColor: #1a1a1a;
+          --bodyTextColor: #4e4b66;
+          --bodyTextColorWhite: #fafbfc;
+          /* 13px - 16px */
+          --topperFontSize: clamp(0.8125rem, 1.6vw, 1rem);
+          /* 31px - 49px */
+          --headerFontSize: clamp(1.9375rem, 3.9vw, 3.0625rem);
+          --bodyFontSize: 1rem;
+          /* 60px - 100px top and bottom */
+          --sectionPadding: clamp(3.75rem, 7.82vw, 6.25rem) 1rem;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+        }
+
+        *,
+        *:before,
+        *:after {
+          /* prevents padding from affecting height and width */
+          box-sizing: border-box;
+        }
+        .cs-topper {
+          font-size: var(--topperFontSize);
+          line-height: 1.2em;
+          text-transform: uppercase;
+          text-align: inherit;
+          letter-spacing: 0.1em;
+          font-weight: 700;
+          color: var(--primary);
+          margin-bottom: 0.25rem;
+          display: block;
+        }
+
+        .cs-title {
+          font-size: var(--headerFontSize);
+          font-weight: 900;
+          line-height: 1.2em;
+          text-align: inherit;
+          max-width: 43.75rem;
+          margin: 0 0 1rem 0;
+          color: var(--headerColor);
+          position: relative;
+        }
+
+        .cs-text {
+          font-size: var(--bodyFontSize);
+          line-height: 1.5em;
+          text-align: inherit;
+          width: 100%;
+          max-width: 40.625rem;
+          margin: 0;
+          color: var(--bodyTextColor);
+        }
+        body {
+          font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+        }
+
+        .notification-box {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: #ffffff;
+          color: #333;
+          padding: 10px 20px;
+          border-radius: 5px;
+          font-size: 16px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+          z-index: 9999;
+          display: inline-block;
+          animation: slideDown 3s forwards;
+        }
+
+        .notification-box.hidden {
+          display: none;
+        }
+
+        @keyframes slideDown {
+          from {
+            top: -60px;
+          }
+          to {
+            top: 20px;
+          }
+        }
+
+        header {
+          background-color: #fff;
+          color: #fff;
+          text-align: center;
+          padding: 30px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 50;
+          display: flex;
+          justify-content: space-between; /* Space between left, center, and right */
+          align-items: center;
+          height: 6vh;
+        }
+
+        .logo-container {
+          flex: 1; /* Take up space on the left */
+          display: flex;
+          align-items: center;
+        }
+
+        .header-title {
+          font-size: 24px;
+          color: #333;
+          font-weight: normal;
+          line-height: 24px;
+          letter-spacing: -1px;
+          text-align: center;
+          flex: 2; /* Center block */
+          margin-right: 40px;
+        }
+
+        .orange-letter {
+          color: #ff7148;
+        }
+
+        .header-button {
+          flex: 1; /* Take up space on the right */
+          text-align: right;
+          margin: 0 10px;
+          color: #333; /* Adjusted for visibility */
+          text-decoration: none;
+          font-size: 20px;
+        }
+
+        nav {
+          display: flex;
+          align-items: center;
+          position: absolute;
+          right: 10px;
+          top: 10px;
+        }
+
+        .notification-badge {
+          position: absolute;
+          top: -5px;
+          right: -10px;
+          background: red;
+          color: white;
+          font-size: 12px;
+          border-radius: 50%;
+          padding: 3px 6px;
+        }
+
+        .back-arrow {
+          position: absolute;
+          left: 10px;
+          top: 10px;
+          font-size: 20px;
+          color: #fff;
+          text-decoration: none;
+        }
+
+        .hamburger-menu {
+          position: relative;
+          cursor: pointer;
+          margin-top: 7px;
+          margin-right: 5px;
+        }
+
+        #menu-icon {
+          font-size: 24px;
+          color: #333;
+        }
+
+        .hidden {
+          display: none;
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: 6vh; /* Matches header height */
+          right: 10px;
+          background-color: #ffffff;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          padding: 10px 0;
+          z-index: 1000;
+        }
+
+        .dropdown-menu ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        .dropdown-menu ul li {
+          padding: 10px 20px;
+        }
+
+        .dropdown-menu ul li a {
+          color: #333;
+          text-decoration: none;
+        }
+
+        .dropdown-menu ul li:hover {
+          background-color: #f9f9f9;
+        }
+
+        /*-- -------------------------- -->
+    <---            FAQ             -->
+    <--- -------------------------- -*/
+
+        /* Mobile - 360px */
+        @media only screen and (min-width: 0rem) {
+          #faq-1263 {
+            padding: var(--sectionPadding);
+            background-color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+          }
+          #faq-1263 .cs-container {
+            width: 100%;
+            max-width: 80rem;
+            margin: auto;
+            margin-top: -40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 40px - 48px */
+            gap: clamp(2.5rem, 5vw, 3rem);
+          }
+          #faq-1263 .cs-content {
+            /* set text align to left if content needs to be left aligned */
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            /* centers content horizontally, set to flex-start to left align */
+            align-items: center;
+          }
+
+          #faq-1263 .cs-title {
+            margin: 0;
+            color: #333;
+          }
+          #faq-1263 .cs-faq-group {
+            width: 100%;
+            max-width: 52.875rem;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            /* 16px - 20px */
+            gap: clamp(1rem, 2.4vw, 1.25rem);
+          }
+          #faq-1263 .cs-faq-item {
+            list-style: none;
+            width: 100%;
+            background-color: white;
+            border-radius: 0.5rem;
+            border: 2px solid #ff7148;
+            padding: 0;
+            box-sizing: border-box;
+            transition: border-bottom 0.3s;
+          }
+          #faq-1263 .cs-faq-item.active .cs-button {
+            color: var(--primary);
+          }
+          #faq-1263 .cs-faq-item.active .cs-button:before {
+            background-color: var(--primary);
+            transform: rotate(315deg);
+          }
+          #faq-1263 .cs-faq-item.active .cs-button:after {
+            background-color: var(--primary);
+            transform: rotate(-315deg);
+          }
+          #faq-1263 .cs-faq-item.active .cs-item-p {
+            height: auto;
+            margin-top: 0.75rem;
+            /* 16px - 24px */
+            padding-top: 0.75rem;
+            padding-bottom: 1.5rem;
+            color: #333;
+            opacity: 0.8;
+          }
+          #faq-1263 .cs-faq-item.active .cs-item-p:before {
+            /* border top */
+            content: "";
+            height: 1px;
+            background: #7d799c;
+            opacity: 1;
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 1.5rem;
+            right: 1.5rem;
+          }
+          #faq-1263 .cs-button {
+            /* 16px - 20px */
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            line-height: 1.2em;
+            text-align: left;
+            font-weight: bold;
+            width: 100%;
+            padding: 1.5rem 1.5rem 0;
+            border: none;
+            background: transparent;
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            /* 16px - 24px */
+            gap: clamp(1rem, 2.5vw, 1.5rem);
+            position: relative;
+            transition: background-color 0.3s, color 0.3s;
+          }
+          #faq-1263 .cs-button:hover {
+            cursor: pointer;
+          }
+          #faq-1263 .cs-button:before {
+            /* left line */
+            content: "";
+            width: 0.5rem;
+            height: 0.125rem;
+            background-color: #ff7148;
+            opacity: 1;
+            border-radius: 50%;
+            position: absolute;
+            display: block;
+            top: 67%;
+            right: 1.1875rem;
+            transform: rotate(45deg);
+            /* animate the transform from the left side of the x axis, and the center of the y */
+            transform-origin: left center;
+            transition: transform 0.5s;
+          }
+          #faq-1263 .cs-button:after {
+            /* right line */
+            content: "";
+            width: 0.5rem;
+            height: 0.125rem;
+            background-color: #ff7148;
+            opacity: 1;
+            border-radius: 50%;
+            position: absolute;
+            display: block;
+            top: 67%;
+            right: 1rem;
+            transform: rotate(-45deg);
+            /* animate the transform from the right side of the x axis, and the center of the y */
+            transform-origin: right center;
+            transition: transform 0.5s;
+          }
+          #faq-1263 .cs-button-text {
+            width: 90%;
+            padding: 0;
+            display: block;
+          }
+          #faq-1263 .cs-item-p {
+            /* 14px - 16px */
+            font-size: clamp(0.875rem, 1.5vw, 1rem);
+            line-height: 1.5em;
+            width: 100%;
+            height: 0;
+            margin: 0;
+            /* 16px - 24px */
+            padding: 0 1.5rem 1.5rem;
+            /* prevents padding and border from affecting height and width */
+            box-sizing: border-box;
+            opacity: 0;
+            color: var(--bodyTextColor);
+            /* clips the text so it doesn't show up */
+            overflow: hidden;
+            position: relative;
+            transition: opacity 0.3s, padding-bottom 0.3s, padding-top 0.3s;
+          }
+          #faq-1263 .cs-background {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+          }
+          #faq-1263 .cs-background img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+        }
+        .floating-footer {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          background-color: #333333b5;
+          color: white;
+          padding: 10px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          z-index: 1000;
+          transform: translateY(100%); /* Initially hidden */
+          transition: transform 0.3s ease-in-out;
+        }
+
+        .footer-text {
+          font-size: 16px;
+        }
+
+        .post-job-button {
+          background-color: #ff7148;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          cursor: pointer;
+          border-radius: 5px;
+        }
+
+        .post-job-button:hover {
+          background-color: whitesmoke;
+          color: #ff7148;
+        }
+
+        /*-- -------------------------- -->
+    <---           Steps            -->
+    <--- -------------------------- -*/
+
+        /* Mobile - 360px */
+        @media only screen and (min-width: 0rem) {
+          #steps-1171 {
+            padding: var(--sectionPadding);
+            background-color: var(--bodyTextColorWhite);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+          }
+          #steps-1171 .cs-container {
+            width: 100%;
+            /* changes to 1280px at desktop */
+            max-width: 44rem;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 48px - 64px */
+            gap: clamp(3rem, 6vw, 4rem);
+            color: #333;
+          }
+          #steps-1171 .cs-content {
+            /* set text align to left if content needs to be left aligned */
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            /* centers content horizontally, set to flex-start to left align */
+            align-items: center;
+          }
+
+          #steps-1171 .cs-topper {
+            color: #ff7148;
+          }
+          #steps-1171 .cs-title,
+          #steps-1171 .cs-text {
+            color: #333);
+          }
+          #steps-1171 .cs-text {
+            opacity: 0.8;
+          }
+          #steps-1171 .cs-card-group {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.25rem;
+          }
+          #steps-1171 .cs-item {
+            text-align: center;
+            list-style: none;
+            display: flex;
+            grid-column: span 12;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+          }
+          #steps-1171 .cs-item:last-of-type:after {
+            display: none;
+          }
+          #steps-1171 .cs-item:nth-of-type(even):after {
+            /* scaleX -1 flips it horizontally */
+            transform: rotate(-135deg) scaleX(-1);
+          }
+          #steps-1171 .cs-item:after {
+            content: "";
+            position: relative;
+            display: block;
+            /* 54px - 84px */
+            width: clamp(3.375rem, 6vw, 5.25rem);
+            height: clamp(3.375rem, 6vw, 5.25rem);
+            margin-top: 1.25rem;
+            background: url("https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/curved-arrow.svg");
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
+            transform: rotate(135deg);
+          }
+          #steps-1171 .cs-picture {
+            margin-bottom: 1.5rem;
+            width: 15rem;
+            height: 15rem;
+            border: 1px solid rgba(255, 252, 243, 0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          #steps-1171 .cs-icon {
+            width: 10rem;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            border: 4px solid #555;
+          }
+          #steps-1171 .cs-h3 {
+            font-size: 1.25rem;
+            line-height: 1.2em;
+            text-align: inherit;
+            margin: 0 0 0.75rem 0;
+            color: var(--bodyTextColorWhite);
+          }
+          #steps-1171 .cs-item-p {
+            font-size: 1rem;
+            line-height: 1.5em;
+            text-align: inherit;
+            max-width: 21.375rem;
+            margin: 0;
+            color: #333;
+            opacity: 0.8;
+          }
+        }
+        /* Tablet - 768px */
+        @media only screen and (min-width: 48rem) {
+          #steps-1171 .cs-item {
+            grid-column: span 6;
+          }
+          #steps-1171 .cs-item:nth-of-type(2):after {
+            display: none;
+          }
+          #steps-1171 .cs-item:nth-of-type(1):after {
+            transform: rotate(135deg) scaleX(-1);
+          }
+          #steps-1171 .cs-item:after {
+            margin: 0;
+            position: absolute;
+            right: -2.5rem;
+            top: 0;
+            transform: rotate(45deg);
+          }
+        }
+        /* Desktop - 1024px */
+        @media only screen and (min-width: 64rem) {
+          #steps-1171 .cs-container {
+            max-width: 80rem;
+          }
+          #steps-1171 .cs-item {
+            grid-column: span 3;
+          }
+          #steps-1171 .cs-item:nth-of-type(2):after {
+            display: block;
+            transform: rotate(45deg);
+          }
+          #steps-1171 .cs-item:nth-of-type(3):after {
+            display: block;
+            transform: rotate(135deg) scaleX(-1);
+          }
+          #steps-1171 .cs-item:after {
+            right: -3rem;
+          }
+        }
+        .login-button {
+          text-decoration: none;
+          color: #ff7148;
+        }
+  </style>
   <body>
-    {% extends 'base.html' %} {% block title %}Main Page{% endblock %} {% block
-    content %}
+    <header>
+      <a href="{{ url_for('login') }}" class="login-button">Login</a>
 
-    <div class="container">
-      <!-- Existing Content -->
-      <div class="content">
-        <p>
-          Whether you're a skilled tradesman or someone looking to get the job
-          done, we're here to connect you.
-        </p>
-        <div class="button-container">
-          <a href="/register-tradesman" class="btn btn-join"
-            >Join as Tradesman</a
-          >
-          <a href="/post-job" class="btn btn-post">Post Your Job</a>
-        </div>
+      <div class="logo-container">
+        <span class="header-title">
+          <span class="orange-letter">o</span>penwork
+        </span>
       </div>
-    </div>
 
-    {% endblock %}
+      <nav>
+        <div class="hamburger-menu" id="hamburger-menu">
+          <i id="menu-icon" class="fas fa-bars"></i>
+        </div>
+      </nav>
+
+      <div id="dropdown-menu" class="dropdown-menu hidden">
+        <ul>
+          <li><a href="{{ url_for('profile') }}">Contact Us</a></li>
+          <li><a href="{{ url_for('notifications') }}">Login</a></li>
+          <li><a href="{{ url_for('logout') }}">About Us</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <section id="hero-143">
+      <div class="cs-container">
+        <h1 class="cs-title">
+          Connecting <br />
+          <span>Tradesman</span> With Each Other And Local
+          <span>Homeowners</span>
+        </h1>
+        <p class="cs-text">
+          Post your job, get connected to trusted, verified trade professionals
+          all in one place.
+        </p>
+        <a
+          href="{{ url_for('register') }}"
+          class="cs-button-solid"
+          style="background-color: whitesmoke; color: #ff7148"
+          >Join As Tradesman</a
+        >
+        <a href="" class="cs-button-solid">Post A Job</a>
+      </div>
+
+      <!-- Background Image -->
+      <picture class="cs-background">
+        <source
+          media="(max-width: 600px)"
+          srcset="https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen-m.jpg"
+        />
+        <source
+          media="(min-width: 601px)"
+          srcset="https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen.jpg"
+        />
+        <img
+          loading="lazy"
+          decoding="async"
+          src="https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen.jpg"
+          alt="kitchen"
+          width="2250"
+          height="1500"
+          aria-hidden="true"
+        />
+      </picture>
+    </section>
+
+    <!-- ============================================ -->
+    <!--                   Services                   -->
+    <!-- ============================================ -->
+
+    <section id="h-services-143">
+      <ul class="cs-card-group">
+        <li class="cs-item">
+          <picture class="cs-icon">
+            <i
+              class="fas fa-pencil-alt"
+              style="font-size: 30px; color: #333"
+              aria-hidden="true"
+            ></i>
+          </picture>
+          <h2 class="cs-title">Post a job</h2>
+          <p class="cs-text">
+            Easily create a job by providing the category, location, and a brief
+            description of your project.
+          </p>
+        </li>
+        <li class="cs-item">
+          <picture class="cs-icon">
+            <i
+              class="fas fa-list-alt"
+              style="font-size: 30px; color: #333"
+              aria-hidden="true"
+            ></i>
+          </picture>
+          <h2 class="cs-title">Get Applications</h2>
+          <p class="cs-text">
+            Recieve applications from skilled tradesmen, view their profiles and
+            chat directly to discuss your project needs.
+          </p>
+        </li>
+        <li class="cs-item">
+          <picture class="cs-icon">
+            <i
+              class="fas fa-user"
+              style="font-size: 30px; color: #333"
+              aria-hidden="true"
+            ></i>
+          </picture>
+          <h2 class="cs-title">Choose A Tradesman</h2>
+          <p class="cs-text">
+            Select the right tradesman for your job and finalize details through
+            the in-app chat.
+          </p>
+        </li>
+        <li class="cs-item">
+          <picture class="cs-icon">
+            <i
+              class="fas fa-check"
+              style="font-size: 30px; color: #333"
+              aria-hidden="true"
+            ></i>
+          </picture>
+          <h2 class="cs-title">Complete And Review</h2>
+          <p class="cs-text">
+            Once the job is done, mark it as complete and share your feedback
+            with a review.
+          </p>
+        </li>
+      </ul>
+    </section>
+    <section id="faq-1263">
+      <div class="cs-container">
+        <div class="cs-content">
+          <span class="cs-topper">FAQ</span>
+          <h2 class="cs-title">Frequently Asked Questions</h2>
+        </div>
+        <ul class="cs-faq-group">
+          <!-- Active class added as default -->
+          <li class="cs-faq-item">
+            <button class="cs-button">
+              <span class="cs-button-text"> How do I post a job? </span>
+            </button>
+            <p class="cs-item-p">
+              To post a job, simply sign up and log in to your account. Navigate
+              to the "Post a Job" section. Fill in the required details such as
+              job title, description, location, and category. After completing
+              the form, click "Submit" to make your job listing live. You will
+              recieve email notifications when a user applies for your job and
+              when they message you!
+            </p>
+          </li>
+          <li class="cs-faq-item">
+            <button class="cs-button">
+              <span class="cs-button-text">
+                How do I find the right tradesman for my project?
+              </span>
+            </button>
+            <p class="cs-item-p">
+              When a tradesman applies for your job, you'll be able to view
+              their profile, including details such as their social media
+              accounts, website, any reviews from past jobs and previous work.
+              This allows you to make an informed decision before moving forward
+              with the hiring process.
+            </p>
+          </li>
+          <li class="cs-faq-item">
+            <button class="cs-button">
+              <span class="cs-button-text">
+                Does it cost to join as a tradesman?
+              </span>
+            </button>
+            <p class="cs-item-p">
+              No, it's completely free to join as a tradesman! You can create
+              your profile and browse job posts without any charges. We only
+              charge a small fee of $4.99 when you want to contact a homeowner
+              about a job you're interested in. This helps keep the platform
+              affordable and accessible for all tradesmen.
+            </p>
+          </li>
+          <li class="cs-faq-item">
+            <button class="cs-button">
+              <span class="cs-button-text">
+                Do you take a commission on jobs?
+              </span>
+            </button>
+            <p class="cs-item-p">
+              No, unlike many of our competitors, we do not take any commission
+              on the jobs posted or completed through our platform. Our goal is
+              to make it as easy and affordable as possible for homeowners to
+              find skilled tradesmen and for tradesmen to connect with potential
+              clients. Instead of charging commission fees, we have a simple and
+              transparent pricing model, ensuring that both homeowners and
+              tradesmen keep more of their hard-earned money.
+            </p>
+          </li>
+        </ul>
+      </div>
+      <!--SVG Waves-->
+      <picture class="cs-background">
+        <!--Mobile Image-->
+        <source
+          media="(max-width: 600px)"
+          srcset="
+            https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-waves-m.svg
+          "
+        />
+        <!--Tablet and above Image-->
+        <source
+          media="(min-width: 601px)"
+          srcset="
+            https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-waves.svg
+          "
+        />
+        <img
+          aria-hidden="true"
+          src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-waves.svg"
+          loading="lazy"
+          decoding="async"
+          alt="moon"
+          width="1920"
+          height="647"
+        />
+      </picture>
+    </section>
+    <!-- ============================================ -->
+    <!--                   Steps                      -->
+    <!-- ============================================ -->
+
+    <section id="steps-1171">
+      <div class="cs-container">
+        <div class="cs-content">
+          <span class="cs-topper">Our Process For Tradies</span>
+          <h2 class="cs-title">How To Get Started</h2>
+          <p class="cs-text">
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa
+            libero sint hic accusantium exercitationem, voluptatem officia
+            quaerat velit quis ullam?
+          </p>
+        </div>
+        <ul class="cs-card-group">
+          <li class="cs-item">
+            <picture class="cs-picture">
+              <img
+                class="cs-icon"
+                src="/static/app_images/Phone_image1.jpeg"
+                alt="App Screenshot"
+                width="300"
+                height="300"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+            </picture>
+            <h3 class="cs-h3">Create Your Profile</h3>
+            <p class="cs-item-p">
+              This process will take just 5 to 10 minutes. Once complete, our
+              team will verify your ID and insurance within 24 hours to ensure
+              trust and transparency for clients. You'll be notified as soon as
+              your profile is approved and ready to go.
+            </p>
+          </li>
+          <li class="cs-item">
+            <picture class="cs-picture">
+              <img
+                class="cs-icon"
+                src="/static/app_images/Phone_image2.jpeg"
+                alt="App Screenshot"
+                width="300"
+                height="300"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+            </picture>
+            <h3 class="cs-h3">Find Jobs</h3>
+            <p class="cs-item-p">
+              Extensible for web iterate process before meta services impact
+              with employee engagement strategies.
+            </p>
+          </li>
+          <li class="cs-item">
+            <picture class="cs-picture">
+              <img
+                class="cs-icon"
+                src="/static/app_images/Phone_image3.jpeg"
+                alt="App Screenshot"
+                width="300"
+                height="300"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+            </picture>
+            <h3 class="cs-h3">Connect With Tradesman</h3>
+            <p class="cs-item-p">
+              Extensible for web iterate process before meta services impact
+              with employee engagement strategies.
+            </p>
+          </li>
+          <li class="cs-item">
+            <picture class="cs-picture">
+              <img
+                class="cs-icon"
+                src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/box.svg"
+                alt="icon"
+                width="40"
+                height="40"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+            </picture>
+            <h3 class="cs-h3">Deliver On Hand</h3>
+            <p class="cs-item-p">
+              Extensible for web iterate process before meta services impact
+              with employee engagement strategies.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="floating-footer" id="floating-footer">
+      <span class="footer-text">Post a job now for free!</span>
+      <button class="post-job-button">Post Job</button>
+    </div>
   </body>
+  <script>
+    const faqItems = Array.from(document.querySelectorAll(".cs-faq-item"));
+    for (const item of faqItems) {
+      const onClick = () => {
+        item.classList.toggle("active");
+      };
+      item.addEventListener("click", onClick);
+    }
+    window.addEventListener("scroll", function () {
+      var footer = document.getElementById("floating-footer");
+
+      // Show the footer when the user scrolls down 100px or more
+      if (window.scrollY > 100) {
+        footer.style.transform = "translateY(0)"; // Show footer
+      } else {
+        footer.style.transform = "translateY(100%)"; // Hide footer
+      }
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuToggle = document.getElementById("hamburger-menu");
+      const menu = document.getElementById("dropdown-menu");
+
+      menuToggle.addEventListener("click", function () {
+        menu.classList.toggle("hidden");
+      });
+    });
+  </script>
 </html>
