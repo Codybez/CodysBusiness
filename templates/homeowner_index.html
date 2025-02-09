@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index Page</title>
+    <title>Homeowner Index Page</title>
   </head>
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -1237,23 +1237,24 @@
     <section id="hero-143">
       <div class="cs-container">
         <p class="user-type-link">
-          <a href="{{ url_for ('index') }}" class="active">Tradesman </a>
-          <a href="{{ url_for ('homeowner_index') }}"> Homeowner </a>
+          <a href="{{ url_for ('index') }}">Tradesman </a>
+          <a href="{{ url_for ('homeowner_index') }}" class="active">
+            Homeowner
+          </a>
         </p>
         <h1 class="cs-title">
           Connecting <br />
-          <span>Tradesman</span> With Each Other And Local
-          <span>Homeowners</span>
+          <span>Homeowners</span> With Verified Local
+          <span>Tradesman</span>
         </h1>
         <p class="cs-text">
-          The go-to platform for tradesmen to find work, connect with
-          subcontractors, and work together to grow their businesses.
+          "The go-to platform for homeowners to find trusted tradesmen, get
+          quality work done, and bring their projects to life."
         </p>
-        <a
-          href="{{ url_for('register') }}"
-          class="cs-button-solid"
-          style="background-color: #ff7148; color: white"
-          >Join As Tradesman</a
+
+        >
+        <a href="{{ url_for('register') }}" class="cs-button-solid"
+          >Post A Job</a
         >
       </div>
 
@@ -1289,44 +1290,43 @@
           <br />
           <picture class="cs-icon">
             <i
-              class="fas fa-briefcase"
+              class="fas fa-tools"
               style="font-size: 30px; color: #333"
               aria-hidden="true"
             ></i>
           </picture>
-          <h2 class="cs-title">Get More Jobs & Leads</h2>
+          <h2 class="cs-title">Find Skilled Tradesmen</h2>
           <p class="cs-text">
-            We bring job opportunities directly to you, delivered instantly to
-            your inbox so you can focus on what you do best.
+            Easily connect with qualified tradesmen in your area, ready to take
+            on your project—big or small.
           </p>
         </li>
         <li class="cs-item">
           <picture class="cs-icon">
             <i
-              class="fas fa-users"
+              class="fas fa-clipboard-list"
               style="font-size: 30px; color: #333"
               aria-hidden="true"
             ></i>
           </picture>
-          <h2 class="cs-title">Connect With Other Tradesmen</h2>
+          <h2 class="cs-title">Post Your Job for Free</h2>
           <p class="cs-text">
-            Need a subcontractor, equipment rental or an extra set of hands? Its
-            free to post in our find-tradies section and connect with other
-            tradesmen.
+            Create a job listing in minutes and get responses from experienced
+            tradesmen who are interested in your project.
           </p>
         </li>
         <li class="cs-item">
           <picture class="cs-icon">
             <i
-              class="fas fa-credit-card"
+              class="fas fa-star"
               style="font-size: 30px; color: #333"
               aria-hidden="true"
             ></i>
           </picture>
-          <h2 class="cs-title">Simple Fee Structure</h2>
+          <h2 class="cs-title">Trusted & Reviewed Professionals</h2>
           <p class="cs-text">
-            Reach out to job posters for just $4.99 and secure work quickly. No
-            hidden fees and zero commissions on your jobs.
+            Read reviews and ratings from other homeowners to find the right
+            tradesman for your job with confidence.
           </p>
         </li>
         <li class="cs-item">
@@ -1337,10 +1337,10 @@
               aria-hidden="true"
             ></i>
           </picture>
-          <h2 class="cs-title">In-App Chat</h2>
+          <h2 class="cs-title">Easy Communication</h2>
           <p class="cs-text">
-            Message job posters and other tradesmen directly through the app,
-            keeping all your work-related conversations in one place.
+            Chat directly with tradesmen through our platform, ask questions,
+            and finalize details before hiring.
           </p>
         </li>
       </ul>
@@ -1353,14 +1353,13 @@
     <section id="steps-1171">
       <div class="cs-container">
         <div class="cs-content">
-          <span class="cs-topper">Our Process For Tradies</span>
+          <span class="cs-topper">Our Process For Homeowners</span>
           <h2 class="cs-title">How To Get Started</h2>
           <p class="cs-text">
-            Whether you're looking for work, subcontractors to help on your job
-            or to rent out or hire equipment, our platform makes it easy. Create
-            your profile, find jobs that match your skills, connect with other
-            tradesmen, and manage everything through our in-app chat. Join today
-            and start building your network.
+            Need a reliable tradesman for your next project? Our platform makes
+            it simple. Sign up, post your job, receive quotes from skilled
+            tradesmen, and chat with them directly to find the right fit. Get
+            started today and bring your project to life.
           </p>
         </div>
         <ul class="cs-card-group">
@@ -1377,12 +1376,11 @@
                 aria-hidden="true"
               />
             </picture>
-            <h3 class="">Create Your Profile</h3>
+            <h3 class="">Sign Up</h3>
             <p class="cs-item-p">
-              This process will take just 5 to 10 minutes. Once complete, our
-              team will verify your ID and insurance within 24 hours to ensure
-              trust and transparency for clients. You'll be notified as soon as
-              your profile is approved and ready to go.
+              Create your free account in just a few minutes. Once signed up,
+              you can start posting jobs and reviewing responses from
+              experienced tradesmen in your area.
             </p>
           </li>
           <li class="cs-item">
@@ -1398,12 +1396,11 @@
                 aria-hidden="true"
               />
             </picture>
-            <h3 class="">Find Jobs</h3>
+            <h3 class="">Post Your Job</h3>
             <p class="cs-item-p">
-              Once your profile is verified, you can browse job listings in your
-              area. New opportunities are posted instantly, you'll get
-              notifications for jobs that match your trade and location. Apply
-              directly and connect with job posters to secure work fast.
+              Describe the work you need done, set your location, and post your
+              job for free. Tradesmen will reach out with quotes, giving you
+              multiple options to choose from.
             </p>
           </li>
           <li class="cs-item">
@@ -1419,13 +1416,11 @@
                 aria-hidden="true"
               />
             </picture>
-            <h3 class="">Connect With Tradesman</h3>
+            <h3 class="">Compare & Hire</h3>
             <p class="cs-item-p">
-              Looking for a subcontractor, some specialized equipment or an
-              extra set of hands? Post in the Find Tradies section for free and
-              connect with skilled tradesmen in your area. Whether it's a
-              one-off job or ongoing work, finding the right team has never been
-              easier..
+              Review profiles, ratings, and quotes from different tradesmen.
+              Choose the one that best fits your needs and budget with
+              confidence.
             </p>
           </li>
           <li class="cs-item">
@@ -1441,17 +1436,17 @@
                 aria-hidden="true"
               />
             </picture>
-            <h3 class="">In-App Chat</h3>
+            <h3 class="">Chat & Finalize</h3>
             <p class="cs-item-p">
-              Communicate directly with job posters and other tradies through
-              our in-app chat. Ask questions, discuss job details, and organize
-              work—all in one place. Keep your business running smoothly without
-              the hassle of back-and-forth calls.
+              Use our in-app chat to discuss job details, agree on terms, and
+              get the work started. Keep all communication in one place for a
+              smooth experience.
             </p>
           </li>
         </ul>
       </div>
     </section>
+
     <section id="faq-1263">
       <div class="cs-container">
         <div class="cs-content">

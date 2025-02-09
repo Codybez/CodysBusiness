@@ -64,7 +64,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 4vh;
+        height: 6vh;
       }
 
       .logo-container {
@@ -118,8 +118,10 @@
         left: 10px;
         top: 10px;
         font-size: 20px;
-        color: #fff;
+        color: #ff7148;
         text-decoration: none;
+        margin-top: 5px;
+        margin-left: 5px;
       }
 
       /* Footer styling */
@@ -144,7 +146,9 @@
 
       #menu-icon {
         font-size: 24px;
-        color: #333;
+        color: #ffffff;
+        margin-right: 5px;
+        margin-top: 7px;
       }
 
       .dropdown-menu {
@@ -179,7 +183,7 @@
         background-color: #f9f9f9;
       }
 
-      .hidden {
+      .dropdown-menu .hidden {
         display: none;
       }
     </style>
@@ -254,6 +258,14 @@
             }
           });
         }
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const menuToggle = document.getElementById("hamburger-menu");
+        const menu = document.getElementById("dropdown-menu");
+
+        menuToggle.addEventListener("click", function () {
+          menu.classList.toggle("hidden");
+        });
       });
     </script>
   </body>

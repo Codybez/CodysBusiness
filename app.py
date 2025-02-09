@@ -2675,6 +2675,10 @@ def preview_email():
     }
     return render_template('verified_profile.html', user=user)
 
+@app.route('/homeowner_index')
+def homeowner_index():
+    return render_template('homeowner_index.html')
+
 
 
 if __name__ == "__main__":
