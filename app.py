@@ -207,6 +207,7 @@ class Post(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     job_location_name = db.Column(db.String(100), nullable=False)  # Just storing the name
+    city_suburb = db.Column(db.String(100), nullable=False)
     job_category_name = db.Column(db.String(100), nullable=False)  # Just storing the name
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -1627,6 +1628,7 @@ def create_tradie_post():
             job_title = request.form.get('job_title')
             job_category_name = request.form.get('job_category')
             job_location_name = request.form.get('job_location')
+            city_suburb = request.form['city_suburb']
             job_details = request.form.get('job_details')
 
             # Debugging: Log the inputs
@@ -1642,6 +1644,7 @@ def create_tradie_post():
                 title=job_title,
                 description=job_details,
                 job_location_name=job_location_name,
+                city_suburb=city_suburb,
                 job_category_name=job_category_name,
                 user_id=current_user.id
             )

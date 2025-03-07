@@ -51,6 +51,12 @@
         text-decoration: none;
       }
 
+      .category {
+        color: #ff7148;
+        font-size: 12px;
+        margin-top: 20px;
+      }
+
       .action-button .arrow {
         margin-left: 10px;
       }
@@ -148,8 +154,10 @@
       }
 
       .post-location {
-        font-size: 16px;
-        color: #333 !important ;
+        font-size: 14px;
+        color: #333;
+        margin-top: 5px;
+        margin-bottom: 10px;
       }
 
       .action-button.active {
@@ -163,7 +171,7 @@
 
       .job-listing .date {
         position: absolute;
-        top: 60px;
+        top: 65px;
         right: 20px;
         font-size: 10px;
         color: #ff7148;
@@ -171,6 +179,7 @@
 
       .job-listing .title {
         font-size: 20px;
+        margin-bottom: 20px;
       }
       .profile-image {
         position: absolute;
@@ -215,12 +224,17 @@
 
       .plus-symbol {
         position: absolute;
-        top: 75px; /* Adjust as needed */
+        top: 95px; /* Adjust as needed */
         right: 20px; /* Adjust the distance from the right edge */
         font-size: 30px; /* Adjust size */
         color: #ff7148; /* Change the color to match your theme */
         cursor: pointer;
         text-decoration: none;
+      }
+
+      .description {
+        color: #555;
+        padding-right: 10px;
       }
     </style>
   </head>
@@ -333,15 +347,20 @@
                 />
               </div>
             </div>
+            <div class="category">
+              <strong> {{ post.job_category_name }}</strong>
+            </div>
 
-            <h4 class="title">{{ post.title }}</h4>
-            <p class="post-location">
+            <div class="post-location">
               <strong>{{ post.job_location_name }}</strong> | {{
-              post.job_category_name }}
-            </p>
+              post.city_suburb }}
+            </div>
+
             <p class="post-user">
               {{ post.user.company_details.trading_name }}
             </p>
+            <h4 class="title">{{ post.title }}</h4>
+
             <p class="date">{{ post.date_created|time_ago }}</p>
 
             <a
@@ -350,7 +369,7 @@
               >+</a
             >
 
-            <p>{{ post.description }}</p>
+            <div class="description">{{ post.description }}</div>
             <div class="button-container">
               <a
                 href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"

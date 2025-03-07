@@ -423,12 +423,14 @@ footer {
     <i class="fas fa-search"></i>
     <p>Find Jobs</p>
   </a>
-<a 
-  href="{{ url_for('applied_jobs') }}" 
-  class="footers-button {% if request.endpoint in ['applied_jobs', 'active_jobs'] %}active{% endif %}">
-  <i class="fas fa-briefcase"></i>
-  <p>My Jobs</p>
-</a>
+
+  <a 
+    href="{{ url_for('find_a_job') }}" 
+    class="footers-button {% if request.endpoint == 'equipment-rental' %}active{% endif %}">
+    <i class="fas fa-truck-moving
+  "></i>
+    <p>Rent Gear</p>
+  </a>
 
 
     <a 
@@ -437,6 +439,12 @@ footer {
     <i class="fas fa-hard-hat"></i>
     <p>Find Tradies</p>
   </a>
+  <a 
+  href="{{ url_for('applied_jobs') }}" 
+  class="footers-button {% if request.endpoint in ['applied_jobs', 'active_jobs'] %}active{% endif %}">
+  <i class="fas fa-briefcase"></i>
+  <p>My Jobs</p>
+</a>
   {% if current_user.is_authenticated %}
   <a 
     href="{{ url_for('labourer_profile') }}" 
