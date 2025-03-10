@@ -209,6 +209,7 @@ class Post(db.Model):
     job_location_name = db.Column(db.String(100), nullable=False)  # Just storing the name
     city_suburb = db.Column(db.String(100), nullable=False)
     job_category_name = db.Column(db.String(100), nullable=False)  # Just storing the name
+    post_images = db.Column(db.String, nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     saved_by_users = Column(MutableList.as_mutable(JSON), default=[])
@@ -1569,6 +1570,7 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
         print(f"Error creating job closure notification: {e}")
         db.session.rollback()
         return None
+
 @app.route('/find-tradies', methods=['GET', 'POST'])
 @login_required
 def find_tradies():
@@ -1605,8 +1607,14 @@ def find_tradies():
     elif selected_location == 'my_locations' and my_locations:
         posts_query = posts_query.filter(Post.job_location_name.in_(my_locations))
 
-    # Execute the query
+    # Execute the query to get filtered posts
     active_posts = posts_query.all()
+
+    # Prepare post_images for each post
+    for post in active_posts:
+        # Split post_images into a list (comma-separated string)
+        post_images = post.post_images.split(', ') if post.post_images else []
+        post.post_images_list = post_images  # Adding this list to the post object for use in the template
 
     return render_template(
         'find_tradies.html',
@@ -1618,6 +1626,9 @@ def find_tradies():
         is_dashboard_page=True
     )
 
+import os
+from werkzeug.utils import secure_filename
+
 @app.route('/create_tradie_post', methods=['GET', 'POST'])
 @login_required
 def create_tradie_post():
@@ -1628,7 +1639,7 @@ def create_tradie_post():
             job_title = request.form.get('job_title')
             job_category_name = request.form.get('job_category')
             job_location_name = request.form.get('job_location')
-            city_suburb = request.form['city_suburb']
+            city_suburb = request.form.get('city_suburb')
             job_details = request.form.get('job_details')
 
             # Debugging: Log the inputs
@@ -1639,6 +1650,35 @@ def create_tradie_post():
                 flash("All fields are required.", 'danger')
                 return redirect(url_for('create_tradie_post'))
 
+            # Handle image uploads
+            post_images = []
+            allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+            files = request.files.getlist('post_images')
+
+            upload_folder = os.path.join('static', 'tradies_post_images')
+            os.makedirs(upload_folder, exist_ok=True)  # Ensure the folder exists
+
+            for file in files:
+                if file and '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(upload_folder, filename)
+
+                    # Ensure unique filenames
+                    counter = 1
+                    while os.path.exists(file_path):
+                        filename = f"{os.path.splitext(filename)[0]}_{counter}{os.path.splitext(filename)[1]}"
+                        file_path = os.path.join(upload_folder, filename)
+                        counter += 1
+
+                    file.save(file_path)
+                    post_images.append(filename)
+                elif file.filename:  # If an invalid file was provided
+                    flash(f"Invalid file format: {file.filename}. Only PNG, JPG, and GIF are allowed.", 'danger')
+                    return redirect(url_for('create_tradie_post'))
+
+            # Store image filenames as a comma-separated string
+            post_images_str = ','.join(post_images) if post_images else None
+
             # Create the new post
             new_post = Post(
                 title=job_title,
@@ -1646,7 +1686,8 @@ def create_tradie_post():
                 job_location_name=job_location_name,
                 city_suburb=city_suburb,
                 job_category_name=job_category_name,
-                user_id=current_user.id
+                user_id=current_user.id,
+                post_images=post_images_str  # Save images here
             )
 
             # Add and commit the post to the database
@@ -1658,9 +1699,7 @@ def create_tradie_post():
 
             # Flash success and redirect
             flash('Your job post has been created!', 'success')
-
-            # Pass the post.id to the redirect URL, assuming you want to redirect to the post details page
-            return redirect(url_for('tradies_my_posts', post_id=new_post.id))  # Use the actual route that shows the post details
+            return redirect(url_for('tradies_my_posts', post_id=new_post.id))  
 
         # Render the form
         return render_template('create_tradie_post.html', is_dashboard_page=True)
@@ -1670,7 +1709,6 @@ def create_tradie_post():
         print(f"Error in create_tradie_post: {e}")
         flash("An unexpected error occurred. Please try again later.", 'danger')
         return redirect(url_for('create_tradie_post'))
-
 
 @app.route('/edit_tradie_post/<int:post_id>', methods=['GET', 'POST'])
 def edit_tradie_post(post_id):

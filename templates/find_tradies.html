@@ -65,7 +65,7 @@
         background-color: #fff;
         border: 1px solid #ddd;
         padding-left: 20px;
-        padding-bottom: 20px;
+        padding-bottom: 50px;
         padding-right: 20px;
         margin: 10px auto;
         max-width: 600px;
@@ -97,7 +97,7 @@
         gap: 10px; /* Add some space between the buttons if desired */
         width: 100%; /* Ensure the container takes up full width */
         padding-right: 10px; /* Ensure there is padding on the right */
-        margin-top: 20px;
+        margin-top: 40px;
       }
 
       /* Button styling */
@@ -224,7 +224,7 @@
 
       .plus-symbol {
         position: absolute;
-        top: 95px; /* Adjust as needed */
+        bottom: 10px; /* Adjust as needed */
         right: 20px; /* Adjust the distance from the right edge */
         font-size: 30px; /* Adjust size */
         color: #ff7148; /* Change the color to match your theme */
@@ -232,9 +232,95 @@
         text-decoration: none;
       }
 
+      .plus-symbol span {
+        font-size: 13px;
+        color: #ff7148;
+        font-weight: bold;
+        text-decoration: underline;
+      }
+
       .description {
         color: #555;
         padding-right: 10px;
+      }
+
+      .image-gallery {
+        margin-top: 20px;
+      }
+
+      .image-gallery img {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 10px;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.9); /* Black with opacity */
+        padding-top: 100px;
+      }
+
+      .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+      }
+
+      /* Modal image zoom effect */
+      .modal-content {
+        animation-name: zoom;
+        animation-duration: 0.6s;
+      }
+
+      @keyframes zoom {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .close {
+        position: absolute;
+        top: 55px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .image-gallery img {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 10px;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -366,10 +452,33 @@
             <a
               href="{{ url_for('save_post', post_id=post.id) }}"
               class="plus-symbol"
-              >+</a
+              ><span>Save Post </span></a
             >
 
             <div class="description">{{ post.description }}</div>
+
+            <!-- Image Gallery for Tradie Post -->
+            {% if post.post_images %}
+
+            <div class="image-gallery">
+              {% for image_filename in post.post_images.split(',') %} {% set
+              image_path = url_for('static', filename='tradies_post_images/' +
+              image_filename) %}
+              <img
+                src="{{ image_path }}"
+                alt="Post Image"
+                onclick="openImageModal('{{ image_path }}')"
+              />
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- The Modal for Image Enlargement -->
+            <div id="imageModal" class="modal">
+              <span class="close" onclick="closeModal()">&times;</span>
+              <img class="modal-content" id="modalImage" />
+            </div>
+
             <div class="button-container">
               <a
                 href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"
@@ -445,6 +554,28 @@
 
       // Call the filter function when the page loads to apply the filters based on the current selection
       window.addEventListener('load', filterPosts);
+
+      // Function to open the modal with the clicked image
+      function openImageModal(imagePath) {
+        var modal = document.getElementById("imageModal");
+        var modalImg = document.getElementById("modalImage");
+        modal.style.display = "block";
+        modalImg.src = imagePath;
+      }
+
+      // Function to close the modal
+      function closeModal() {
+        var modal = document.getElementById("imageModal");
+        modal.style.display = "none";
+      }
+
+      // Close the modal if the user clicks outside of the image
+      window.onclick = function (event) {
+        var modal = document.getElementById("imageModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
     </script>
 
     {% endblock %}
