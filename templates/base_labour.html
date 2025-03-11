@@ -435,7 +435,7 @@ footer {
 
     <a 
     href="{{ url_for('find_tradies') }}" 
-    class="footers-button {% if request.endpoint == 'find_tradies' %}active{% endif %}">
+    class="footers-button {% if request.endpoint in['find_tradies', 'create_tradie_post', 'tradies_my_posts', 'tradies_saved_posts' ] %}active{% endif %}">
     <i class="fas fa-hard-hat"></i>
     <p>Find Tradies</p>
   </a>

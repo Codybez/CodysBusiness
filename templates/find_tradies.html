@@ -178,7 +178,7 @@
       }
 
       .job-listing .title {
-        font-size: 20px;
+        font-size: 18px;
         margin-bottom: 20px;
       }
       .profile-image {
@@ -417,7 +417,8 @@
         </div>
 
         <div id="job-listings">
-          {% if active_posts %} {% for post in active_posts %}
+          {% set post_count = 0 %} {% for post in active_posts| reverse %} {%
+          set post_count = post_count + 1 %}
           <div
             class="job-listing"
             data-category="{{ post.job_category_name }}"
@@ -492,8 +493,8 @@
               >
             </div>
           </div>
-          {% endfor %} {% else %}
-          <p class="no-posts-message" style="display: none">
+          {% endfor %} {% if post_count == 0 %}
+          <p class="no-posts-message">
             No posts available based on your filters.
           </p>
           {% endif %}

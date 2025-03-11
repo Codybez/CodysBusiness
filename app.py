@@ -665,7 +665,7 @@ def labourer_profile():
         labourer_profile=labourer_profile,
         company_details=company_details,
         verification_ready=labourer_profile.verification_ready,
-        id_verified=labourer_profile.id_verified
+        id_verified=labourer_profile.id_verified, is_dashboard_page=True
     )
 
 
@@ -1806,7 +1806,8 @@ def tradies_saved_posts():
     # Query all posts where the current user is in the saved_user_ids list
     saved_posts = Post.query.filter(Post.saved_by_users.contains([user.id])).all()
 
-    return render_template('tradies_saved_posts.html', saved_posts=saved_posts)
+    return render_template('tradies_saved_posts.html', saved_posts=saved_posts, is_dashboard_page=True
+    )
 
 
 
@@ -1816,7 +1817,7 @@ def tradies_my_posts():
     # Fetch the current user's posts
     posts = Post.query.filter_by(user_id=current_user.id).all()
 
-    return render_template('tradies_my_posts.html', posts=posts)
+    return render_template('tradies_my_posts.html', posts=posts, is_dashboard_page=True)
 
 
 

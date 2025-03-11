@@ -69,6 +69,7 @@
         margin-bottom: 15px;
         background-color: #ffffff;
         border-radius: 10px;
+        padding-bottom: 50px;
       }
 
       .profile-image-container {
@@ -85,7 +86,7 @@
         border: 1px solid #999;
       }
 
-      .post-title {
+      .title {
         font-size: 18px;
         font-weight: bold;
         color: #333;
@@ -97,7 +98,6 @@
         font-size: 14px;
         color: #333;
         margin-top: 5px;
-        margin-bottom: 10px;
       }
 
       .post-description {
@@ -126,12 +126,14 @@
         color: #888;
       }
 
-      .company_name {
+      .post-user {
         color: #777;
+        font-size: 16px;
+        margin-top: 10px;
       }
       .date {
         position: absolute;
-        top: 55px;
+        top: 60px;
         right: 20px;
         font-size: 10px;
         color: #ff7148;
@@ -174,19 +176,21 @@
       .post-description {
         margin-top: 20px;
       }
-
-      /* Style for the minus button */
       .minus-symbol {
         position: absolute;
-        top: 60px;
-        right: 20px;
-        color: #ff7148; /* White text color */
-        font-size: 30px;
-        font-weight: bold;
+        bottom: 10px; /* Adjust as needed */
+        right: 20px; /* Adjust the distance from the right edge */
+        font-size: 30px; /* Adjust size */
+        color: #ff7148; /* Change the color to match your theme */
         cursor: pointer;
-        display: inline-flex;
-        align-items: center;
         text-decoration: none;
+      }
+
+      .minus-symbol span {
+        font-size: 13px;
+        color: #ff7148;
+        font-weight: bold;
+        text-decoration: underline;
       }
 
       /* Button container adjustments */
@@ -233,6 +237,90 @@
         font-size: 18px;
         color: #333;
         margin-top: 20px;
+      }
+
+      .image-gallery {
+        margin-top: 20px;
+      }
+
+      .image-gallery img {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 10px;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.9); /* Black with opacity */
+        padding-top: 100px;
+      }
+
+      .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+      }
+
+      /* Modal image zoom effect */
+      .modal-content {
+        animation-name: zoom;
+        animation-duration: 0.6s;
+      }
+
+      @keyframes zoom {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .close {
+        position: absolute;
+        top: 55px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .image-gallery img {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+      .category {
+        color: #ff7148;
+        font-size: 12px;
       }
     </style>
   </head>
@@ -283,21 +371,47 @@
             </div>
             <!-- Post details -->
             <div>
-              <div class="post-title">{{ post.title }}</div>
-              <div class="post-category">
+              <div class="category">
+                <strong> {{ post.job_category_name }}</strong>
+              </div>
+
+              <div class="post-location">
                 <strong>{{ post.job_location_name }}</strong> | {{
-                post.job_category_name }}
+                post.city_suburb }}
               </div>
-              <div class="company_name">
+
+              <p class="post-user">
                 {{ post.user.company_details.trading_name }}
-              </div>
+              </p>
+              <h4 class="title">{{ post.title }}</h4>
               <p class="date">{{ post.date_created|time_ago }}</p>
               <div class="post-description">{{ post.description }}</div>
+            </div>
+            <!-- Image Gallery for Tradie Post -->
+            {% if post.post_images %}
+
+            <div class="image-gallery">
+              {% for image_filename in post.post_images.split(',') %} {% set
+              image_path = url_for('static', filename='tradies_post_images/' +
+              image_filename) %}
+              <img
+                src="{{ image_path }}"
+                alt="Post Image"
+                onclick="openImageModal('{{ image_path }}')"
+              />
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- The Modal for Image Enlargement -->
+            <div id="imageModal" class="modal">
+              <span class="close" onclick="closeModal()">&times;</span>
+              <img class="modal-content" id="modalImage" />
             </div>
             <a
               href="{{ url_for('remove_saved_post', post_id=post.id) }}"
               class="minus-symbol"
-              >_</a
+              ><span>Remove Post</span></a
             >
             <div class="button-container">
               <a
@@ -319,6 +433,29 @@
         {% endif %}
       </div>
     </div>
+    <script>
+      // Function to open the modal with the clicked image
+      function openImageModal(imagePath) {
+        var modal = document.getElementById("imageModal");
+        var modalImg = document.getElementById("modalImage");
+        modal.style.display = "block";
+        modalImg.src = imagePath;
+      }
+
+      // Function to close the modal
+      function closeModal() {
+        var modal = document.getElementById("imageModal");
+        modal.style.display = "none";
+      }
+
+      // Close the modal if the user clicks outside of the image
+      window.onclick = function (event) {
+        var modal = document.getElementById("imageModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
     {% endblock %}
   </body>
 </html>
