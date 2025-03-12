@@ -49,6 +49,8 @@
         align-items: center;
         transition: background-color 0.3s ease;
         text-decoration: none;
+        margin-left: 5px;
+        margin-right: 5px;
       }
 
       .category {
@@ -58,7 +60,7 @@
       }
 
       .action-button .arrow {
-        margin-left: 10px;
+        margin-left: 3px;
       }
 
       .job-listing {
@@ -79,15 +81,15 @@
         color: #333;
         font-size: 16px;
         margin-bottom: 0px;
-        margin-top: 20px;
-        padding-right: 40px;
+        margin-top: 30px;
+        padding-right: 10px;
       }
 
       .job-listing p {
         color: #777;
         font-size: 16px;
-        margin-top: 5px;
-        margin-bottom: 20px;
+        margin-top: 0px;
+        margin-bottom: 30px;
       }
 
       /* Button container adjustments */
@@ -97,7 +99,7 @@
         gap: 10px; /* Add some space between the buttons if desired */
         width: 100%; /* Ensure the container takes up full width */
         padding-right: 10px; /* Ensure there is padding on the right */
-        margin-top: 40px;
+        margin-top: 30px;
       }
 
       /* Button styling */
@@ -125,7 +127,7 @@
 
       .right-button {
         background-color: #ffffff;
-        color: #555;
+        color: #ff7148;
         border: solid 2px #ff7148;
       }
 
@@ -161,8 +163,10 @@
       }
 
       .action-button.active {
-        border-bottom: 3px solid #ff7148; /* Orange underline */
-        color: #ff7148; /* Optional: Change text color to orange */
+        border: 2px solid #ff7148; /* Orange underline */
+        border-radius: 20px;
+        color: #ff7148;
+        padding: 5px 10px;
       }
 
       .job-listing .post-user {
@@ -171,7 +175,7 @@
 
       .job-listing .date {
         position: absolute;
-        top: 65px;
+        top: 70px;
         right: 20px;
         font-size: 10px;
         color: #ff7148;
@@ -245,7 +249,7 @@
       }
 
       .image-gallery {
-        margin-top: 20px;
+        margin-top: 30px;
       }
 
       .image-gallery img {
@@ -334,25 +338,25 @@
           href="/find-tradies"
           class="action-button {{ 'active' if request.endpoint == 'find_tradies' else '' }}"
         >
-          All Posts <span class="arrow">&#9662;</span>
+          All Posts<span class="arrow">&#9662;</span>
         </a>
         <a
           href="/create_tradie_post"
           class="action-button {{ 'active' if request.endpoint == 'create_tradie_post' else '' }}"
         >
-          New Post <span class="arrow">&#9662;</span>
+          New Post<span class="arrow">&#9662;</span>
         </a>
         <a
           href="/tradies_my_posts"
           class="action-button {{ 'active' if request.endpoint == 'tradies_my_posts' else '' }}"
         >
-          My Posts <span class="arrow">&#9662;</span>
+          My Posts<span class="arrow">&#9662;</span>
         </a>
         <a
           href="/tradies_saved_posts"
           class="action-button {{ 'active' if request.endpoint == 'tradies_saved_posts' else '' }}"
         >
-          Saved <span class="arrow">&#9662;</span>
+          Saved<span class="arrow">&#9662;</span>
         </a>
       </div>
 

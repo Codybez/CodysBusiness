@@ -441,7 +441,7 @@ footer {
   </a>
   <a 
   href="{{ url_for('applied_jobs') }}" 
-  class="footers-button {% if request.endpoint in ['applied_jobs', 'active_jobs'] %}active{% endif %}">
+  class="footers-button {% if request.endpoint in ['applied_jobs', 'active_jobs', 'my_job_display_job'] %}active{% endif %}">
   <i class="fas fa-briefcase"></i>
   <p>My Jobs</p>
 </a>
