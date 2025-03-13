@@ -20,9 +20,14 @@
         margin-bottom: 70px;
       }
       .heading {
-        font-size: 22px;
+        font-size: 19px;
         margin-top: 30px;
         padding-left: 10px;
+        margin-bottom: 20px;
+      }
+      .heading span {
+        color: #ff7148;
+        font-size: 15px;
       }
       /* Container for Applicant Profiles */
       .applicant-container {
@@ -56,6 +61,10 @@
         margin-bottom: 8px;
         margin-left: 5px;
         padding-right: 50px;
+      }
+
+      .applicant-profile p span {
+        font-weight: bold;
       }
 
       .button-container {
@@ -99,7 +108,7 @@
       /* White Button with Orange Border */
       .button-container .white-button {
         background-color: white;
-        color: #555;
+        color: #ff7148;
         border: 2px solid #ff7148;
       }
 
@@ -134,7 +143,9 @@
 
     <!-- Applicant Profiles Container -->
     <div class="applicant-container">
-      <h1 class="heading">Job Applicants</h1>
+      <h1 class="heading">
+        <span>Job applicants</span><br />{{ job.job_name }}
+      </h1>
       {% for application in job_applications | reverse %}
       <div class="applicant-profile">
         {% if application.user and application.user.profile_image %} {% if
@@ -149,11 +160,9 @@
         <h3>{{ application.user.company_details.trading_name }}</h3>
 
         <p>
-          {{ application.user.first_name }} {{ application.user.last_name }} |
-          {{ application.user.location }}
+          <span>{{ application.user.first_name }}</span>
+          | {{ application.user.location }}
         </p>
-        <p>{{ application.user.email }}</p>
-        <p>{{ application.user.labourer_profile.phone_number }}</p>
 
         <div class="button-container">
           <a

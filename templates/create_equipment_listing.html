@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equipment Hire</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        background-color: #ffffff;
+        margin: 0;
+        margin-top: 30px;
+        margin-bottom: 70px;
+      }
+      .main-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .equipment-heading {
+        font-size: 28px;
+        color: #333;
+        text-align: center;
+
+        font-weight: bold;
+      }
+
+      .buttons-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-button {
+        background-color: #ffffff;
+        color: #333;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 5px 5px;
+        border: none;
+        border-radius: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
+      .category {
+        color: #ff7148;
+        font-size: 12px;
+        margin-top: 20px;
+      }
+
+      .action-button .arrow {
+        margin-left: 3px;
+      }
+
+      .action-button.active {
+        border: 2px solid #ff7148;
+        border-radius: 20px;
+        color: #ff7148;
+        padding: 5px 10px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: #fff;
+        padding: 20px;
+        width: 80%;
+
+        margin-top: 20px;
+      }
+
+      label {
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: -5px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+        transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #ff7148;
+        box-shadow: 0 0 5px rgba(255, 113, 72, 0.5);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .action-button.secondary {
+        background-color: #ccc;
+        color: #333;
+      }
+
+      .post-button {
+        background-color: #ff7148;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    {% extends 'base_labour.html' %} {% block title %}Equipment Sale and
+    Rental{% endblock %} {% block content %}
+    <div class="main-container">
+      <div class="buttons-container">
+        <a
+          href="/find_equipment"
+          class="action-button {{ 'active' if request.endpoint == 'find_equipment' else '' }}"
+        >
+          Search<span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/create_equipment_listing"
+          class="action-button {{ 'active' if request.endpoint == 'create_equipment_listing' else '' }}"
+        >
+          New Listing<span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/my_equipment_posts"
+          class="action-button {{ 'active' if request.endpoint == 'my_equipment_posts' else '' }}"
+        >
+          My Listings<span class="arrow">&#9662;</span>
+        </a>
+        <a
+          href="/saved_equipment_posts"
+          class="action-button {{ 'active' if request.endpoint == 'saved_equipment_posts' else '' }}"
+        >
+          Saved<span class="arrow">&#9662;</span>
+        </a>
+      </div>
+      <div>
+        <form
+          action="/hire_equipment"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <label for="equipment_name">Equipment Name:</label>
+          <input
+            type="text"
+            id="equipment_name"
+            name="equipment_name"
+            required
+          />
+
+          <label for="category">Category:</label>
+          <select id="category" name="category" required>
+            <option value="excavator">Excavator</option>
+            <option value="scaffolding">Scaffolding</option>
+            <option value="power_tools">Power Tools</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label for="location">Location:</label>
+          <select id="location" name="location" required>
+            <option value="auckland">Auckland</option>
+            <option value="wellington">Wellington</option>
+            <option value="christchurch">Christchurch</option>
+          </select>
+
+          <label for="price">Price per Day ($):</label>
+          <input type="number" id="price" name="price" required />
+
+          <label for="description">Description:</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            required
+          ></textarea>
+
+          <label for="images">Upload Images:</label>
+          <input
+            type="file"
+            id="images"
+            name="images"
+            multiple
+            accept="image/*"
+          />
+
+          <div class="buttons-container">
+            <button type="submit" class="post-button">Post Equipment</button>
+            <button type="reset" class="action-button secondary">Clear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% endblock %}
+  </body>
+</html>

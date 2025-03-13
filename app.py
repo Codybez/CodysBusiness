@@ -268,6 +268,18 @@ class Review(db.Model):
     def __repr__(self):
         return f"<Review {self.id} for Job {self.job_id}>"
 
+class GearPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    equipment_type = db.Column(db.String(50), nullable=False)
+    location = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    is_rental = db.Column(db.Boolean, default=True)  # True = rental, False = sale
+    price = db.Column(db.Float, nullable=True)
+    rental_duration = db.Column(db.String(20), nullable=True)  # If renting: daily, weekly, etc.
+    image_url = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 @app.route('/landing_page')
@@ -1528,6 +1540,7 @@ def close_job(job_id):
 
         # Set the job status to closed
         job.status = 'closed'
+
         
         # Check if there is an accepted user and send the notification
         if job.accepted_user_id:
@@ -2710,6 +2723,7 @@ def list_routes():
         line = urllib.parse.unquote(f"{rule.endpoint}: {rule.rule} [{methods}]")
         output.append(line)
     return "<br>".join(output)
+
 @app.route('/preview_email')
 def preview_email():
     user = {
@@ -2721,7 +2735,13 @@ def preview_email():
 def homeowner_index():
     return render_template('homeowner_index.html')
 
+@app.route('/find_equipment')
+def find_equipment():
+    return render_template('find_equipment.html')
 
+@app.route('/create_equipment_listing')
+def create_equipment_listing():
+    return render_template('create_equipment_listing.html')
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
