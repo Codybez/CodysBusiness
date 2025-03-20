@@ -175,6 +175,10 @@
         color: #ff7148;
         padding: 5px 10px; /* Optional: Change text color to orange */
       }
+
+      .star-icon {
+        color: gold;
+      }
     </style>
     <script>
       // Function to toggle the details of a job listing
@@ -252,7 +256,6 @@
     {% if active_jobs | length == 0 %}
     <p class="no-jobs-msg">You have no won jobs.</p>
     {% else %} {% for job in active_jobs %}
-
     <a
       href="{{ url_for('my_job_display_job', job_id=job.id) }}"
       class="job-listing-link"
@@ -280,9 +283,30 @@
           class="job-image"
         />
         {% endif %}
+
+        <!-- Display Review Score with Gold Star -->
+        {% if job.reviews %}
+        <div class="job-review">
+          {% set review = job.reviews[0] %}
+          <!-- Only one review per job -->
+          {% set total_score = review.professionalism + review.quality +
+          review.cost + review.communication %} {% set average_score =
+          total_score / 4.0 %}
+          <!-- Calculate average score -->
+
+          <div class="review-score">
+            <!-- Gold star icon (use font-awesome or custom image) -->
+            <span class="star-icon">&#9733;</span>
+            <!-- Unicode for star -->
+            <span class="score" style="color: #333"
+              >{{ average_score | round(1) }}</span
+            >
+            <!-- Round to 1 decimal -->
+          </div>
+        </div>
+        {% endif %}
       </div>
     </a>
-
     {% endfor %} {% endif %} {% endblock %}
   </body>
 </html>

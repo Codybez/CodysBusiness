@@ -28,16 +28,22 @@
       }
 
       .job-details-container h1 {
-        color: #555;
+        color: #333;
         font-size: 21px;
         margin-bottom: -10px;
         padding-right: 40px;
       }
 
       .job-details-container h2 {
-        color: #777;
+        color: #555;
         padding-right: 60px;
         font-weight: normal;
+      }
+
+      .job-details-container h2 span {
+        color: #555;
+
+        font-weight: bold;
       }
 
       .job-details-container p {
@@ -193,7 +199,9 @@
 
     <div class="job-details-container">
       <h1>{{ job.job_name }}</h1>
-      <h2 class="job-location">{{ job.location }} | {{ job.job_category }}</h2>
+      <h2 class="job-location">
+        <span>{{ job.location }}</span> | {{ job.job_category }}
+      </h2>
       <p>
         <i class="fas fa-map-marker-alt"></i>
         {{ job.city }}, {{ job.suburb }}

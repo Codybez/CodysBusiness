@@ -24,7 +24,7 @@
         max-width: 600px;
         border-radius: 10px;
         margin-bottom: 50px;
-        padding: 20px;
+        padding: 10px;
         background-color: #ccccccdf;
         margin: auto;
         margin-top: -40px;
@@ -71,6 +71,14 @@
         width: 100%; /* Make button span 90% of its container */
         font-size: 16px;
         cursor: pointer;
+      }
+
+            /* Form Styles */
+      form {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
       /* Style the form sections */
@@ -138,20 +146,15 @@
       }
       /* Hide the default file input button */
       input[type="file"] {
-        display: none;
+        display:block;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
       }
 
       /* Style the custom file input button */
-      .custom-file-input {
-        display: inline-block;
-        padding: 8px 18px;
-        background-color: #ff7148;
-        color: #ffffff;
-        border: 2px solid #ff7148;
-        border-radius: 25px;
-        cursor: pointer;
-        margin-top: 20px;
-      }
+
 
       /* Optional: Add hover and focus effects */
 
@@ -187,8 +190,8 @@
       }
 
       .preview-image {
-        width: 100px;
-        height: 100px;
+        width: 100%;
+        max-height: 220px;
         border: 2px solid #ddd;
         border-radius: 4px;
         object-fit: cover; /* Make sure images fit nicely */
@@ -203,9 +206,9 @@
         color: white;
         border: none;
         border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        font-size: 14px;
+        width: 25px;
+        height: 25px;
+        font-size: 18px;
         text-align: center;
         cursor: pointer;
         padding: 2px;
@@ -397,11 +400,10 @@
 
         <div class="form-group">
           <label for="photo-upload"
-            >Upload Photos: Multiple images must be uploaded together. Images
-            added seperately will not be added to the job.</label
+            >Upload Photos:</label
           >
-          <label for="photo-upload" class="custom-file-input"
-            >Choose Images</label
+          <label for="photo-upload" 
+            > </label
           >
           <input
             type="file"
@@ -411,6 +413,7 @@
             multiple
             onchange="updateFileLabel(this)"
           />
+            <small>You can upload multiple images (JPG, PNG, GIF).</small>
           <div id="selected-files"></div>
         </div>
 
@@ -429,40 +432,43 @@
 
     <script>
       function updateFileLabel(input) {
-        const selectedFilesContainer =
-          document.getElementById("selected-files");
+    const selectedFilesContainer = document.getElementById("selected-files");
 
-        const files = input.files;
-        if (files) {
-          Array.from(files).forEach((file) => {
+    // Clear the previous selected files
+    selectedFilesContainer.innerHTML = "";
+
+    const files = input.files;
+    if (files) {
+        Array.from(files).forEach((file) => {
             const existingFile = Array.from(
-              selectedFilesContainer.children
+                selectedFilesContainer.children
             ).find((fileDiv) => fileDiv.dataset.filename === file.name);
 
             if (!existingFile) {
-              const fileDiv = document.createElement("div");
-              fileDiv.classList.add("file-preview");
-              fileDiv.dataset.filename = file.name;
+                const fileDiv = document.createElement("div");
+                fileDiv.classList.add("file-preview");
+                fileDiv.dataset.filename = file.name;
 
-              const img = document.createElement("img");
-              img.classList.add("preview-image");
-              img.src = URL.createObjectURL(file);
-              img.alt = file.name;
+                const img = document.createElement("img");
+                img.classList.add("preview-image");
+                img.src = URL.createObjectURL(file);
+                img.alt = file.name;
 
-              const removeBtn = document.createElement("button");
-              removeBtn.innerText = "X";
-              removeBtn.classList.add("remove-btn");
-              removeBtn.onclick = function () {
-                removeFile(file, fileDiv);
-              };
+                const removeBtn = document.createElement("button");
+                removeBtn.innerText = "X";
+                removeBtn.classList.add("remove-btn");
+                removeBtn.onclick = function () {
+                    removeFile(file, fileDiv);
+                };
 
-              fileDiv.appendChild(img);
-              fileDiv.appendChild(removeBtn);
-              selectedFilesContainer.appendChild(fileDiv);
+                fileDiv.appendChild(img);
+                fileDiv.appendChild(removeBtn);
+                selectedFilesContainer.appendChild(fileDiv);
             }
-          });
-        }
-      }
+        });
+    }
+}
+
 
       function removeFile(file, fileDiv) {
         const input = document.getElementById("photo-upload");
@@ -503,6 +509,8 @@
           document.getElementById("job-form").submit();
         }
       }
+
+
     </script>
   </body>
   {% endblock %}

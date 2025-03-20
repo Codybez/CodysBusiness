@@ -266,7 +266,7 @@
       .modal {
         display: none; /* Hidden by default */
         position: fixed;
-        z-index: 1; /* Sit on top */
+        z-index: 1000; /* Sit on top */
         left: 0;
         top: 0;
         width: 100%;
@@ -325,6 +325,21 @@
         overflow: hidden;
         margin-right: 10px;
         cursor: pointer;
+      }
+      label {
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: -5px;
+      }
+
+      .formSelector label {
+        display: block; /* Forces the label onto its own line */
+        margin-bottom: 10px; /* Creates space between label and select */
+      }
+
+      .formSelector {
+        margin-bottom: -10px;
       }
     </style>
   </head>
@@ -545,6 +560,7 @@
             post.style.display = 'none';
           }
         });
+
 
         // Show or hide the "No posts available" message based on whether posts are visible
         if (postsVisible) {

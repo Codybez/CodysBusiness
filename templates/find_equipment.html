@@ -55,32 +55,33 @@
       .category {
         color: #ff7148;
         font-size: 12px;
-        margin-top: 20px;
+        margin-top: 0px;
       }
 
       .action-button .arrow {
         margin-left: 3px;
       }
-
       .equipment-listing {
         background-color: #fff;
         border: 1px solid #ddd;
-        padding-left: 20px;
-        padding-bottom: 60px;
-        padding-right: 20px;
-        margin: 10px auto;
+        padding: 20px; /* More consistent padding */
+
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-bottom: 10px;
         max-width: 600px;
         position: relative;
         text-decoration: none;
         color: inherit;
         border-radius: 10px;
+        overflow: hidden; /* Prevents overflowing content */
+        box-sizing: border-box; /* Ensures padding doesn't add to the total width */
       }
-
       .equipment-listing h4 {
         color: #333;
         font-size: 16px;
-        margin-bottom: 0px;
-        margin-top: 30px;
+        margin-top: 0px;
+
         padding-right: 10px;
       }
 
@@ -88,7 +89,6 @@
         color: #777;
         font-size: 16px;
         margin-top: 0px;
-        margin-bottom: 30px;
       }
 
       .button-container {
@@ -247,17 +247,19 @@
       }
 
       .image-gallery {
-        margin-top: 30px;
+        position: relative; /* Ensure the container has relative positioning */
       }
 
       .image-gallery img {
-        position: relative;
-        width: 60px;
-        height: 60px;
+        position: absolute; /* Position the image absolutely inside the container */
+        top: 0px; /* Align it to the top */
+        right: 0; /* Align it to the right */
+        width: 50px;
+        height: 50px;
         object-fit: cover;
         border-radius: 5px;
         overflow: hidden;
-        margin-right: 10px;
+        margin: 0; /* Remove any margin */
       }
 
       .modal {
@@ -312,15 +314,17 @@
         cursor: pointer;
       }
 
-      .image-gallery img {
-        position: relative;
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 5px;
-        overflow: hidden;
-        margin-right: 10px;
-        cursor: pointer;
+      .location {
+        font-size: 15px;
+        color: #333;
+        font-weight: bold;
+        margin-top: -5px;
+      }
+
+      .location span {
+        font-size: 15px;
+        color: #333;
+        font-weight: normal;
       }
     </style>
   </head>
@@ -358,9 +362,30 @@
       <div class="sort-options">
         <!-- Dropdown for Sale or Rental -->
         <select class="sort-dropdown" id="sale-rental-filter">
-          <option value="all">All Listings</option>
-          <option value="sale">For Sale</option>
-          <option value="rental">For Rent</option>
+          <option value="all">All Categories</option>
+          <option value="Earthworks & Excavation">
+            Earthworks & Excavation
+          </option>
+          <option value="Lifting & Access Equipment">
+            Lifting & Access Equipment
+          </option>
+          <option value="Concrete Equipment">Concrete Equipment</option>
+          <option value="Generators & Power Equipment">
+            Generators & Power Equipment
+          </option>
+          <option value="Scaffolding & Formwork">Scaffolding & Formwork</option>
+          <option value="Demolition & Excavation Tools">
+            Demolition & Excavation Tools
+          </option>
+          <option value="Material Handling & Transport">
+            Material Handling & Transport
+          </option>
+          <option value="Welding & Metalworking">Welding & Metalworking</option>
+          <option value="Landscaping & Outdoor Equipment">
+            Landscaping & Outdoor Equipment
+          </option>
+          <option value="Power Tools">Power Tools</option>
+          <option value="Other">Other</option>
         </select>
 
         <!-- Dropdown for Location -->
@@ -395,32 +420,38 @@
         <button id="search-button">Search</button>
       </div>
 
-      {% if equipment_posts %} {% for post in equipment_posts %}
+      {% if equipment_posts %} {% for post in equipment_posts | reverse %}
       <div class="equipment-listing">
-        <h4>{{ post.title }}</h4>
-        <p class="description">{{ post.description }}</p>
         <div class="image-gallery">
-          {% for image in post.images %}
+          {% if post.images and post.images[0] %}
           <img
-            src="{{ url_for('static', filename='images/' + image) }}"
-            alt="Image"
+            src="{{ url_for('static', filename='rental_images/' + post.images[0]) }}"
+            alt="Equipment Image"
+            class="equipment-image"
           />
-          {% endfor %}
+          {% else %}
+          <img
+            src="{{ url_for('static', filename='rental_images/default.jpg') }}"
+            alt="Default Equipment Image"
+            class="equipment-image"
+          />
+          {% endif %}
         </div>
+        <h2 class="category">{{ post.equipment_type }}</h2>
+        <h3 class="location">
+          {{ post.location }} | <span>{{ post.city_suburb }}</span>
+        </h3>
+        <h4>{{ post.title }}</h4>
+
+        <p class="description">{{ post.description }}</p>
 
         <div class="button-container">
           <a
-            href="{{ url_for('view_equipment_post', post_id=post.id) }}"
+            href="{{ url_for('view_tradesman_profile', user_id=post.user_id) }}"
             class="button left-button"
+            >Profile</a
           >
-            View Details
-          </a>
-          <a
-            href="{{ url_for('save_equipment_post', post_id=post.id) }}"
-            class="button right-button"
-          >
-            Save
-          </a>
+          <a href="" class="button right-button"> Save </a>
         </div>
       </div>
       {% endfor %} {% else %}

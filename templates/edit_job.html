@@ -1,45 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <!-- Add your head content here -->
-</head>
-<body>
-  {% extends 'base_business.html' %}
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Edit Details</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='labourer_home.css') }}"
+    />
+    <style>
+      /* General container and layout */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        margin-bottom: 70px;
+      }
 
-  {% block title %}Edit Job{% endblock %}
+      .job-heading h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
 
-  {% block content %}
-    <div class="info-container">
-      <h1>Edit Job</h1>
+      .job-heading h1 span {
+        color: #ff6600; /* Use your brand color for the span */
+      }
+
+      /* Form Styles */
+      form {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      input[type="file"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      input[type="text"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #ff6600; /* Highlight color on focus */
+      }
+
+      textarea {
+        resize: vertical;
+        height: 150px;
+      }
+
+      small.form-text {
+        font-size: 0.875rem;
+        color: #777;
+      }
+
+      .custom-file-input {
+        background-color: #ff6600;
+        color: white;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      #selected-files {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      /* Button Styles */
+      button.submit-button {
+        background-color: #ff6600;
+        color: white;
+        font-size: 1rem;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        margin-right: 10px;
+      }
+
+      button.submit-button:hover {
+        background-color: #e65c00; /* Darken the button on hover */
+      }
+
+      /* Responsiveness */
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+        }
+
+        form {
+          padding: 20px;
+        }
+
+        button.submit-button {
+          width: auto;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .job-heading h1 {
+          font-size: 1.5rem;
+        }
+
+        label {
+          font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+          padding: 8px;
+          font-size: 0.9rem;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+      }
+
+      .image-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      .existing-image {
+        width: 100%;
+        max-height: 220px;
+        object-fit:cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(255, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      .remove-image:hover {
+        background-color: red;
+      }
+
+      /* New Image Preview */
+      .preview-image {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        margin-top: 10px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-preview-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .button-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .reset-button {
+        font-size: 14px;
+        color: #555;
+        background-color: #ccc;
+        border-radius: 5px;
+        border: #ccc solid 5px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    {% extends 'base_business.html' %}
+
+    {% block title %}Edit Job{% endblock %}
+
+    {% block content %}
+    <div class="container">
+      <div class="job-heading">
+        <h1>
+          <span>Edit Your Job Details,</span> <br />
+          Update the information here.
+        </h1>
+        <form
+          id="job-form"
+          method="POST"
+          action="{{ url_for('edit_job', job_id=job.id) }}"
+          enctype="multipart/form-data"
+        >
+          <!-- Job Name -->
+          <div class="form-group">
+            <label for="job_name">Job Name: *</label>
+            <input
+              type="text"
+              id="job_name"
+              maxlength="35"
+              name="job_name"
+              required
+              value="{{ job.job_name }}"
+            />
+
+            <small class="form-text text-muted">
+              A short and concise title for your job eg 'New weatherboards on
+              garage'
+            </small>
+          </div>
+
+          <!-- Job Category -->
+          <div class="form-group">
+            <label for="job_category">Job Category: *</label>
+            <select id="job-category" name="job-category" required>
+              <option value="" disabled>Select a category</option>
+              <option value="General Labouring" {% if job.job_category == 'General Labouring' %}selected{% endif %}>General Labouring</option>
+              <option value="Construction" {% if job.job_category == 'Construction' %}selected{% endif %}>Construction</option>
+              <option value="Landscaping" {% if job.job_category == 'Landscaping' %}selected{% endif %}>Landscaping</option>
+              <option value="Cleaning" {% if job.job_category == 'Cleaning' %}selected{% endif %}>Cleaning</option>
+              <option value="Painting" {% if job.job_category == 'Painting' %}selected{% endif %}>Painting</option>
+              <option value="Plumbing" {% if job.job_category == 'Plumbing' %}selected{% endif %}>Plumbing</option>
+              <option value="Electrical" {% if job.job_category == 'Electrical' %}selected{% endif %}>Electrical</option>
+              <option value="Carpentry" {% if job.job_category == 'Carpentry' %}selected{% endif %}>Carpentry</option>
+              <option value="Roofing" {% if job.job_category == 'Roofing' %}selected{% endif %}>Roofing</option>
+              <option value="HVAC" {% if job.job_category == 'HVAC' %}selected{% endif %}>HVAC</option>
+              <option value="Moving" {% if job.job_category == 'Moving' %}selected{% endif %}>Moving</option>
+              <option value="Gardening" {% if job.job_category == 'Gardening' %}selected{% endif %}>Gardening</option>
+              <option value="Handyman" {% if job.job_category == 'Handyman' %}selected{% endif %}>Handyman</option>
+              <option value="Window Glazing" {% if job.job_category == 'Window Glazing' %}selected{% endif %}>Window Glazing</option>
+              <option value="Tiling" {% if job.job_category == 'Tiling' %}selected{% endif %}>Tiling</option>
+              <option value="Flooring" {% if job.job_category == 'Flooring' %}selected{% endif %}>Flooring</option>
+              <option value="Concreting" {% if job.job_category == 'Concreting' %}selected{% endif %}>Concreting</option>
+              <option value="Whiteware Repair" {% if job.job_category == 'Whiteware Repair' %}selected{% endif %}>Whiteware Repair</option>
+              <option value="Other" {% if job.job_category == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+
+          <!-- Region -->
+          <div class="form-group">
+            <label for="location">Region: *</label>
+            <select id="location" name="location" required>
+              <option value="" disabled>Select a region</option>
+              <option value="Northland" {% if job.location == 'Northland' %}selected{% endif %}>Northland</option>
+              <option value="Auckland" {% if job.location == 'Auckland' %}selected{% endif %}>Auckland</option>
+              <option value="Waikato" {% if job.location == 'Waikato' %}selected{% endif %}>Waikato</option>
+              <option value="Bay of Plenty" {% if job.location == 'Bay of Plenty' %}selected{% endif %}>Bay of Plenty</option>
+              <option value="Gisborne" {% if job.location == 'Gisborne' %}selected{% endif %}>Gisborne</option>
+              <option value="Hawke's Bay" {% if job.location == 'Hawke\'s Bay' %}selected{% endif %}>Hawke's Bay</option>
+              <option value="Taranaki" {% if job.location == 'Taranaki' %}selected{% endif %}>Taranaki</option>
+              <option value="Manawatu-Wanganui" {% if job.location == 'Manawatu-Wanganui' %}selected{% endif %}>Manawatu-Wanganui</option>
+              <option value="Wellington" {% if job.location == 'Wellington' %}selected{% endif %}>Wellington</option>
+              <option value="Nelson" {% if job.location == 'Nelson' %}selected{% endif %}>Nelson</option>
+              <option value="Marlborough" {% if job.location == 'Marlborough' %}selected{% endif %}>Marlborough</option>
+              <option value="West Coast" {% if job.location == 'West Coast' %}selected{% endif %}>West Coast</option>
+              <option value="Canterbury" {% if job.location == 'Canterbury' %}selected{% endif %}>Canterbury</option>
+              <option value="Otago" {% if job.location == 'Otago' %}selected{% endif %}>Otago</option>
+              <option value="Southland" {% if job.location == 'Southland' %}selected{% endif %}>Southland</option>
+            </select>
+          </div>
+
+          <!-- City/Town -->
+          <div class="form-group">
+            <label for="city">City/Town: *</label>
+            <input type="text" id="city" name="city" required value="{{ job.city }}" />
+          </div>
+
+      <!-- Suburb -->
+          <div class="form-group">
+            <label for="suburb">Suburb: *</label>
+            <input type="text" id="suburb" name="suburb" required value="{{ job.suburb }}" />
+          </div>
+
+          <!-- Contact Number -->
+          <div class="form-group">
+            <label for="contact_number">Contact Number:</label>
+            <input type="text" id="contact_number" name="contact_number" value="{{ job.contact_number }}" />
+          </div>
+
+      <!-- Tasks -->
+          <div class="form-group">
+            <label for="tasks">Basic Outline of Tasks: *</label>
+            <textarea id="tasks" name="tasks" rows="10" required>{{ job.tasks }}</textarea>
+          </div>
+
+      <!-- Additional Details -->
+          <div class="form-group">
+            <label for="additional-details">Additional Details:</label>
+            <textarea id="additional-details" name="additional-details" rows="10">{{ job.additional_details }}</textarea>
+          </div>
+
+          <!-- Existing Images -->
+          <div class="form-group">
+            <label>Existing Images:</label>
+            <div id="existingImagesContainer">
+              {% if job.image_paths %}
+                {% for image_filename in job.image_paths.split(',') %}
+                  {% set image_path = url_for('static', filename='job_images/' + image_filename.strip()) %}
+                  <div class="image-wrapper">
+                    <img src="{{ image_path }}" class="existing-image" alt="Job Image" />
+                    <button type="button" class="remove-image" data-image="{{ image_filename }}" data-job-id="{{ job.id }}">X</button>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p>No images available.</p>
+              {% endif %}
+            </div>
+          </div>
+
+
+
+          <!-- New Image Upload for Edit Job -->
+          <div class="form-group">
+            <label for="photo-upload">Upload New Images</label>
+            <input
+              type="file"
+              id="photo-upload"
+              name="photo-upload"
+              accept="image/*"
+              multiple
+            />
+            <small>You can upload multiple images (JPG, PNG, GIF).</small>
+            <div class="image-preview-container" id="imagePreviewContainer"></div>
+          </div>
+
+
+          <!-- Submit Button -->
+
+
+
+          <!-- Submit Button -->
+          <div class="form-group">
+            <div class="button-container">
+            <button type="submit" class="submit-button">Update Details</button>
+            <button class="reset-button" type="reset">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
-    {% if job %}
-      <div class="job-details-container">
-        <h2>{{ job.job_name }}</h2>
-        
-      </div>
+    <!-- JavaScript for Image Removal -->
+    <script>
+      document.querySelectorAll('.remove-image').forEach(button => {
+  button.addEventListener('click', function() {
+    const imageFilename = this.dataset.image;
+    const jobId = this.dataset.jobId;  // Assuming job ID is stored in the button's data attributes
+    
+    // Make a request to remove the image (you will need a route for this)
+    fetch('/remove_job_image', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        image_filename: imageFilename,
+        job_id: jobId
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        this.parentElement.remove(); // Remove the image from the DOM
+      } else {
+        alert('Error removing image');
+      }
+    });
+  });
+});
 
-      <form method="post" enctype="multipart/form-data">
-        <!-- Your form fields for editing the job -->
+  document.getElementById("photo-upload").addEventListener("change", function (event) {
+    let previewContainer = document.getElementById("imagePreviewContainer");
+    previewContainer.innerHTML = ""; // Clear previous previews
 
-        <label for="job_name">Job Name:</label>
-        <input type="text" id="job_name" name="job_name" value="{{ job.job_name }}" required>
+    let files = event.target.files; // Get selected files
 
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
 
+      if (file.type.startsWith("image/")) {
+        let reader = new FileReader();
 
-        <!-- Add other form fields for editing the job as needed -->
+        reader.onload = function (e) {
+          let img = document.createElement("img");
+          img.src = e.target.result;
+          img.classList.add("preview-image");
+          previewContainer.appendChild(img);
+        };
 
-        <button type="submit">Update Job</button>
-      </form>
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+    </script>
 
-    {% else %}
-      <p>Job not found.</p>
-    {% endif %}
-
-    <br>
-    <br>
-    <br>
-    <br>
-  {% endblock %}
-</body>
+    {% endblock %}
+  </body>
 </html>

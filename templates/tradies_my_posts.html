@@ -361,6 +361,13 @@
                   Delete
                 </button>
               </form>
+              <!-- Link to Edit Post Page -->
+              <a
+                href="{{ url_for('edit_tradie_post', post_id=post.id) }}"
+                class="action-button"
+              >
+                Edit Post
+              </a>
             </div>
           </li>
           {% endfor %}

@@ -274,12 +274,21 @@ class GearPost(db.Model):
     title = db.Column(db.String(100), nullable=False)
     equipment_type = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(50), nullable=False)
+    city_suburb = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    is_rental = db.Column(db.Boolean, default=True)  # True = rental, False = sale
+    is_rental = db.Column(db.Boolean, default=True)  
     price = db.Column(db.Float, nullable=True)
-    rental_duration = db.Column(db.String(20), nullable=True)  # If renting: daily, weekly, etc.
-    image_url = db.Column(db.String(200), nullable=True)
+    price_per_day = db.Column(db.Float, nullable=True)
+    price_per_week = db.Column(db.Float, nullable=True) 
+    price_per_half_day = db.Column(db.Float, nullable=True) 
+    rental_duration = db.Column(db.String(20), nullable=True)  
+    image_url = db.Column(db.String(200), nullable=True) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    pickup_only = db.Column(db.Boolean, default=True)
+    delivery_available = db.Column(db.Boolean, default=False)
+    bond_required = db.Column(db.Boolean, default=False)
+    bond_amount = db.Column(db.Float, nullable=True)
+
 
 
 @app.route('/landing_page')
@@ -1006,40 +1015,7 @@ def business_active_jobs():
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
 
-@app.route('/edit_job/<int:job_id>', methods=['GET', 'POST'])
-@login_required
-def edit_job(job_id):
-    job = Job.query.get_or_404(job_id)
 
-    # Ensure that the current user is the owner of the job
-    if job.business_profile.user_id != current_user.id:
-        flash("You do not have permission to edit this job.", "error")
-        return redirect(url_for('business_created_jobs'))
-
-    if request.method == 'POST':
-        # Update job details based on the form submission
-        job.job_name = request.form['job_name']
-
-        # Handle image uploads
-        images = request.files.getlist('photo-upload')
-        image_paths = []
-
-        for image in images:
-            filename = secure_filename(image.filename)
-            image_path = os.path.join(app.config['profile_pics'], filename)
-            image.save(image_path)
-            image_paths.append(image_path)
-
-        job.image_paths = ','.join(image_paths)
-
-        # Commit changes to the database
-        db.session.commit()
-
-        flash("Job updated successfully!", "success")
-        return redirect(url_for('business_dashboard'))
-
-    # Pass the image_paths attribute to the template to avoid 'None' has no attribute 'split' error
-    return render_template('edit_job.html', job=job, image_paths=getattr(job, 'image_paths', ''))
 
 def time_ago(date):
     now = datetime.utcnow()
@@ -1725,31 +1701,105 @@ def create_tradie_post():
 
 @app.route('/edit_tradie_post/<int:post_id>', methods=['GET', 'POST'])
 def edit_tradie_post(post_id):
-    # Fetch the post from the database by its ID
-    post = Post.query.get(post_id)
-    
-    if not post:
-        flash("Post not found", "error")
-        return redirect(url_for('find_tradies'))
+    post = Post.query.get_or_404(post_id)
+
+    # Convert existing images string to a list
+    post_images = post.post_images.split(',') if post.post_images else []
 
     if request.method == 'POST':
-        # Update the post with new data from the form
-        post.title = request.form.get('job_title')
-        post.category = request.form.get('job_category')
-        post.location = request.form.get('job_location')
-        post.details = request.form.get('job_details')
+        # Update post details
+        post.title = request.form['job_title']
+        post.job_category_name = request.form['job_category']
+        post.job_location_name = request.form['job_location']
+        post.city_suburb = request.form['city_suburb']
+        post.description = request.form['job_details']
 
-        # Save changes to the database
-        try:
+        # Handle image uploads
+        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+        files = request.files.getlist('post_images')
+
+        print("FILES RECEIVED:", files)  # Debugging step
+
+        upload_folder = os.path.join('static', 'tradies_post_images')
+        os.makedirs(upload_folder, exist_ok=True)  # Ensure the folder exists
+
+        for file in files:
+            if file and file.filename:  # Ensure the file is valid
+                file_ext = file.filename.rsplit('.', 1)[1].lower()
+
+                if file_ext in allowed_extensions:
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(upload_folder, filename)
+
+                    # Ensure unique filenames
+                    counter = 1
+                    while os.path.exists(file_path):
+                        filename = f"{os.path.splitext(file.filename)[0]}_{counter}{os.path.splitext(file.filename)[1]}"
+                        file_path = os.path.join(upload_folder, filename)
+                        counter += 1
+
+                    file.save(file_path)
+                    post_images.append(filename)  # Add new image to the list
+
+                else:
+                    flash(f"Invalid file format: {file.filename}. Only PNG, JPG, JPEG, and GIF are allowed.", 'danger')
+                    return redirect(url_for('edit_tradie_post', post_id=post_id))
+
+        # Store updated images as a comma-separated string
+        post.post_images = ','.join(post_images) if post_images else None
+
+        print("UPDATED IMAGES:", post.post_images)  # Debugging step
+
+        db.session.commit()
+        flash('Post updated successfully!', 'success')
+        return redirect(url_for('tradies_my_posts'))  # Redirect after saving
+
+    return render_template('edit_tradie_post.html', post=post, post_images=post_images)  
+
+
+@app.route('/remove_image', methods=['POST'])
+def remove_image():
+    data = request.get_json()
+    image_filename = data.get('image_filename')
+    post_id = data.get('post_id')  # Get post ID from request
+
+    print("DEBUG: Received request to remove image")
+    print(f"DEBUG: image_filename = {image_filename}")
+    print(f"DEBUG: post_id = {post_id}")
+
+    if not image_filename or not post_id:
+        print("ERROR: Missing required data")
+        return jsonify({"success": False, "message": "Missing required data"}), 400
+
+    # Delete the image file from the server
+    upload_folder = os.path.join('static', 'tradies_post_images')
+    file_path = os.path.join(upload_folder, image_filename)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"DEBUG: Successfully deleted {file_path}")
+    else:
+        print("ERROR: Image file not found on server")
+        return jsonify({"success": False, "message": "Image file not found"}), 404
+
+    # Update the database: remove the image from the post's images list
+    post = Post.query.get(post_id)  
+    if post:
+        post_images = post.post_images.split(',') if post.post_images else []
+        if image_filename in post_images:
+            post_images.remove(image_filename)
+            post.post_images = ','.join(post_images) if post_images else None
             db.session.commit()
-            flash("Post updated successfully", "success")
-            return redirect(url_for('tradies_my_posts'))
-        except Exception as e:
-            db.session.rollback()
-            flash(f"An error occurred: {str(e)}", "error")
+            print("DEBUG: Updated database successfully")
+        else:
+            print("ERROR: Image filename not found in database")
+            return jsonify({"success": False, "message": "Image not found in post data"}), 404
+    else:
+        print("ERROR: Post not found in database")
+        return jsonify({"success": False, "message": "Post not found"}), 404
 
-    # Render the form pre-filled with the post's existing data
-    return render_template('edit_tradie_post.html', post=post)
+    return jsonify({"success": True})
+
 
 @app.route('/save_post/<int:post_id>', methods=['GET', 'POST'])
 @login_required
@@ -2737,11 +2787,210 @@ def homeowner_index():
 
 @app.route('/find_equipment')
 def find_equipment():
-    return render_template('find_equipment.html')
+    # Query to get all equipment posts from the database
+    equipment_posts = GearPost.query.all()
 
-@app.route('/create_equipment_listing')
+    # Loop through each post and split the comma-separated image URLs
+    for post in equipment_posts:
+        print(f"Original image_url for post {post.id}: {post.image_url}")  # Debug print
+        
+        # If image_url exists, split by commas, and make sure the path is clean
+        if post.image_url:
+            post.images = [image.replace('/static', '') for image in post.image_url.split(',')]  # Strip '/static' and split
+            # Remove 'rental_images/' from the image paths if it exists
+            post.images = [image.lstrip('rental_images/') for image in post.images]
+        else:
+            post.images = []
+
+        print(f"Images list for post {post.id}: {post.images}")  # Debug print
+
+    # Pass the posts to the template
+    return render_template('find_equipment.html', equipment_posts=equipment_posts)
+
+@app.route('/create_equipment_listing', methods=['GET', 'POST'])
 def create_equipment_listing():
+    if request.method == 'POST':
+        # Get form data
+        equipment_name = request.form.get('equipment_name')
+        category = request.form.get('category')
+        location = request.form.get('location')
+        city_suburb = request.form.get('city_suburb')
+        description = request.form.get('description')
+        pickup_only = 'pickup_only' in request.form  # If it's checked
+        delivery_available = 'delivery_available' in request.form  # If it's checked
+        bond_required = 'bond_required' in request.form  # If it's checked
+        bond_amount = request.form.get('bond_amount') if bond_required else None
+
+        # Handle price fields - convert to float if not empty, otherwise None
+        price = request.form.get('price')
+        price_per_day = request.form.get('price_day')
+        price_per_week = request.form.get('price_week')
+        price_per_half_day = request.form.get('price_half_day')
+
+        # Convert empty strings to None for float fields
+        price = float(price) if price else None
+        price_per_day = float(price_per_day) if price_per_day else None
+        price_per_week = float(price_per_week) if price_per_week else None
+        price_per_half_day = float(price_per_half_day) if price_per_half_day else None
+
+        rental_duration = request.form.get('rental_duration')
+
+        # Handle file upload (if images are being uploaded)
+        images = request.files.getlist('images')
+        image_urls = []  # Will store the URLs of uploaded images
+
+        # Define the path for saving images in the static folder
+        upload_folder = os.path.join(app.root_path, 'static', 'rental_images')
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)  # Create the folder if it doesn't exist
+
+        # Process the uploaded images and save them in the rental_images folder
+        for image in images:
+            if image:
+                filename = secure_filename(image.filename)  # Secure the filename
+                image_path = os.path.join(upload_folder, filename)  # Full path for saving
+                image.save(image_path)  # Save the image
+
+                # Generate URL for the image
+                image_url = f'/static/rental_images/{filename}'
+                image_urls.append(image_url)  # Add the image URL to the list
+
+        # Create a new GearPost object
+        new_post = GearPost(
+            user_id=current_user.id,  # Assuming you're using Flask-Login to get the current user
+            title=equipment_name,
+            equipment_type=category,
+            location=location,
+            city_suburb=city_suburb,
+            description=description,
+            is_rental=True,  # Assuming it’s always rental
+            price=price,
+            price_per_day=price_per_day,
+            price_per_week=price_per_week,
+            price_per_half_day=price_per_half_day,
+            rental_duration=rental_duration,
+            image_url=','.join(image_urls),  # Store the image URLs as a comma-separated string
+            pickup_only=pickup_only,
+            delivery_available=delivery_available,
+            bond_required=bond_required,
+            bond_amount=bond_amount
+        )
+
+        # Add the new post to the session and commit to the database
+        db.session.add(new_post)
+        db.session.commit()
+
+        flash("Equipment listing created successfully!", "success")  # Optional message
+        return redirect(url_for('find_equipment'))  # Redirect after successful submission
+
     return render_template('create_equipment_listing.html')
+
+@app.route('/edit_job/<int:job_id>', methods=['GET', 'POST'])
+@login_required
+def edit_job(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    # Ensure that the current user is the owner of the job
+    if job.business_profile.user_id != current_user.id:
+        flash("You do not have permission to edit this job.", "error")
+        return redirect(url_for('business_created_jobs'))
+
+    if request.method == 'POST':
+        # Update job details based on the form submission
+        job.job_name = request.form['job_name']
+        job.job_category = request.form['job-category']
+        job.location = request.form.get('location')
+        job.city = request.form['city']
+        job.suburb = request.form['suburb']
+        job.tasks = request.form['tasks']
+        job.additional_details = request.form.get('additional-details')
+        job.contact_number = request.form.get('contact_number')
+
+        # Handle image uploads
+        image_paths = []
+
+        # Ensure the directory exists
+        image_dir = os.path.join(app.root_path, 'static', 'job_images')
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+
+        # Get the uploaded images
+        if 'photo-upload' in request.files:
+            photo_uploads = request.files.getlist('photo-upload')
+
+            for photo_upload in photo_uploads:
+                if photo_upload.filename != '':  # Ensure there's a filename
+                    filename = secure_filename(photo_upload.filename)
+                    file_path = os.path.join(image_dir, filename)
+                    photo_upload.save(file_path)
+                    image_paths.append(filename)
+
+        # Retain existing images if no new images are uploaded
+        if job.image_paths:
+            # Add the existing image paths (if any)
+            existing_images = job.image_paths.split(',')
+            image_paths.extend(existing_images)
+
+        # Update image paths in the database (update if images exist, else set to None)
+        job.image_paths = ','.join(image_paths) if image_paths else None
+
+        # Commit changes to the database
+        db.session.commit()
+
+        flash("Job updated successfully!", "success")
+        return redirect(url_for('business_created_jobs'))
+
+    # Pass the image_paths attribute to the template
+    return render_template('edit_job.html', job=job, image_paths=job.image_paths.split(',') if job.image_paths else [])
+
+
+@app.route('/remove_job_image', methods=['DELETE'])
+def remove_job_image():
+    # Parse incoming JSON data from the request
+    data = request.get_json()
+    image_filename = data.get('image_filename')
+    job_id = data.get('job_id')  # Get job ID from request
+
+    # Debugging print statements for verification
+    print("DEBUG: Received request to remove job image")
+    print(f"DEBUG: image_filename = {image_filename}")
+    print(f"DEBUG: job_id = {job_id}")
+
+    # Check if the necessary data was provided
+    if not image_filename or not job_id:
+        print("ERROR: Missing required data")
+        return jsonify({"success": False, "message": "Missing required data"}), 400
+
+    # Delete the image file from the file system
+    upload_folder = os.path.join('static', 'job_images')  # Correct folder for job images
+    file_path = os.path.join(upload_folder, image_filename)
+
+    if os.path.exists(file_path):
+        os.remove(file_path)  # Delete the image
+        print(f"DEBUG: Successfully deleted {file_path}")
+    else:
+        print("ERROR: Image file not found on server")
+        return jsonify({"success": False, "message": "Image file not found"}), 404
+
+    # Update the database to remove the image from the job's image list
+    job = Job.query.get(job_id)  # Query the job by ID
+    if job:
+        # Get the list of images and remove the specified image
+        job_images = job.image_paths.split(',') if job.image_paths else []
+        if image_filename in job_images:
+            job_images.remove(image_filename)
+            job.image_paths = ','.join(job_images) if job_images else None
+            db.session.commit()  # Commit the changes to the database
+            print("DEBUG: Updated database successfully")
+        else:
+            print("ERROR: Image filename not found in database")
+            return jsonify({"success": False, "message": "Image not found in job data"}), 404
+    else:
+        print("ERROR: Job not found in database")
+        return jsonify({"success": False, "message": "Job not found"}), 404
+
+    # Return a success response
+    return jsonify({"success": True})
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)

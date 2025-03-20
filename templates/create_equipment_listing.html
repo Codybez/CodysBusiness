@@ -46,6 +46,7 @@
         text-decoration: none;
         margin-left: 5px;
         margin-right: 5px;
+        margin-bottom: 30px;
       }
 
       .category {
@@ -64,13 +65,25 @@
         color: #ff7148;
         padding: 5px 10px;
       }
+
+      #formSelector {
+        max-width: 85%;
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-bottom: -10px;
+      }
+
+      .formSelector label {
+        margin-left: 20px;
+      }
+
       form {
         display: flex;
         flex-direction: column;
         gap: 15px;
         background: #fff;
         padding: 20px;
-        width: 80%;
+        width: 85%;
 
         margin-top: 20px;
       }
@@ -109,6 +122,7 @@
       .action-button.secondary {
         background-color: #ccc;
         color: #333;
+        margin-top: 30px;
       }
 
       .post-button {
@@ -120,6 +134,92 @@
         cursor: pointer;
         font-size: 16px;
         margin-right: 10px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .formSelector label {
+        display: block; /* Forces the label onto its own line */
+        margin-bottom: 10px; /* Creates space between label and select */
+      }
+
+      .formSelector {
+        margin-bottom: -10px;
+      }
+
+      .pricing-option {
+        margin-bottom: 10px;
+      }
+
+      .pricing-option label {
+        display: inline-flex; /* Makes the label and checkbox appear inline */
+        align-items: center; /* Aligns the checkbox and label on the same line */
+        white-space: nowrap; /* Ensures text does not wrap to the next line */
+      }
+
+      .pricing-option input[type="checkbox"] {
+        margin-right: 20px;
+        margin-top: 10px; /* Optional: small space between checkbox and label */
+      }
+
+      .image-preview-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+
+      .image-preview {
+        position: relative;
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 10px;
+      }
+
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+      }
+
+      .remove-image {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        background-color: #000000;
+        font-weight: bold;
+
+        color: #ffffff;
+        font-size: 12px;
+        border: none;
+        cursor: pointer;
+        padding: 3px 7px;
+        border-radius: 50%;
+      }
+
+      .remove-image:hover {
+        background-color: rgba(255, 0, 0, 0.7);
+      }
+
+      /* Style for the pickup_only, delivery_available, and bond_required checkboxes */
+      .form-check {
+        margin-bottom: 10px;
+      }
+
+      .form-check label {
+        display: inline-flex; /* Makes the label and checkbox appear inline */
+        align-items: center; /* Aligns the checkbox and label on the same line */
+        white-space: nowrap; /* Ensures text does not wrap to the next line */
+      }
+
+      .form-check input[type="checkbox"] {
+        margin-right: 20px;
+        margin-top: 10px; /* Optional: small space between checkbox and label */
       }
     </style>
   </head>
@@ -154,12 +254,22 @@
         </a>
       </div>
       <div>
+        <!-- Dropdown to Switch Between Rent and Sale -->
+        <div class="formSelector">
+          <label for="formSelector">Choose Listing Type:</label>
+          <select id="formSelector">
+            <option value="rent">Equipment for Hire</option>
+          </select>
+        </div>
+
+        <!-- Rent Equipment Form -->
         <form
-          action="/hire_equipment"
+          id="rentForm"
+          action="/create_equipment_listing"
           method="POST"
           enctype="multipart/form-data"
         >
-          <label for="equipment_name">Equipment Name:</label>
+          <label for="equipment_name">Listing Name:</label>
           <input
             type="text"
             id="equipment_name"
@@ -169,23 +279,133 @@
 
           <label for="category">Category:</label>
           <select id="category" name="category" required>
-            <option value="excavator">Excavator</option>
-            <option value="scaffolding">Scaffolding</option>
-            <option value="power_tools">Power Tools</option>
-            <option value="other">Other</option>
+            <option value="">Select a Category</option>
+            <option value="Earthworks & Excavation">
+              Earthworks & Excavation
+            </option>
+            <option value="Lifting & Access Equipment">
+              Lifting & Access Equipment
+            </option>
+            <option value="Concrete Equipment">Concrete Equipment</option>
+            <option value="Generators & Power Equipment">
+              Generators & Power Equipment
+            </option>
+            <option value="Scaffolding & Formwork">
+              Scaffolding & Formwork
+            </option>
+            <option value="Demolition & Excavation Tools">
+              Demolition & Excavation Tools
+            </option>
+            <option value="Material Handling & Transport">
+              Material Handling & Transport
+            </option>
+            <option value="Welding & Metalworking">
+              Welding & Metalworking
+            </option>
+            <option value="Landscaping & Outdoor Equipment">
+              Landscaping & Outdoor Equipment
+            </option>
+            <option value="Power Tools">Power Tools</option>
+            <option value="Other">Other</option>
           </select>
 
           <label for="location">Location:</label>
           <select id="location" name="location" required>
-            <option value="auckland">Auckland</option>
-            <option value="wellington">Wellington</option>
-            <option value="christchurch">Christchurch</option>
+            <option value="" disabled selected>Select a location</option>
+            <option value="Northland">Northland</option>
+            <option value="Auckland">Auckland</option>
+            <option value="Waikato">Waikato</option>
+            <option value="Bay of Plenty">Bay of Plenty</option>
+            <option value="Gisborne">Gisborne</option>
+            <option value="Hawke's Bay">Hawke's Bay</option>
+            <option value="Taranaki">Taranaki</option>
+            <option value="Manawatū-Whanganui">Manawatū-Whanganui</option>
+            <option value="Wellington">Wellington</option>
+            <option value="Tasman">Tasman</option>
+            <option value="Nelson">Nelson</option>
+            <option value="Marlborough">Marlborough</option>
+            <option value="West Coast">West Coast</option>
+            <option value="Canterbury">Canterbury</option>
+            <option value="Otago">Otago</option>
+            <option value="Southland">Southland</option>
           </select>
 
-          <label for="price">Price per Day ($):</label>
-          <input type="number" id="price" name="price" required />
+          <label for="city_suburb">City/Suburb:</label>
+          <input type="text" id="city_suburb" name="city_suburb" required />
 
-          <label for="description">Description:</label>
+          <div>
+            <label class="pricing">Select Pricing Types You Will Offer:</label
+            ><br />
+          </div>
+          <div class="pricing-option">
+            <label for="price_per_half_day">
+              <input
+                type="checkbox"
+                id="price_per_half_day"
+                name="pricing"
+                value="per_half_day"
+                onclick="togglePriceInput('per_half_day')"
+              />
+              Price Per Half Day
+            </label>
+          </div>
+
+          <div id="price_per_half_day_input" style="display: none">
+            <label for="price_half_day">Price Per Half Day ($):</label>
+            <input
+              type="number"
+              id="price_half_day"
+              name="price_half_day"
+              placeholder="Enter price per half day"
+            />
+          </div>
+          <div class="pricing-option">
+            <label for="price_per_day">
+              <input
+                type="checkbox"
+                id="price_per_day"
+                name="pricing"
+                value="per_day"
+                onclick="togglePriceInput('per_day')"
+              />
+              Price Per Day
+            </label>
+          </div>
+
+          <div id="price_per_day_input" style="display: none">
+            <label for="price_day">Price Per Day ($):</label>
+            <input
+              type="number"
+              id="price_day"
+              name="price_day"
+              placeholder="Enter price per day"
+            />
+          </div>
+
+          <div class="pricing-option">
+            <label for="price_per_week">
+              <input
+                type="checkbox"
+                id="price_per_week"
+                name="pricing"
+                value="per_week"
+                onclick="togglePriceInput('per_week')"
+              />
+              Price Per Week
+            </label>
+          </div>
+
+          <div id="price_per_week_input" style="display: none">
+            <label for="price_week">Price Per Week ($):</label>
+            <input
+              type="number"
+              id="price_week"
+              name="price_week"
+              placeholder="Enter price per week"
+            />
+          </div>
+
+          <label for="description">Details:</label>
           <textarea
             id="description"
             name="description"
@@ -193,14 +413,71 @@
             required
           ></textarea>
 
-          <label for="images">Upload Images:</label>
-          <input
-            type="file"
-            id="images"
-            name="images"
-            multiple
-            accept="image/*"
-          />
+          <div>
+            <label for="images">Upload Images:</label>
+            <input
+              type="file"
+              id="images"
+              name="images"
+              multiple
+              accept="image/*"
+            />
+
+            <small>You can upload multiple images (JPG, PNG, GIF).</small>
+            <div
+              class="image-preview-container"
+              id="imagePreviewContainer"
+            ></div>
+          </div>
+          <div>
+            <label class="pricing">Collection And Delivery Details:</label
+            ><br />
+          </div>
+
+          <div class="form-check">
+            <label for="pickup_only">
+              <input
+                type="checkbox"
+                id="pickup_only"
+                name="pickup_only"
+                onclick="togglePickupDelivery('pickup_only')"
+              />
+              Pickup Only
+            </label>
+          </div>
+
+          <!-- Delivery Available Checkbox -->
+          <div class="form-check">
+            <label for="delivery_available">
+              <input
+                type="checkbox"
+                id="delivery_available"
+                name="delivery_available"
+                onclick="togglePickupDelivery('delivery_available')"
+              />
+              Delivery Available
+            </label>
+          </div>
+
+          <!-- Bond Required Checkbox -->
+          <div class="form-check">
+            <label for="bond_required">
+              <input type="checkbox" id="bond_required" name="bond_required" />
+              Bond Required
+            </label>
+          </div>
+
+          <!-- Bond Amount (Visible only if Bond Required is checked) -->
+          <div id="bond_amount_container" style="display: none">
+            <label for="bond_amount">Bond Amount ($):</label>
+            <input
+              type="number"
+              id="bond_amount"
+              name="bond_amount"
+              placeholder="Enter bond amount"
+              min="0"
+            />
+          </div>
 
           <div class="buttons-container">
             <button type="submit" class="post-button">Post Equipment</button>
@@ -209,6 +486,105 @@
         </form>
       </div>
     </div>
+    <script>
+      document
+        .getElementById("formSelector")
+        .addEventListener("change", function () {
+          document
+            .getElementById("rentForm")
+            .classList.toggle("hidden", this.value !== "rent");
+          document
+            .getElementById("sellForm")
+            .classList.toggle("hidden", this.value !== "sale");
+        });
+
+      function togglePriceInput(type) {
+        const priceInputDiv = document.getElementById(`price_${type}_input`);
+        const isChecked = document.getElementById(`price_${type}`).checked;
+
+        if (isChecked) {
+          priceInputDiv.style.display = "block"; // Show input
+        } else {
+          priceInputDiv.style.display = "none"; // Hide input
+        }
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const imageInput = document.getElementById("images");
+        const imagePreviewContainer = document.getElementById(
+          "imagePreviewContainer"
+        );
+
+        if (!imageInput || !imagePreviewContainer) return; // Exit if elements are missing
+
+        imageInput.addEventListener("change", function (event) {
+          const files = event.target.files;
+          imagePreviewContainer.innerHTML = ""; // Clear previous previews
+
+          Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              const imagePreview = document.createElement("div");
+              imagePreview.classList.add("image-preview");
+              imagePreview.setAttribute("data-index", index);
+
+              const imgElement = document.createElement("img");
+              imgElement.src = e.target.result;
+
+              const removeButton = document.createElement("span");
+              removeButton.textContent = "X";
+              removeButton.classList.add("remove-image");
+
+              removeButton.addEventListener("click", function () {
+                imagePreviewContainer.removeChild(imagePreview);
+
+                // Remove the selected file from the input
+                const dataTransfer = new DataTransfer();
+                Array.from(imageInput.files).forEach((file, i) => {
+                  if (i !== index) {
+                    dataTransfer.items.add(file);
+                  }
+                });
+                imageInput.files = dataTransfer.files;
+              });
+
+              imagePreview.appendChild(imgElement);
+              imagePreview.appendChild(removeButton);
+              imagePreviewContainer.appendChild(imagePreview);
+            };
+
+            reader.readAsDataURL(file);
+          });
+        });
+      });
+
+      // JavaScript to toggle the visibility of delivery fee and bond amount fields
+      document
+        .getElementById("delivery_available")
+        .addEventListener("change", function () {
+          const deliveryFeeContainer = document.getElementById(
+            "delivery_fee_container"
+          );
+          if (this.checked) {
+            deliveryFeeContainer.style.display = "block";
+          } else {
+            deliveryFeeContainer.style.display = "none";
+          }
+        });
+
+      document
+        .getElementById("bond_required")
+        .addEventListener("change", function () {
+          const bondAmountContainer = document.getElementById(
+            "bond_amount_container"
+          );
+          if (this.checked) {
+            bondAmountContainer.style.display = "block";
+          } else {
+            bondAmountContainer.style.display = "none";
+          }
+        });
+    </script>
     {% endblock %}
   </body>
 </html>

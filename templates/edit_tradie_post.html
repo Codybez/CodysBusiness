@@ -13,7 +13,8 @@
         font-family: Arial, sans-serif;
         background-color: #ffffff;
         margin: 0;
-        margin-top: 20px;
+        margin-bottom: 50px;
+        
       }
 
       .main-container {
@@ -33,11 +34,8 @@
         background-color: #ffffff;
         padding: 20px;
         margin: 10px auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 15px;
-        max-width: 60%;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-        margin-top: 20px;
+
+        max-width: 90%;
       }
 
       .edit-post-section h3 {
@@ -71,13 +69,80 @@
         border-radius: 6px;
         border: none;
         font-size: 16px;
-        width: 100%;
+        margin-right: 10px;
+        margin-bottom: 30px;
+     
         transition: background-color 0.3s ease;
       }
 
       .edit-post-form button:hover {
         background-color: #e8633d;
       }
+
+      label {
+        display: block;
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .button-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-button.secondary {
+        background-color: #ccc;
+        color: #333;
+        font-size: 14px;
+        padding: 5px 8px;
+      }
+
+ 
+  .image-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 10px;
+  }
+  .existing-image, .preview-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin: 5px;
+  }
+
+  .preview-image {
+    margin-top: 20px;
+  }
+      .remove-image {
+        position: absolute !important;
+        top: 1px!important;
+        right: -10px!important;
+        background-color: #000000!important;
+        font-weight: bold!important;
+
+        color: #ffffff!important;
+        font-size: 12px!important;
+        border: none!important;
+        cursor: pointer!important;
+        padding: 3px 7px!important;
+        border-radius: 50%!important;
+      }
+
+      .remove-image:hover {
+        background-color: rgba(255, 0, 0, 0.7)!important;
+      }
+
+      .top-text {
+        color: #ff7148;
+      }
+
+
+      
+
     </style>
   </head>
   <body>
@@ -86,81 +151,207 @@
     <div class="main-container">
       <!-- Edit Post Section -->
       <div class="edit-post-section" id="editPostSection">
-        <h3>Edit Your Post</h3>
-        <p>Make changes to your post below.</p>
+        
+        <p class="top-text"> Make changes to your post below.</p>
+        <br>
         <form
           class="edit-post-form"
+          enctype="multipart/form-data"
           action="/edit_tradie_post/{{ post.id }}"
           method="POST"
         >
           <div class="form-group">
+            <label for="post-title">Post Title:</label>
             <input
               type="text"
               id="job_title"
               name="job_title"
-              placeholder="Enter the job title"
-              value="{{ post.job_title }}"
+              value="{{ post.title }}"
               required
             />
           </div>
 
-          <!-- Job Category (Hardcoded) -->
-          <div class="form-group">
-            <select id="job_category" name="job_category" required>
-              <option value="" disabled>Select a category</option>
-              <option value="General Labouring" {{ 'selected' if post.job_category == 'General Labouring' else '' }}>General Labouring</option>
-              <option value="Construction" {{ 'selected' if post.job_category == 'Construction' else '' }}>Construction</option>
-              <option value="Landscaping" {{ 'selected' if post.job_category == 'Landscaping' else '' }}>Landscaping</option>
-              <option value="Cleaning" {{ 'selected' if post.job_category == 'Cleaning' else '' }}>Cleaning</option>
-              <option value="Painting" {{ 'selected' if post.job_category == 'Painting' else '' }}>Painting</option>
-              <option value="Plumbing" {{ 'selected' if post.job_category == 'Plumbing' else '' }}>Plumbing</option>
-              <option value="Electrical" {{ 'selected' if post.job_category == 'Electrical' else '' }}>Electrical</option>
-              <option value="Carpentry" {{ 'selected' if post.job_category == 'Carpentry' else '' }}>Carpentry</option>
-              <option value="Roofing" {{ 'selected' if post.job_category == 'Roofing' else '' }}>Roofing</option>
-              <option value="HVAC" {{ 'selected' if post.job_category == 'HVAC' else '' }}>HVAC</option>
-              <option value="Moving" {{ 'selected' if post.job_category == 'Moving' else '' }}>Moving</option>
-              <option value="Gardening" {{ 'selected' if post.job_category == 'Gardening' else '' }}>Gardening</option>
-              <option value="Handyman" {{ 'selected' if post.job_category == 'Handyman' else '' }}>Handyman</option>
-              <option value="Other" {{ 'selected' if post.job_category == 'Other' else '' }}>Other</option>
-            </select>
-          </div>
+<div class="form-group">
+  <label for="job_category">Category:</label>
+  <select id="job_category" name="job_category" required>
+    <option value="" disabled selected>Select a category</option>
+    <option value="General Labouring" {% if post.job_category_name == "General Labouring" %}selected{% endif %}>General Labouring</option>
+    <option value="Construction" {% if post.job_category_name == "Construction" %}selected{% endif %}>Construction</option>
+    <option value="Landscaping" {% if post.job_category_name == "Landscaping" %}selected{% endif %}>Landscaping</option>
+    <option value="Cleaning" {% if post.job_category_name == "Cleaning" %}selected{% endif %}>Cleaning</option>
+    <option value="Painting" {% if post.job_category_name == "Painting" %}selected{% endif %}>Painting</option>
+    <option value="Plumbing" {% if post.job_category_name == "Plumbing" %}selected{% endif %}>Plumbing</option>
+    <option value="Electrical" {% if post.job_category_name == "Electrical" %}selected{% endif %}>Electrical</option>
+    <option value="Carpentry" {% if post.job_category_name == "Carpentry" %}selected{% endif %}>Carpentry</option>
+    <option value="Roofing" {% if post.job_category_name == "Roofing" %}selected{% endif %}>Roofing</option>
+    <option value="HVAC" {% if post.job_category_name == "HVAC" %}selected{% endif %}>HVAC</option>
+    <option value="Moving" {% if post.job_category_name == "Moving" %}selected{% endif %}>Moving</option>
+    <option value="Gardening" {% if post.job_category_name == "Gardening" %}selected{% endif %}>Gardening</option>
+    <option value="Handyman" {% if post.job_category_name == "Handyman" %}selected{% endif %}>Handyman</option>
+    <option value="Window Glazing" {% if post.job_category_name == "Window Glazing" %}selected{% endif %}>Window Glazing</option>
+    <option value="Tiling" {% if post.job_category_name == "Tiling" %}selected{% endif %}>Tiling</option>
+    <option value="Flooring" {% if post.job_category_name == "Flooring" %}selected{% endif %}>Flooring</option>
+    <option value="Concreting" {% if post.job_category_name == "Concreting" %}selected{% endif %}>Concreting</option>
+    <option value="Whiteware Repair" {% if post.job_category_name == "Whiteware Repair" %}selected{% endif %}>Whiteware Repair</option>
+    <option value="Other" {% if post.job_category_name == "Other" %}selected{% endif %}>Other</option>
+  </select>
+</div>
+
 
           <!-- Location (Hardcoded) -->
           <div class="form-group">
+            <label for="job_location">Location:</label>
             <select id="job_location" name="job_location" required>
-              <option value="" disabled>Select a location</option>
-              <option value="Northland" {{ 'selected' if post.job_location == 'Northland' else '' }}>Northland</option>
-              <option value="Auckland" {{ 'selected' if post.job_location == 'Auckland' else '' }}>Auckland</option>
-              <option value="Waikato" {{ 'selected' if post.job_location == 'Waikato' else '' }}>Waikato</option>
-              <option value="Bay of Plenty" {{ 'selected' if post.job_location == 'Bay of Plenty' else '' }}>Bay of Plenty</option>
-              <option value="Gisborne" {{ 'selected' if post.job_location == 'Gisborne' else '' }}>Gisborne</option>
-              <option value="Hawke's Bay" {{ 'selected' if post.job_location == "Hawke's Bay" else '' }}>Hawke's Bay</option>
-              <option value="Taranaki" {{ 'selected' if post.job_location == 'Taranaki' else '' }}>Taranaki</option>
-              <option value="Manawatū-Whanganui" {{ 'selected' if post.job_location == 'Manawatū-Whanganui' else '' }}>Manawatū-Whanganui</option>
-              <option value="Wellington" {{ 'selected' if post.job_location == 'Wellington' else '' }}>Wellington</option>
-              <option value="Tasman" {{ 'selected' if post.job_location == 'Tasman' else '' }}>Tasman</option>
-              <option value="Nelson" {{ 'selected' if post.job_location == 'Nelson' else '' }}>Nelson</option>
-              <option value="Marlborough" {{ 'selected' if post.job_location == 'Marlborough' else '' }}>Marlborough</option>
-              <option value="West Coast" {{ 'selected' if post.job_location == 'West Coast' else '' }}>West Coast</option>
-              <option value="Canterbury" {{ 'selected' if post.job_location == 'Canterbury' else '' }}>Canterbury</option>
-              <option value="Otago" {{ 'selected' if post.job_location == 'Otago' else '' }}>Otago</option>
-              <option value="Southland" {{ 'selected' if post.job_location == 'Southland' else '' }}>Southland</option>
+              <option value="" disabled>Select Location</option>
+    <option value="Northland" {% if post.job_location_name == "Northland" %}selected{% endif %}>Northland</option>
+    <option value="Auckland" {% if post.job_location_name == "Auckland" %}selected{% endif %}>Auckland</option>
+    <option value="Waikato" {% if post.job_location_name == "Waikato" %}selected{% endif %}>Waikato</option>
+    <option value="Bay of Plenty" {% if post.job_location_name == "Bay of Plenty" %}selected{% endif %}>Bay of Plenty</option>
+    <option value="Gisborne" {% if post.job_location_name == "Gisborne" %}selected{% endif %}>Gisborne</option>
+    <option value="Hawke's Bay" {% if post.job_location_name == "Hawke's Bay" %}selected{% endif %}>Hawke's Bay</option>
+    <option value="Taranaki" {% if post.job_location_name == "Taranaki" %}selected{% endif %}>Taranaki</option>
+    <option value="Manawatū-Whanganui" {% if post.job_location_name == "Manawatū-Whanganui" %}selected{% endif %}>Manawatū-Whanganui</option>
+    <option value="Wellington" {% if post.job_location_name == "Wellington" %}selected{% endif %}>Wellington</option>
+    <option value="Tasman" {% if post.job_location_name == "Tasman" %}selected{% endif %}>Tasman</option>
+    <option value="Nelson" {% if post.job_location_name == "Nelson" %}selected{% endif %}>Nelson</option>
+    <option value="Marlborough" {% if post.job_location_name == "Marlborough" %}selected{% endif %}>Marlborough</option>
+    <option value="West Coast" {% if post.job_location_name == "West Coast" %}selected{% endif %}>West Coast</option>
+    <option value="Canterbury" {% if post.job_location_name == "Canterbury" %}selected{% endif %}>Canterbury</option>
+    <option value="Otago" {% if post.job_location_name == "Otago" %}selected{% endif %}>Otago</option>
+    <option value="Southland" {% if post.job_location_name == "Southland" %}selected{% endif %}>Southland</option>
             </select>
           </div>
 
           <div class="form-group">
-            <textarea
-              id="job_details"
-              name="job_details"
-              rows="5"
-              placeholder="Provide details about the job"
+            <label for="city_suburb">City/Suburb:</label>
+            <input
+              type="text"
+              id="city_suburb"
+              name="city_suburb"
+              placeholder="Enter the city_suburb"
+              value="{{ post.city_suburb }}"
               required
-            >{{ post.job_details }}</textarea>
+            />
           </div>
-          <button type="submit">Save Changes</button>
+
+  <div class="form-group">
+  <label for="description">Details:</label>
+  <textarea
+    id="job_details"
+    name="job_details"
+    rows="5"
+    required
+  >{{ post.description }}</textarea>
+</div>
+
+
+<!-- Existing Image Preview -->
+<div class="form-group">
+  <label>Existing Images:</label>
+  <div id="existingImagesContainer">
+    {% if post.post_images %}
+      {% for image_filename in post.post_images.split(',') %}
+        {% set image_path = url_for('static', filename='tradies_post_images/' + image_filename.strip()) %}
+        <div class="image-wrapper">
+          <img src="{{ image_path }}" class="existing-image" alt="Post Image" />
+          <button type="button" class="remove-image" data-image="{{ image_filename }}">X</button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+
+<!-- New Image Upload -->
+<div class="form-group">
+  <label for="post_images">Upload New Images</label>
+  <input
+    type="file"
+    id="post_images"
+    name="post_images"
+    accept="image/*"
+    multiple
+  />
+  <small>You can upload multiple images (JPG, PNG, GIF).</small>
+  <div class="image-preview-container" id="imagePreviewContainer"></div>
+</div>
+
+<!-- JavaScript for Image Preview & Removal -->
+
+
+<!-- CSS Styling -->
+
+
+          <div class="button-container">
+            <button type="submit" class="create-post-form">Save Post</button>
+            <button type="reset" class="action-button secondary">Reset</button>
+          </div>
         </form>
       </div>
     </div>
-    {% endblock %}
-  </body>
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const imageInput = document.getElementById("post_images");
+    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+    const existingImagesContainer = document.getElementById("existingImagesContainer");
+
+    // Ensure preview is cleared before adding new images
+    imageInput.addEventListener("change", function () {
+      imagePreviewContainer.innerHTML = ""; // Clear previous previews
+      Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imgElement = document.createElement("img");
+          imgElement.src = e.target.result;
+          imgElement.classList.add("preview-image");
+          imagePreviewContainer.appendChild(imgElement);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // Handle existing image removal
+    existingImagesContainer.addEventListener("click", function (event) {
+      if (event.target.classList.contains("remove-image")) {
+        const imageWrapper = event.target.closest(".image-wrapper");
+        const imageName = event.target.getAttribute("data-image");
+
+        // Create hidden input to track removed images
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "remove_images[]";
+        hiddenInput.value = imageName;
+        existingImagesContainer.appendChild(hiddenInput);
+
+        // Remove image from UI
+        imageWrapper.remove();
+      }
+    });
+  });
+
+document.querySelectorAll('.remove-image').forEach(button => {
+    button.addEventListener('click', function () {
+        const imageFilename = this.dataset.image;
+        const postId = "{{ post.id }}";  // Ensure this is correctly set
+
+        fetch('/remove_image', {
+            method: 'POST',
+            body: JSON.stringify({ image_filename: imageFilename, post_id: postId }),  // Now sending post_id
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                this.closest('.image-wrapper').remove(); // Remove image from UI
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => console.error('Error:', err));
+    });
+});
+
+</script>
+</body>
+{% endblock %}
 </html>
