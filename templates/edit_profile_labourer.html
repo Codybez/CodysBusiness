@@ -12,7 +12,8 @@
         background-color: #ffffff;
         color: #333;
         margin: 0;
-        margin-top: 0px;
+        margin-top: 20px;
+        padding: 10px;
       }
 
       .edit-form-container h1 {
@@ -54,32 +55,16 @@
         font-family: "roboto";
       }
 
-      button {
-        background-color: #333;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        display: block; /* Makes the button a block-level element */
-        margin-left: auto; /* Automatically pushes the button to the right */
-        margin-right: auto; /* Automatically pushes the button to the left */
-      }
-
-      button:hover {
-        background-color: #555;
-      }
-
       /* edit_profile.css */
 
       /* Styles for the edit profile container */
       .edit-form-container {
-        background-color: #ffffff;
+        background-color: #f9f9f9;
         padding: 20px;
         margin: auto;
         margin-bottom: 50px;
         max-width: 600px;
+        border-radius: 10px;
       }
 
       /* Styles for form labels */
@@ -112,26 +97,8 @@
         width: 93%;
         padding: 10px;
       }
-      /* Styles for form buttons */
-      .edit-form-container button {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        cursor: pointer;
-        border-radius: 25px;
-        font-size: 16px;
-        margin-top: 15px;
-      }
-
-      .edit-form-container button:hover {
-        background-color: #ff5e33;
-      }
 
       /* Additional styling for the submit button */
-      .edit-form-container .submit-button {
-        margin-top: 20px;
-      }
 
       .edit-form-container h1 {
         margin-bottom: 20px;
@@ -142,22 +109,9 @@
         border-radius: 50px;
       }
 
-      .btn {
-        background-color: #333;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-
-      .btn:hover {
-        background-color: rgb(42, 191, 42);
-      }
-
       .form-text.text-muted {
         font-size: 0.85em;
-        color: #6c757d;
+        color: #555a5f;
         margin-top: 5px;
       }
 
@@ -169,6 +123,35 @@
         margin-bottom: 10px;
         padding: 10px;
       }
+
+      .button-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .reset-button {
+        font-size: 14px;
+        color: #555;
+        background-color: #ffffff;
+        border-radius: 5px;
+        border: #ffffff solid 5px;
+        font-weight: bold;
+      }
+
+      .submit-button {
+        background-color: #ff6600;
+        color: white;
+        font-size: 1rem;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body>
@@ -176,8 +159,6 @@
     block content %}
 
     <div class="edit-form-container">
-      <h2>Add Your Basic</h2>
-      <h1>Information</h1>
       <form method="POST" enctype="multipart/form-data" action="">
         {{ form.hidden_tag() }}
 
@@ -190,18 +171,10 @@
         <label for="{{ form.date_of_birth.id }}">Date of Birth</label>
         {{ form.date_of_birth(class="form-control") }}
 
-        <label for="{{ form.phone_number.id }}">Phone Number</label>
+        <label for="{{ form.phone_number.id }}">Business Contact Number</label>
         {{ form.phone_number(class="form-control") }}
-        <div class="text">
-          <small class="form-text text-muted">
-            Please provide the number you want on your profile for potential
-            clients to contact you directly.
-          </small>
-        </div>
 
-        <label for="{{ form.user_blurb.id }}"
-          >Tell us about your business</label
-        >
+        <label for="{{ form.user_blurb.id }}">Your Business bio</label>
         {{ form.user_blurb(class="form-control", rows=10) }}
         <div class="bottom-slot">
           <small class="form-text text-muted">
@@ -212,7 +185,10 @@
           </small>
         </div>
 
-        <button type="submit">Save Information</button>
+        <div class="button-container">
+          <button class="submit-button" type="submit">Save Information</button>
+          <button class="reset-button" type="reset">Clear</button>
+        </div>
       </form>
     </div>
     <br />

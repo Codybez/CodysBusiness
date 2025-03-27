@@ -9,16 +9,18 @@
         font-family: Arial, Helvetica, sans-serif;
         background-color: #ffffff;
         color: #333;
-        margin: 0;
-        padding: 0;
+        margin-top: 10px;
+        padding: 10px;
         margin-bottom: 70px;
       }
 
       .edit-form-container {
         max-width: 600px;
         padding: 20px;
-        background-color: #fff;
+        background-color: #f9f9f9;
         margin: auto;
+        border-radius: 10px;
+        padding-top: 0px;
       }
 
       h2 {
@@ -49,7 +51,7 @@
 
       .help-button {
         position: absolute;
-        transform: translateY(-220%);
+        top: 70px;
         right: 30px;
         display: flex;
         justify-content: center;
@@ -66,23 +68,6 @@
 
       .help-button:hover {
         background-color: #ff4500;
-      }
-
-      button[type="submit"] {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background-color: #333;
-        color: #fff;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-top: 20px;
-      }
-
-      button[type="submit"]:hover {
-        background-color: #555;
       }
 
       /* Modal styling */
@@ -136,6 +121,35 @@
         margin-bottom: 10px;
         padding: 10px;
       }
+
+      .button-container {
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      .reset-button {
+        font-size: 14px;
+        color: #555;
+        background-color: #ccc;
+        border-radius: 5px;
+        border: #ccc solid 5px;
+        font-weight: bold;
+      }
+
+      .submit-button {
+        background-color: #ff6600;
+        color: white;
+        font-size: 1rem;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body>
@@ -143,7 +157,6 @@
     endblock %} {% block content %}
 
     <div class="edit-form-container">
-      <h2>Edit Social Links</h2>
       <button
         type="button"
         class="help-button"
@@ -229,7 +242,10 @@
           />
         </div>
 
-        <button type="submit">Save Changes</button>
+        <div class="button-container">
+          <button class="submit-button" type="submit">Save Changes</button>
+          <button class="reset-button" type="reset">Reset</button>
+        </div>
       </form>
     </div>
 

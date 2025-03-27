@@ -17,17 +17,19 @@
       }
 
       h1 {
-        text-align: center;
         color: #333;
-        font-size: 28px;
+        font-size: 23px;
+        margin-left: 20px;
+        margin-bottom: 10px;
       }
 
       h2 {
-        text-align: center;
         color: #333;
-        margin-bottom: -25px;
+        margin-bottom: -20px;
         margin-top: 30px;
-        color: #ff7148;
+        color: #ff6600;
+        margin-left: 20px;
+        font-size: 24px;
       }
 
       .form-container {
@@ -62,7 +64,7 @@
       button {
         width: 100%;
         padding: 12px;
-        background-color: #ff7148;
+        background-color: #ff6600;
         color: white;
         margin-top: 20px;
         border: none;
@@ -101,8 +103,10 @@
   {% extends 'base_business.html' %} {% block title %}Close Job{% endblock %} {%
   block content %}
   <body>
-    <h2>Close Job</h2>
-    <h1>{{ job.job_name }}</h1>
+    <div class="heading">
+      <h2>Close & Complete Job,</h2>
+      <h1>{{ job.job_name }}</h1>
+    </div>
 
     <div class="form-container">
       <form method="POST">

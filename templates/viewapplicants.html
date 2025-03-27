@@ -19,15 +19,10 @@
         margin: 0;
         margin-bottom: 70px;
       }
-      .heading {
-        font-size: 19px;
-        margin-top: 30px;
-        padding-left: 10px;
-        margin-bottom: 20px;
-      }
+
       .heading span {
-        color: #ff7148;
-        font-size: 15px;
+        color: #ff6600;
+        font-size: 24px;
       }
       /* Container for Applicant Profiles */
       .applicant-container {
@@ -36,6 +31,10 @@
 
       .applicant-container .heading {
         margin-left: 10px;
+        font-size: 24px;
+        margin-top: 30px;
+        padding-left: 10px;
+        margin-bottom: 20px;
       }
 
       .profile-pic {
@@ -98,9 +97,9 @@
 
       /* Orange Button */
       .button-container .orange-button {
-        background-color: #ff7148;
+        background-color: #ff6600;
         color: #ffffff;
-        border: 2px solid #ff7148;
+        border: 2px solid #ff6600;
         padding-left: -25px;
         padding-right: -25px;
       }
@@ -108,8 +107,8 @@
       /* White Button with Orange Border */
       .button-container .white-button {
         background-color: white;
-        color: #ff7148;
-        border: 2px solid #ff7148;
+        color: #ff6600;
+        border: 2px solid #ff6600;
       }
 
       /* Ensure applicant profile respects container width */
@@ -144,7 +143,7 @@
     <!-- Applicant Profiles Container -->
     <div class="applicant-container">
       <h1 class="heading">
-        <span>Job applicants</span><br />{{ job.job_name }}
+        <span>Job applicants,</span><br />{{ job.job_name }}
       </h1>
       {% for application in job_applications | reverse %}
       <div class="applicant-profile">
