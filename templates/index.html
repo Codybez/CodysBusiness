@@ -11,6 +11,10 @@
   />
 
   <style>
+    body {
+      font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
+    }
     /*-- -------------------------- -->
         <---           Hero             -->
         <--- -------------------------- -*/
@@ -110,10 +114,11 @@
         margin: 0 auto clamp(1rem, 4vw, 1.5rem);
         color: #fff;
         position: relative;
+        margin-top: -40px;
       }
 
       #hero-143 .cs-title span {
-        color: #ff7148;
+        color: #ff6600;
       }
       #hero-143 .cs-title:after {
         /* Divider Line */
@@ -141,6 +146,7 @@
         /* 40px - 48px */
         margin-bottom: clamp(2.5rem, 4vw, 3rem);
         color: #fff;
+        font-weight: bold;
       }
       #hero-143 .cs-button-solid {
         font-size: 1rem;
@@ -174,7 +180,7 @@
         transition: width 0.3s;
       }
       #hero-143 .cs-button-solid:hover {
-        color: #ff7148;
+        color: #ff6600;
       }
       #hero-143 .cs-button-solid:hover:before {
         width: 100%;
@@ -236,15 +242,15 @@
       }
       #h-services-143 .cs-icon {
         /* 68px - 88px */
-        width: clamp(4.25rem, 8.8vw, 5.5rem);
+        width: clamp(3.25rem, 8.8vw, 5.5rem);
         /* 68px - 88px */
-        height: clamp(4.25rem, 8.8vw, 5.5rem);
+        height: clamp(3.25rem, 8.8vw, 5.5rem);
         margin: auto;
         /* 20px - 24px */
         margin-bottom: clamp(1.25rem, 5vw, 1.5rem);
         background: white;
         border-radius: 50%;
-        border: 2px solid #ff7148;
+        border: 2px solid #ff6600;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -307,7 +313,7 @@
     }
     :root {
       /* Add these styles to your global stylesheet, which is used across all site pages. You only need to do this once. All elements in the library derive their variables and base styles from this central sheet, simplifying site-wide edits. For instance, if you want to modify how your h2's appear across the site, you just update it once in the global styles, and the changes apply everywhere. */
-      --primary: #ff6a3e;
+      --primary: #ff6600;
       --primaryLight: #ffba43;
       --secondary: #ffba43;
       --secondaryLight: #ffba43;
@@ -433,7 +439,7 @@
     }
 
     .orange-letter {
-      color: #ff7148;
+      color: #ff6600;
     }
 
     .header-button {
@@ -576,7 +582,7 @@
         width: 100%;
         background-color: white;
         border-radius: 0.5rem;
-        border: 2px solid #ff7148;
+        border: 2px solid #ff6600;
         padding: 0;
         box-sizing: border-box;
         transition: border-bottom 0.3s;
@@ -641,7 +647,7 @@
         content: "";
         width: 0.5rem;
         height: 0.125rem;
-        background-color: #ff7148;
+        background-color: #ff6600;
         opacity: 1;
         border-radius: 50%;
         position: absolute;
@@ -658,7 +664,7 @@
         content: "";
         width: 0.5rem;
         height: 0.125rem;
-        background-color: #ff7148;
+        background-color: #ff6600;
         opacity: 1;
         border-radius: 50%;
         position: absolute;
@@ -732,7 +738,7 @@
     }
 
     .post-job-button {
-      background-color: #ff7148;
+      background-color: #ff6600;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -745,7 +751,7 @@
 
     .post-job-button:hover {
       background-color: whitesmoke;
-      color: #ff7148;
+      color: #ff6600;
     }
 
     /*-- -------------------------- -->
@@ -784,7 +790,7 @@
       }
 
       #steps-1171 .cs-topper {
-        color: #ff7148;
+        color: #ff6600;
       }
       #steps-1171 .cs-title,
       #steps-1171 .cs-text {
@@ -910,7 +916,8 @@
     }
     .login-button {
       text-decoration: none;
-      color: #ff7148;
+      color: #ff6600;
+      font-weight: bold;
     }
 
     /*-- -------------------------- -->
@@ -933,6 +940,7 @@
         align-items: center;
         /* 48px - 64px */
         gap: clamp(3rem, 6vw, 4rem);
+        padding: 20px;
       }
       #cs-contact-240 .cs-content {
         /* set text align to left if content needs to be left aligned */
@@ -1138,7 +1146,7 @@
           2.5vw,
           1.75rem
         ); /* Adjusts size responsively */
-        color: #ff7148;
+        color: #ff6600;
       }
     }
     /* Tablet - 700px */
@@ -1205,7 +1213,7 @@
       text-decoration: none;
     }
     .user-type-link a.active {
-      color: #ff7148;
+      color: #ff6600;
       text-decoration: underline;
     }
   </style>
@@ -1236,24 +1244,21 @@
 
     <section id="hero-143">
       <div class="cs-container">
-        <p class="user-type-link">
-          <a href="{{ url_for ('index') }}" class="active">Tradesman </a>
-          <a href="{{ url_for ('homeowner_index') }}"> Homeowner </a>
-        </p>
         <h1 class="cs-title">
-          Connecting <br />
-          <span>Tradesman</span> With Each Other And Local
-          <span>Homeowners</span>
+          <br />
+          <span>Get Work.</span> <br />
+          Get Connected.
+          <br /><span>Grow Your </span>Business.
         </h1>
         <p class="cs-text">
-          The go-to platform for tradesmen to find work, connect with
-          subcontractors, and work together to grow their businesses.
+          We Deliver The Jobs & Connections - <br />
+          So You Can Focus On What You Do Best.
         </p>
         <a
           href="{{ url_for('register') }}"
           class="cs-button-solid"
-          style="background-color: #ff7148; color: white"
-          >Join As Tradesman</a
+          style="background-color: #ff6600; color: white"
+          >Join Today</a
         >
       </div>
 
@@ -1290,7 +1295,7 @@
           <picture class="cs-icon">
             <i
               class="fas fa-briefcase"
-              style="font-size: 30px; color: #333"
+              style="font-size: 30px; color: #ff6600"
               aria-hidden="true"
             ></i>
           </picture>
@@ -1304,7 +1309,7 @@
           <picture class="cs-icon">
             <i
               class="fas fa-users"
-              style="font-size: 30px; color: #333"
+              style="font-size: 30px; color: #ff6600"
               aria-hidden="true"
             ></i>
           </picture>
@@ -1319,21 +1324,21 @@
           <picture class="cs-icon">
             <i
               class="fas fa-credit-card"
-              style="font-size: 30px; color: #333"
+              style="font-size: 30px; color: #ff6600"
               aria-hidden="true"
             ></i>
           </picture>
           <h2 class="cs-title">Simple Fee Structure</h2>
           <p class="cs-text">
             Reach out to job posters for just $4.99 and secure work quickly. No
-            hidden fees and zero commissions on your jobs.
+            subscriptions and zero commissions on your jobs.
           </p>
         </li>
         <li class="cs-item">
           <picture class="cs-icon">
             <i
               class="fas fa-comments"
-              style="font-size: 30px; color: #333"
+              style="font-size: 30px; color: #ff6600"
               aria-hidden="true"
             ></i>
           </picture>
@@ -1462,36 +1467,35 @@
           <!-- Active class added as default -->
           <li class="cs-faq-item">
             <button class="cs-button">
-              <span class="cs-button-text"> How do I post a job? </span>
+              <span class="cs-button-text">
+                Can I join if I'm self-employed or a subcontractor?
+              </span>
             </button>
             <p class="cs-item-p">
-              To post a job, simply sign up and log in to your account. Navigate
-              to the "Post a Job" section. Fill in the required details such as
-              job title, description, location, and category. After completing
-              the form, click "Submit" to make your job listing live. You will
-              recieve email notifications when a user applies for your job and
-              when they message you!
+              Yes! Whether you're a self-employed tradesman, subcontractor, or
+              part of a company, you can sign up and start applying for jobs.
+              Our platform is designed to connect all types of tradespeople with
+              job opportunities, making it easy for you to find work and grow
+              your business.
             </p>
           </li>
           <li class="cs-faq-item">
             <button class="cs-button">
               <span class="cs-button-text">
-                How do I find the right tradesman for my project?
+                Can I add my social media or website to my profile?
               </span>
             </button>
             <p class="cs-item-p">
-              When a tradesman applies for your job, you'll be able to view
-              their profile, including details such as their social media
-              accounts, website, any reviews from past jobs and previous work.
-              This allows you to make an informed decision before moving forward
-              with the hiring process.
+              Absolutely! You can add links to your social media pages, website,
+              or portfolio in your profile. This helps potential clients see
+              your past work, customer reviews, and get a better idea of your
+              skills and experience. A well-completed profile can increase your
+              chances of getting hired.
             </p>
           </li>
           <li class="cs-faq-item">
             <button class="cs-button">
-              <span class="cs-button-text">
-                Does it cost to join as a tradesman?
-              </span>
+              <span class="cs-button-text"> Does it cost to join? </span>
             </button>
             <p class="cs-item-p">
               No, it's completely free to join as a tradesman! You can create
@@ -1504,17 +1508,17 @@
           <li class="cs-faq-item">
             <button class="cs-button">
               <span class="cs-button-text">
-                Do you take a commission on jobs?
+                Does the platform take a commission from my earnings?
               </span>
             </button>
             <p class="cs-item-p">
-              No, unlike many of our competitors, we do not take any commission
-              on the jobs posted or completed through our platform. Our goal is
-              to make it as easy and affordable as possible for homeowners to
-              find skilled tradesmen and for tradesmen to connect with potential
-              clients. Instead of charging commission fees, we have a simple and
-              transparent pricing model, ensuring that both homeowners and
-              tradesmen keep more of their hard-earned money.
+              No, we do not take any commission on the jobs posted or completed
+              through our platform. Our goal is to make it as easy and
+              affordable as possible for homeowners to find skilled tradesmen
+              and for tradesmen to connect with potential clients. Instead of
+              charging commission fees, we have a simple and transparent pricing
+              model, ensuring that both homeowners and tradesmen keep more of
+              their hard-earned money.
             </p>
           </li>
         </ul>
@@ -1557,9 +1561,10 @@
             <span class="cs-topper">Contact</span>
             <h2 class="cs-title">Get in Touch</h2>
             <p class="cs-text">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ridiculus
-              elementum ullamcorper ipsum porttitor aliquam. Id magna urna
-              ultrices odio pulvinar. Sed ut.
+              Have a question or need assistance? We're here to help! Whether
+              you’re a tradesman looking for work or need support with your
+              profile, feel free to reach out. Contact us, and we’ll get back to
+              you as soon as possible.
             </p>
           </div>
           <form id="cs-form-240" name="Contact Form" method="post">
@@ -1628,9 +1633,7 @@
               </div>
               <div class="cs-flex-group">
                 <span class="cs-header">Address</span>
-                <a href="" class="cs-link"
-                  >2553 Woodbridge Lane, Bouston Ware 120</a
-                >
+                <a href="" class="cs-link">67 Cameron Rd, Tauranga, BOP 3186</a>
               </div>
             </li>
           </ul>
