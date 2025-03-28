@@ -568,7 +568,7 @@
       #faq-1263 .cs-faq-group {
         width: 100%;
         max-width: 52.875rem;
-        padding: 0;
+        padding: 10px;
         margin: 0;
         display: flex;
         justify-content: center;
@@ -583,7 +583,7 @@
         background-color: white;
         border-radius: 0.5rem;
         border: 2px solid #ff6600;
-        padding: 0;
+        padding: -5px;
         box-sizing: border-box;
         transition: border-bottom 0.3s;
       }
@@ -1216,6 +1216,73 @@
       color: #ff6600;
       text-decoration: underline;
     }
+
+    .footer {
+      background-color: #f9f9f9;
+      color: #333;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 14px;
+      padding-bottom: 80px;
+      margin-top: -90px;
+    }
+
+    .footer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 15px;
+    }
+
+    .footer-links li {
+      display: inline;
+    }
+
+    .footer-links a {
+      color: #333;   
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 80vh; /* Limits height to 80% of the screen */
+      overflow-y: auto; /* Enables scrolling when content overflows */
+    }
+
+    .close-btn {
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
   <body>
     <header>
@@ -1487,10 +1554,10 @@
             </button>
             <p class="cs-item-p">
               Absolutely! You can add links to your social media pages, website,
-              or portfolio in your profile. This helps potential clients see
-              your past work, customer reviews, and get a better idea of your
-              skills and experience. A well-completed profile can increase your
-              chances of getting hired.
+              google reviews or portfolio in your profile. This helps potential
+              clients see your past work, customer reviews, and get a better
+              idea of your skills and experience. A well-completed profile can
+              increase your chances of getting hired.
             </p>
           </li>
           <li class="cs-faq-item">
@@ -1645,8 +1712,197 @@
       <span class="footer-text">Sign up now for free!</span>
       <a href="{{ url_for('register') }}" class="post-job-button">Sign Up</a>
     </div>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <p class="footer-text">© 2025 Openwork All Rights Reserved.</p>
+        <ul class="footer-links">
+          <li>
+            <a href="javascript:void(0);" onclick="openTermsModal()"
+              >Terms & Conditions</a
+            >
+          </li>
+
+          <li>
+            <a href="javascript:void(0);" onclick="openPrivacyPolicy()"
+              >Privacy Policy</a
+            >
+          </li>
+        </ul>
+      </div>
+    </footer>
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closePrivacyPolicy()">&times;</span>
+        <h2>Privacy Policy</h2>
+        <p><strong>Effective Date:</strong> 01/01/2025</p>
+
+        <h3>1. Introduction</h3>
+        <p>
+          Welcome to <strong>Openwork.co.nz</strong>. Your privacy is important
+          to us. This Privacy Policy explains how we collect, use, and protect
+          your information.
+        </p>
+
+        <h3>2. Information We Collect</h3>
+        <p>
+          We collect your name, email, phone number, job postings, and any other
+          details provided when using our platform.
+        </p>
+
+        <h3>3. How We Use Your Information</h3>
+        <p>
+          We use your data to match tradesmen with jobs, facilitate
+          communication, and improve our services. We do not sell your personal
+          data.
+        </p>
+
+        <h3>4. Sharing Your Information</h3>
+        <p>
+          We may share your data with other users, service providers, or when
+          required by law.
+        </p>
+
+        <h3>5. Data Security</h3>
+        <p>
+          We implement encryption and secure servers to protect your
+          information.
+        </p>
+
+        <h3>6. Your Rights & Choices</h3>
+        <p>
+          You can update or delete your information and opt out of marketing
+          emails by contacting us.
+        </p>
+
+        <h3>7. Cookies & Tracking</h3>
+        <p>
+          We use cookies to enhance user experience. You can disable them in
+          your browser settings.
+        </p>
+
+        <h3>8. Contact Us</h3>
+        <p>
+          Email:
+          <a href="mailto:your-email@example.com">support@openwork.co.nz</a>
+        </p>
+      </div>
+    </div>
+    <div id="termsModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeTermsModal()">&times;</span>
+        <h2>Terms and Conditions</h2>
+<p>
+  Welcome to Openwork.co.nz. By accessing or using our platform, you agree to these Terms and Conditions. If you do not agree, please do not use the platform.
+</p>
+
+<h3>1. Account Registration & User Responsibilities</h3>
+<p>
+  - Users must create an account and provide accurate, up-to-date information. <br>
+  - Tradespeople must have the necessary qualifications, licenses, and insurance to perform their trade. Openwork.co.nz does not verify qualifications unless stated otherwise. <br>
+  - Users are responsible for taxes, legal compliance, and safety regulations related to their work.
+</p>
+
+<h3>2. Job Listings & Applications</h3>
+<p>
+  - Job posters (employers/homeowners) must provide clear and accurate job details. Misleading or fraudulent postings are prohibited. <br>
+  - Tradespeople can apply for jobs, but Openwork.co.nz does not guarantee job availability or hiring success. <br>
+  - The hiring process is entirely between users, and Openwork.co.nz is not responsible for any issues arising from job agreements.
+</p>
+
+<h3>3. Payments & Fees</h3>
+<p>
+  - Tradespeople can create a profile and browse jobs for free. <br>
+  - A $4.99 fee applies when contacting job posters. <br>
+  - Openwork.co.nz does not take a commission from completed jobs. <br>
+  - The $4.99 contact fee is non-refundable, even if the job does not proceed.
+</p>
+
+<h3>4. User Conduct</h3>
+<p>
+  Users must not: <br>
+  ✔ Post false, misleading, or inappropriate content. <br>
+  ✔ Spam, harass, or abuse other users. <br>
+  ✔ Use the platform for illegal activities. <br>
+  ✔ Impersonate another person or business. <br>
+  ✔ Attempt to bypass platform fees. <br>
+  Violations may result in account suspension or a permanent ban.
+</p>
+
+<h3>5. Account Suspension & Bans</h3>
+<p>
+  - Openwork.co.nz reserves the right to suspend or terminate accounts that violate these Terms. <br>
+  - Users may receive a warning before suspension, but serious violations can result in immediate bans. <br>
+  - Banned users can request a review by contacting support.
+</p>
+
+<h3>6. Disputes & Liability</h3>
+<p>
+  - Openwork.co.nz is not responsible for payment disputes between tradespeople and job posters. <br>
+  - Users must handle their own disputes. Openwork.co.nz does not mediate or enforce contracts. <br>
+  - If a job is canceled or abandoned, Openwork.co.nz is not liable for any losses.
+</p>
+
+<h3>7. Privacy & Data Usage</h3>
+<p>
+  - User data is collected and processed according to our <a href="javascript:void(0);" onclick="openPrivacyPolicy();closeTermsModal();"
+  
+  >Privacy Policy</a>. <br>
+  - We do not sell user data to third parties. <br>
+  - Users can request account deletion.
+</p>
+
+<h3>8. Intellectual Property</h3>
+<p>
+  - Users retain ownership of the content they post (job listings, reviews, profiles). <br>
+  - By posting content, users grant Openwork.co.nz the right to use it for marketing or promotional purposes.
+</p>
+
+<h3>9. Modifications to Terms</h3>
+<p>
+  - Openwork.co.nz reserves the right to update these Terms and Conditions at any time. <br>
+  - Users will be notified of major changes. Continued use of the platform after changes means you accept the updated Terms.
+</p>
+
+<h3>10. Contact Information</h3>
+<p>
+  For questions about these Terms, contact us at <a href="mailto:support@openwork.co.nz">support@openwork.co.nz</a>.
+</p>
+
+    </div>
   </body>
   <script>
+    function openTermsModal() {
+      document.getElementById("termsModal").style.display = "block";
+    }
+
+    function closeTermsModal() {
+      document.getElementById("termsModal").style.display = "none";
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+      var modal = document.getElementById("termsModal");
+      if (event.target === modal) {
+        closeTermsModal();
+      }
+    };
+
+    function openPrivacyPolicy() {
+      document.getElementById("privacyModal").style.display = "block";
+    }
+
+    function closePrivacyPolicy() {
+      document.getElementById("privacyModal").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      var modal = document.getElementById("privacyModal");
+      if (event.target === modal) {
+        closePrivacyPolicy();
+      }
+    };
     const faqItems = Array.from(document.querySelectorAll(".cs-faq-item"));
     for (const item of faqItems) {
       const onClick = () => {
