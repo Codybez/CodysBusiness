@@ -31,6 +31,8 @@ from flask import current_app
 from threading import Thread
 
 
+app = Flask(__name__)
+
 
 
 bcrypt = Bcrypt(app)
@@ -61,7 +63,7 @@ app.config['MAIL_DEFAULT_SENDER'] = 'cdbeznec@gmail.com'  # Default sender email
 mail = Mail(app)
 
 
-app = Flask(__name__)
+
 
 @app.route('/')
 def index():
