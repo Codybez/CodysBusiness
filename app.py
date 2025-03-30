@@ -33,7 +33,6 @@ from threading import Thread
 
 
 
-app = Flask(__name__)
 bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key 
@@ -60,6 +59,9 @@ app.config['MAIL_PASSWORD'] = 'pakn jone hhup njpt'  # Your email password
 app.config['MAIL_DEFAULT_SENDER'] = 'cdbeznec@gmail.com'  # Default sender email
 
 mail = Mail(app)
+
+
+app = Flask(__name__)
 
 @app.route('/')
 def index():
