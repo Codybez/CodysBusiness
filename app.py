@@ -31,9 +31,10 @@ from flask import current_app
 from threading import Thread
 
 
-
-
 app = Flask(__name__)
+
+
+
 bcrypt = Bcrypt(app)
 
 app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key 
@@ -41,6 +42,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_database.db'
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 socketio = SocketIO(app)
 
@@ -60,6 +62,9 @@ app.config['MAIL_PASSWORD'] = 'pakn jone hhup njpt'  # Your email password
 app.config['MAIL_DEFAULT_SENDER'] = 'cdbeznec@gmail.com'  # Default sender email
 
 mail = Mail(app)
+
+
+
 
 @app.route('/')
 def index():
