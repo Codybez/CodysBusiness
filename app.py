@@ -29,6 +29,8 @@ from flask_mail import Message as emailmessage
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = Flask(__name__)
@@ -37,8 +39,8 @@ app = Flask(__name__)
 
 bcrypt = Bcrypt(app)
 
-app.config['SECRET_KEY'] = 'your_secret'  # Replace with a secure secret key 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_database.db'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Replace with a secure secret key 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -52,14 +54,14 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)  # Create a LoginManager instance
 login_manager.login_view = 'login'  # Set the login view
 
-# Set up email configuration
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your SMTP server
-app.config['MAIL_PORT'] = 587  # Use the appropriate port
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'cdbeznec@gmail.com'  # Your email username
-app.config['MAIL_PASSWORD'] = 'pakn jone hhup njpt'  # Your email password
-app.config['MAIL_DEFAULT_SENDER'] = 'cdbeznec@gmail.com'  # Default sender email
+# Email Configuration
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))  # Default to 587 if missing
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS') == 'True'
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL') == 'True'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 
 mail = Mail(app)
 
