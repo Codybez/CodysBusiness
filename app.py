@@ -384,7 +384,13 @@ def register():
         # If the email doesn't exist, create a new user
         hashed_password = bcrypt.generate_password_hash(password)
 
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        # Ensure SECRET_KEY is properly set
+        secret_key = current_app.config.get('SECRET_KEY')
+        if not secret_key:
+            flash('SECRET_KEY not set in app config.', 'error')
+            return redirect(url_for('login'))  # Add a fallback action
+
+        serializer = URLSafeTimedSerializer(secret_key)
 
         # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
         token = serializer.dumps(email, salt='email-verify-salt')
@@ -426,7 +432,6 @@ def register():
             template_name='email/email_verification.html',
             context=email_context
         )
-
 
         flash('Registration successful! A verification email has been sent to your inbox.', 'info')
         return redirect(url_for('login'))
