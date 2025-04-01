@@ -42,13 +42,13 @@ bcrypt = Bcrypt(app)
 
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = (os.getenv('SECRET_KEY'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
-serializer = URLSafeTimedSerializer = os.getenv('SECRET_KEY')
+serializer = URLSafeTimedSerializer = (os.getenv('SECRET_KEY'))
 
 socketio = SocketIO(app)
 
