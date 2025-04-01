@@ -35,6 +35,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 bcrypt = Bcrypt(app)
 
@@ -51,12 +52,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-
-# Check if SECRET_KEY is None
-if SECRET_KEY is None:
-    raise ValueError("SECRET_KEY is not set in the environment variables.")
-print(f"SECRET_KEY: {SECRET_KEY}")  # Check value of SECRET_KEY
+print(os.getenv('SECRET_KEY'))
 
 serializer = URLSafeTimedSerializer(SECRET_KEY)
 
@@ -384,13 +380,7 @@ def register():
         # If the email doesn't exist, create a new user
         hashed_password = bcrypt.generate_password_hash(password)
 
-        # Ensure SECRET_KEY is properly set
-        secret_key = current_app.config.get('SECRET_KEY')
-        if not secret_key:
-            flash('SECRET_KEY not set in app config.', 'error')
-            return redirect(url_for('login'))  # Add a fallback action
-
-        serializer = URLSafeTimedSerializer(secret_key)
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
         # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
         token = serializer.dumps(email, salt='email-verify-salt')
@@ -432,6 +422,7 @@ def register():
             template_name='email/email_verification.html',
             context=email_context
         )
+
 
         flash('Registration successful! A verification email has been sent to your inbox.', 'info')
         return redirect(url_for('login'))
