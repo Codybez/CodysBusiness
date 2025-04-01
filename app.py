@@ -30,8 +30,8 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -44,7 +44,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/User/Desktop/My Webs
 
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
-serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+serializer = URLSafeTimedSerializer = os.getenv(app.config['SECRET_KEY'])
 
 socketio = SocketIO(app)
 
