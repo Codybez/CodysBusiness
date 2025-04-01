@@ -35,7 +35,10 @@ load_dotenv()
 
 app = Flask(__name__)
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+app.config['SESSION_TYPE'] = 'filesystem'
+
 
 bcrypt = Bcrypt(app)
 
@@ -52,7 +55,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
 
-print(os.getenv('SECRET_KEY'))
 
 serializer = URLSafeTimedSerializer(SECRET_KEY)
 
@@ -351,7 +353,7 @@ def verify_email(token):
 
 
 def generate_verification_token(email):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    serializer = URLSafeTimedSerializer(SECRET_KEY)
     return serializer.dumps(email, salt='email-verify-salt')
 
 
@@ -380,7 +382,7 @@ def register():
         # If the email doesn't exist, create a new user
         hashed_password = bcrypt.generate_password_hash(password)
 
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        serializer = URLSafeTimedSerializer(SECRET_KEY)
 
         # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
         token = serializer.dumps(email, salt='email-verify-salt')
@@ -3010,5 +3012,6 @@ def remove_job_image():
     return jsonify({"success": True})
 
 if __name__ == "__main__":
+
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 
