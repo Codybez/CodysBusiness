@@ -44,7 +44,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Replace with a secure secr
 
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://ueg3o8fc1v1mum:pa058e9696ea3e9fca055574c483d7418fcd64148cdd73aed350e77909570760a@ccba8a0vn4fb2p.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d27qa3o55agrsv'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ueg3o8fc1v1mum:pa058e9696ea3e9fca055574c483d7418fcd64148cdd73aed350e77909570760a@ccba8a0vn4fb2p.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d27qa3o55agrsv'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
