@@ -53,6 +53,11 @@ app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
+# Check if SECRET_KEY is None
+if SECRET_KEY is None:
+    raise ValueError("SECRET_KEY is not set in the environment variables.")
+print(f"SECRET_KEY: {SECRET_KEY}")  # Check value of SECRET_KEY
+
 serializer = URLSafeTimedSerializer(SECRET_KEY)
 
 socketio = SocketIO(app)
