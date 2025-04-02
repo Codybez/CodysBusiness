@@ -31,12 +31,12 @@ from flask import current_app
 from threading import Thread
 from dotenv import load_dotenv
 from flask_session import Session
-
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 
 app = Flask(__name__)
-
+csrf = CSRFProtect(app)
 SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
 
 
