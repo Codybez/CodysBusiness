@@ -39,6 +39,7 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
 
+app.config['WTF_CSRF_SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)

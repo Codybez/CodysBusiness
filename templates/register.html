@@ -134,6 +134,7 @@
       </div>
 
       <form action="{{ url_for('register') }}" method="post">
+        {{ form.hidden_tag() }}
         <!-- First Name -->
         <div>
           <label for="first_name"></label>
