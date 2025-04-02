@@ -3,3 +3,4 @@ instance/new_database.db
 __pycache__/
 .env
 .venv
+venv

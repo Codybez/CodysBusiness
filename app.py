@@ -37,6 +37,7 @@ app = Flask(__name__)
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+
 app.config['SESSION_TYPE'] = 'filesystem'
 
 
@@ -44,6 +45,7 @@ bcrypt = Bcrypt(app)
 
 
 uri = os.getenv('DATABASE_URL')
+
 
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
@@ -93,7 +95,7 @@ class User(UserMixin, db.Model):
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
     location = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(500), nullable=False)
     first_name = db.Column(db.String(50), nullable=True)  # Initially nullable
     last_name = db.Column(db.String(50), nullable=True)   # Initially nullable
     jobs_completed = db.Column(db.Integer, default=0)
