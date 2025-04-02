@@ -387,7 +387,7 @@ def register():
             return redirect(url_for('login'))  # Redirect to login page if email exists
 
         # If the email doesn't exist, create a new user
-        hashed_password = bcrypt.generate_password_hash(password)
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         print(f"Generated Password Hash: {hashed_password}")
 
