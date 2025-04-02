@@ -30,21 +30,21 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 
 app = Flask(__name__)
 
 
-
 bcrypt = Bcrypt(app)
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Replace with a secure secret key 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/User/Desktop/My Website/instance/new_database.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
-serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+serializer = URLSafeTimedSerializer = (os.getenv('SECRET_KEY'))
 
 socketio = SocketIO(app)
 
@@ -77,7 +77,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     soft_deleted = db.Column(db.Boolean, default=False)  # New column for soft delete
     email_verified = db.Column(db.Boolean, default=False)  # Column to track if email is verified
-    verification_token = db.Column(db.String(200), nullable=True)  # New column for verification token
+    verification_token = db.Column(db.String(500), nullable=True)  # New column for verification token
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
     location = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
