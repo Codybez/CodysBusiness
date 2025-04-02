@@ -389,6 +389,8 @@ def register():
         # If the email doesn't exist, create a new user
         hashed_password = bcrypt.generate_password_hash(password)
 
+        print(f"Generated Password Hash: {hashed_password}")
+
         serializer = URLSafeTimedSerializer(SECRET_KEY)
 
         # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
@@ -448,6 +450,10 @@ def login():
         if user:
             # Check if the password is correct and if the account is not soft deleted
             if bcrypt.check_password_hash(user.password, password):
+
+                print(f"Stored password hash: {user.password}")
+                print(f"Input password: {password}")
+
                 if user.soft_deleted:
                     flash('Your account has been deactivated. Please contact support.', 'error')
                     return redirect(url_for('login'))
@@ -3019,6 +3025,6 @@ def remove_job_image():
     return jsonify({"success": True})
 
 if __name__ == "__main__":
-
+    app.run(debug=True)
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 
