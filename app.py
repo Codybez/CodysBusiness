@@ -368,6 +368,7 @@ def generate_verification_token(email):
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@csrf.exempt
 def register():
     if request.method == 'POST':
         user_type = request.form.get('userType')
@@ -442,6 +443,7 @@ def register():
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
+@csrf.exempt
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
