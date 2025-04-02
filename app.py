@@ -521,6 +521,7 @@ def send_job_notification_email_async(user, job_name, tasks, job_id, employer_na
     send_async_email(user.email, subject, template_name, context)
 
 @app.route('/submit_job', methods=['POST'])
+@csrf.exempt
 def submit_job():
     if current_user.is_authenticated:
         if current_user.user_type == 'Business' and current_user.business_profile:
@@ -616,6 +617,7 @@ def business_dashboard():
     return render_template('business_home.html',is_dashboard_page=True, current_user=current_user)
 
 @app.route('/profile', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def profile():
     if request.method == 'POST':
@@ -644,6 +646,7 @@ def profile():
     return render_template('business_profile.html')
 
 @app.route('/profile/labourer/image', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_image():
     if request.method == 'POST':
@@ -673,6 +676,7 @@ def labourer_image():
 
 @app.route('/profile/business')
 @login_required
+@csrf.exempt
 def business_profile():
     # Fetch the full profile information of the current business user from the database
     user = current_user
@@ -689,6 +693,7 @@ from sqlalchemy.orm import joinedload
 
 @app.route('/profile/labourer')
 @login_required
+@csrf.exempt
 def labourer_profile():
     # Fetch the full profile information of the current labourer user from the database
     user = (
@@ -727,6 +732,7 @@ def labourer_profile():
 
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def edit_profile():
     user = User.query.get(current_user.id)
@@ -758,6 +764,7 @@ def edit_profile():
 
 
 @app.route('/profile/labourer/edit', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def edit_labourer_profile():
     user = User.query.get(current_user.id)
@@ -837,6 +844,7 @@ from flask import flash
 # ... (previous imports) ...
 
 @app.route('/apply_for_job/<int:job_id>')
+@csrf.exempt
 @login_required
 def apply_for_job(job_id):
     job = Job.query.get_or_404(job_id)
@@ -1460,6 +1468,7 @@ def business_completed_jobs():
 
 # Contact route
 @app.route('/contact', methods=['GET', 'POST'])
+@csrf.exempt
 def contact():
     if request.method == 'POST':
         # Get form data
@@ -1481,6 +1490,7 @@ def contact():
 
 
 @app.route('/select_job_categories_and_locations', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def select_job_categories_and_locations():
     # Predefined categories and locations
@@ -1654,6 +1664,7 @@ import os
 from werkzeug.utils import secure_filename
 
 @app.route('/create_tradie_post', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def create_tradie_post():
     try:
@@ -1735,6 +1746,7 @@ def create_tradie_post():
         return redirect(url_for('create_tradie_post'))
 
 @app.route('/edit_tradie_post/<int:post_id>', methods=['GET', 'POST'])
+@csrf.exempt
 def edit_tradie_post(post_id):
     post = Post.query.get_or_404(post_id)
 
@@ -1793,6 +1805,7 @@ def edit_tradie_post(post_id):
 
 
 @app.route('/remove_image', methods=['POST'])
+@csrf.exempt
 def remove_image():
     data = request.get_json()
     image_filename = data.get('image_filename')
