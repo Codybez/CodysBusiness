@@ -617,7 +617,6 @@ def business_dashboard():
     return render_template('business_home.html',is_dashboard_page=True, current_user=current_user)
 
 @app.route('/profile', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 def profile():
     if request.method == 'POST':
@@ -646,7 +645,6 @@ def profile():
     return render_template('business_profile.html')
 
 @app.route('/profile/labourer/image', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 def labourer_image():
     if request.method == 'POST':
@@ -1168,6 +1166,7 @@ def delete_job(job_id):
 
 
 @app.route('/edit_tradesman_profile', methods=['GET', 'POST'])
+@csrf.exempt
 def edit_tradesman_profile():
     if request.method == 'POST':
         # Similar to the previous route, handle the form submission
@@ -1221,6 +1220,7 @@ def edit_tradesman_profile():
 
 
 @app.route('/review/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 def tradesman_review(job_id):
     # Fetch the job details based on job_id
     job = Job.query.get(job_id)
@@ -1278,6 +1278,7 @@ def tradesman_review(job_id):
     return render_template('labourer_review.html', job=job, selected_user=selected_user, existing_review=existing_review)
 
 @app.route('/edit_social_links', methods=['GET', 'POST'])
+@csrf.exempt
 def edit_social_links():
     if request.method == 'POST':
         facebook = request.form.get('facebook')
