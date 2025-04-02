@@ -35,7 +35,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
 
 
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -43,14 +43,15 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 bcrypt = Bcrypt(app)
 
-
-uri = os.getenv('DATABASE_URL')
-
+uri = os.getenv("DATABASE_URL")
 
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
+else:
+    uri = "sqlite:///C:/Users/User/Desktop/My Website/instance/new_database.db"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = uri
+
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
