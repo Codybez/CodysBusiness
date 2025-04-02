@@ -691,7 +691,6 @@ from sqlalchemy.orm import joinedload
 
 @app.route('/profile/labourer')
 @login_required
-@csrf.exempt
 def labourer_profile():
     # Fetch the full profile information of the current labourer user from the database
     user = (
@@ -2354,6 +2353,7 @@ def upload_id_image():
         return jsonify({"error": "Invalid file format. Only PNG, JPG, and JPEG are allowed."}), 400
 
 @app.route('/upload_liability_insurance', methods=['POST'])
+
 @login_required
 def upload_liability_insurance():
     if 'liability_insurance' not in request.files:
@@ -2613,6 +2613,7 @@ def admin_user_details(user_id):
     return render_template('admin_user_details.html', user=user)
 
 @app.route('/verify-profile', methods=['POST'])
+@csrf.exempt
 @login_required
 def verify_profile():
     confirmation = request.form.get('confirmation')
