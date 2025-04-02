@@ -30,6 +30,8 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
 from dotenv import load_dotenv
+from flask_session import Session
+
 
 load_dotenv()
 
@@ -39,7 +41,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
 
 
 app.config['SESSION_TYPE'] = 'filesystem'
-
+Session(app)
 
 bcrypt = Bcrypt(app)
 
@@ -68,6 +70,8 @@ migrate = Migrate(app, db)
 
 login_manager = LoginManager(app)  # Create a LoginManager instance
 login_manager.login_view = 'login'  # Set the login view
+login_manager.init_app(app)
+
 
 # Email Configuration
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
