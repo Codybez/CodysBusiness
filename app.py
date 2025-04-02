@@ -93,8 +93,8 @@ class User(UserMixin, db.Model):
     email_verified = db.Column(db.Boolean, default=False)  # Column to track if email is verified
     verification_token = db.Column(db.String(500), nullable=True)  # New column for verification token
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
-    location = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    location = db.Column(db.String(500), nullable=False)
+    email = db.Column(db.String(500), unique=True, nullable=False)
     password = db.Column(db.String(500), nullable=False)
     first_name = db.Column(db.String(50), nullable=True)  # Initially nullable
     last_name = db.Column(db.String(50), nullable=True)   # Initially nullable
