@@ -2312,6 +2312,7 @@ import os
 from werkzeug.utils import secure_filename
 
 @app.route('/upload_id_image', methods=['POST'])
+@csrf.exempt
 @login_required
 def upload_id_image():
     if 'id_image' not in request.files:
