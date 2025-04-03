@@ -22,6 +22,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import and_
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.types import JSON
+from sqlalchemy import cast
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail 
@@ -1910,6 +1911,7 @@ def delete_post(post_id):
     flash('Post deleted successfully!', 'success')
     return redirect(url_for('tradies_my_posts'))  # Redirect to the user's posts page
 
+
 @app.route('/tradies_saved_posts')
 @csrf.exempt
 @login_required  # Ensure the user is logged in
@@ -1917,12 +1919,12 @@ def tradies_saved_posts():
     # Get the current logged-in user
     user = current_user
     
-    # Query all posts where the current user is in the saved_user_ids list
-    saved_posts = Post.query.filter(Post.saved_by_users.op([user.id])).all()
+    # Query all posts where the current user's ID is in the saved_user_ids list (assuming it's a JSON field)
+    saved_posts = Post.query.filter(
+        cast(Post.saved_by_users, JSON).contains([user.id])
+    ).all()
 
-    return render_template('tradies_saved_posts.html', saved_posts=saved_posts, is_dashboard_page=True
-    )
-
+    return render_template('tradies_saved_posts.html', saved_posts=saved_posts, is_dashboard_page=True)
 
 
 @app.route('/tradies_my_posts', methods=['GET'])
