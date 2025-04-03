@@ -1917,7 +1917,7 @@ def tradies_saved_posts():
     user = current_user
     
     # Query all posts where the current user is in the saved_user_ids list
-    saved_posts = Post.query.filter(Post.saved_by_users.contains([user.id])).all()
+    saved_posts = Post.query.filter(Post.saved_by_users.op('@>')([user.id])).all()
 
     return render_template('tradies_saved_posts.html', saved_posts=saved_posts, is_dashboard_page=True
     )
