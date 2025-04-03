@@ -2354,7 +2354,7 @@ def upload_id_image():
         return jsonify({"error": "Invalid file format. Only PNG, JPG, and JPEG are allowed."}), 400
 
 @app.route('/upload_liability_insurance', methods=['POST'])
-
+@csrf.exempt
 @login_required
 def upload_liability_insurance():
     if 'liability_insurance' not in request.files:
