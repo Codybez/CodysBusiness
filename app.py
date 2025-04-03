@@ -618,6 +618,7 @@ def business_dashboard():
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
+@csrf.exempt
 def profile():
     if request.method == 'POST':
         file = request.files['profile_image']
@@ -645,6 +646,7 @@ def profile():
     return render_template('business_profile.html')
 
 @app.route('/profile/labourer/image', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_image():
     if request.method == 'POST':
