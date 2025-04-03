@@ -1912,6 +1912,10 @@ def delete_post(post_id):
     return redirect(url_for('tradies_my_posts'))  # Redirect to the user's posts page
 
 
+from sqlalchemy import cast, JSON
+from flask_login import current_user, login_required
+from yourapp.models import Post  # Ensure the Post model is imported correctly
+
 @app.route('/tradies_saved_posts')
 @csrf.exempt
 @login_required  # Ensure the user is logged in
@@ -1919,9 +1923,9 @@ def tradies_saved_posts():
     # Get the current logged-in user
     user = current_user
     
-    # Query all posts where the current user's ID is in the saved_user_ids list (assuming it's a JSON field)
+    # Query all posts where the current user's ID is in the saved_user_ids list (assuming it's a JSONB field)
     saved_posts = Post.query.filter(
-        cast(Post.saved_by_users, JSON).contains([user.id])
+        Post.saved_by_users.contains([user.id])  # Use the contains method for JSONB arrays
     ).all()
 
     return render_template('tradies_saved_posts.html', saved_posts=saved_posts, is_dashboard_page=True)
