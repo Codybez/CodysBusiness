@@ -1348,11 +1348,7 @@ def get_unread_notifications():
         user_id=current_user.id,
         read=False
     ).all()
-
-    # Convert timestamps to NZST (New Zealand Standard Time)
-    nz_tz = pytz.timezone('Pacific/Auckland')
-    for notification in notifications:
-        notification.timestamp = notification.timestamp.astimezone(nz_tz)  # Convert to NZST
+    
     
     return jsonify({
         "notifications": [{"id": n.id, "message": n.message, "timestamp": n.timestamp, "notification_type": n.notification_type, 
@@ -1427,6 +1423,11 @@ def create_message_notification(receiver_id, message_content, job_application_id
 def notifications():
     # Fetch the notifications for the current user
     notifications = Notification.query.filter_by(user_id=current_user.id).all()
+
+    # Convert timestamps to NZST (New Zealand Standard Time)
+    nz_tz = pytz.timezone('Pacific/Auckland')
+    for notification in notifications:
+        notification.timestamp = notification.timestamp.astimezone(nz_tz)  # Convert to NZST
 
     # Render the notifications page template with the notifications data
     return render_template('notifications.html', notifications=notifications, is_dashboard_page=True)
