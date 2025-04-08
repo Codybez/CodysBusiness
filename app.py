@@ -182,7 +182,7 @@ class JobApplication(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), default=func.now())
     is_read = db.Column(db.Boolean, default=False, nullable=True)
     room = db.Column(db.String(50), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey
@@ -196,7 +196,7 @@ class Notification(db.Model):
     message = db.Column(db.String(255), nullable=False)
     read = db.Column(db.Boolean, default=False)
     notification_type = db.Column(db.String(50))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), default=func.now())
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  
     job = db.relationship('Job', backref='notifications', lazy=True)
     user2_id = db.Column(db.Integer, nullable=True)  # Add user2_id here
@@ -2022,17 +2022,13 @@ def chat(job_id, user_id):
             else:
                 receiver_id = job_application.user_id
 
-              # Get the current time in NZST
-            nz_tz = pytz.timezone('Pacific/Auckland')
-            nz_now = datetime.now(nz_tz)  # Get the current time in NZST
-
             message = Message(
                 sender_id=current_user.id,
                 receiver_id=receiver_id,
                 content=content,
                 job_application_id=job_application.id,
                 room=room,
-                timestamp=nz_now
+                timestamp=datetime.now(pytz.timezone('Pacific/Auckland'))  # ✅ Proper timestamp
             )
             db.session.add(message)
             db.session.commit()
@@ -2056,6 +2052,11 @@ def chat(job_id, user_id):
                 send_async_email(receiver_user.email, email_subject, "email/email_job_message.html", email_context)
 
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
+
+        nz_tz = pytz.timezone('Pacific/Auckland')
+        for message in messages:
+            if message.timestamp:
+                message.timestamp = message.timestamp.astimezone(nz_tz)
 
 
         Message.query.filter_by(
