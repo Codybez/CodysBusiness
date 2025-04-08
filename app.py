@@ -2414,6 +2414,7 @@ def upload_liability_insurance():
 
 
 @app.route('/reviews/<int:user_id>')
+@csrf.exempt
 def reviews_page(user_id):
     user = User.query.get_or_404(user_id)  # Fetch user by ID
     # Fetch all reviews for the user and join with the Job table to get job details
@@ -2438,6 +2439,7 @@ def calculate_overall_rating(user):
     return round(overall_rating, 2)  # Round to 2 decimal places
 
 @app.route('/delete_account', methods=['POST' , 'GET'])
+@csrf.exempt
 def delete_account():
     # Get the current user (assuming they are logged in)
     user = current_user  # or however you're retrieving the user
@@ -2455,6 +2457,7 @@ def delete_account():
 
 
 @app.route('/change-email', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def change_email():
     if request.method == 'POST':
@@ -2479,6 +2482,7 @@ def change_email():
 
 
 @app.route('/change-password', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def change_password():
     if request.method == 'POST':
@@ -2505,6 +2509,7 @@ def change_password():
     return render_template('business_profile.html')
 
 @app.route('/save_location', methods=['POST'])
+@csrf.exempt
 @login_required
 def save_location():
     location = request.form.get('location')
@@ -2518,6 +2523,7 @@ def save_location():
     return redirect(url_for('business_profile'))  # Replace with your appropriate redirect
 
 @app.route('/labourer-change-email', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_change_email():
     if request.method == 'POST':
@@ -2539,6 +2545,7 @@ def labourer_change_email():
 
 
 @app.route('/labourer-change-password', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_change_password():
     if request.method == 'POST':
@@ -2566,6 +2573,7 @@ def labourer_change_password():
 
 
 @app.route('/labourer-save-location', methods=['POST'])
+@csrf.exempt
 @login_required
 def labourer_save_location():
     location = request.form.get('location')
@@ -2590,6 +2598,7 @@ def admin_required(f):
     return decorated_function
 
 @app.route('/admin', methods=['GET'])
+@csrf.exempt
 @login_required
 @admin_required
 def admin_dashboard():
@@ -2607,6 +2616,7 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', users=users, jobs=jobs, pending_verifications=pending_verifications, tradesman_users=tradesman_users,total_job_contacts=total_job_contacts,homeowner_users=homeowner_users)
 
 @app.route('/admin/user/<int:user_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 @admin_required
 def admin_user_details(user_id):
@@ -2638,6 +2648,7 @@ def verify_profile():
     return redirect(url_for('labourer_profile'))
 
 @app.route('/update_verification/<int:user_id>', methods=['POST'])
+@csrf.exempt
 @login_required
 @admin_required
 def update_verification(user_id):
@@ -2688,6 +2699,7 @@ def update_verification(user_id):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/impersonate/<int:user_id>', methods=['GET'])
+@csrf.exempt
 @login_required
 def impersonate(user_id):
     for rule in app.url_map.iter_rules():
@@ -2726,6 +2738,7 @@ def impersonate(user_id):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/end_impersonation', methods=['POST'])
+@csrf.exempt
 def end_impersonation():
     # Ensure the session contains impersonation data
     if not session.get('is_impersonating'):
@@ -2748,6 +2761,7 @@ def end_impersonation():
     return redirect(url_for('login'))
 
 @app.route('/admin_tradesman', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def admin_tradesman():
     if not current_user.is_admin:
@@ -2776,6 +2790,7 @@ def admin_tradesman():
 from sqlalchemy import or_
 
 @app.route('/admin_homeowners')
+@csrf.exempt
 @login_required
 def admin_homeowners():
     if not current_user.is_admin:
@@ -2811,6 +2826,7 @@ def admin_homeowners():
     return render_template('admin_homeowners.html', homeowners_with_jobs=homeowners_with_jobs, search=search)
 
 @app.route('/admin_jobs')
+@csrf.exempt
 def admin_jobs():
     search = request.args.get('search', '')  # Get the search term from the URL, default to empty string if not provided
 
@@ -2946,6 +2962,7 @@ def create_equipment_listing():
     return render_template('create_equipment_listing.html')
 
 @app.route('/edit_job/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def edit_job(job_id):
     job = Job.query.get_or_404(job_id)
@@ -3005,6 +3022,7 @@ def edit_job(job_id):
 
 
 @app.route('/remove_job_image', methods=['DELETE'])
+@csrf.exempt
 def remove_job_image():
     # Parse incoming JSON data from the request
     data = request.get_json()
