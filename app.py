@@ -1348,6 +1348,11 @@ def get_unread_notifications():
         user_id=current_user.id,
         read=False
     ).all()
+
+    # Convert timestamps to NZST (New Zealand Standard Time)
+    nz_tz = pytz.timezone('Pacific/Auckland')
+    for notification in notifications:
+        notification.timestamp = notification.timestamp.astimezone(nz_tz)  # Convert to NZST
     
     return jsonify({
         "notifications": [{"id": n.id, "message": n.message, "timestamp": n.timestamp, "notification_type": n.notification_type, 
