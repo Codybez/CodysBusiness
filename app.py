@@ -968,6 +968,7 @@ def view_applicants(job_id):
     )
 
 @app.route('/process_applications/<int:job_id>/<int:user_id>', methods=['POST'])
+@csrf.exempt
 def process_applications(job_id, user_id):
     # Update the status of all applications for the job
     job_applications = JobApplication.query.filter_by(job_id=job_id).all()
@@ -994,6 +995,7 @@ def process_applications(job_id, user_id):
 
 
 @app.route('/confirm_user/<int:job_id>/<int:user_id>', methods=['GET'])
+@csrf.exempt
 @login_required
 def confirm_user(job_id, user_id):
     # Fetch details about the accepted user and job
@@ -1105,6 +1107,7 @@ def search_jobs():
     return render_template('your_template.html', job_data=job_data)
 
 @app.route('/active_jobs')
+@csrf.exempt
 @login_required
 def active_jobs():
     # Retrieve jobs where the current user has been accepted
@@ -1127,6 +1130,7 @@ def active_jobs():
     return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user, is_dashboard_page=True)
 
 @app.route('/remove_application/<int:job_id>')
+@csrf.exempt
 @login_required
 def remove_application(job_id):
     # Find the job and application
@@ -1143,6 +1147,7 @@ def remove_application(job_id):
 
 
 @app.route('/delete_job/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def delete_job(job_id):
     job = Job.query.get(job_id)
@@ -1314,6 +1319,7 @@ def edit_social_links():
     return render_template('edit_social_links.html')
 
 @app.route('/tradesman_profile/<int:user_id>')
+@csrf.exempt
 def view_tradesman_profile(user_id):
     # Query the database for the user
     user = User.query.get_or_404(user_id)  # Get the user by ID
@@ -1408,6 +1414,7 @@ def create_message_notification(receiver_id, message_content, job_application_id
 
 
 @app.route('/notifications')
+@csrf.exempt
 @login_required
 def notifications():
     # Fetch the notifications for the current user
@@ -1457,6 +1464,7 @@ def create_job_application_notification(receiver_id, job_id, applicant_name, tra
         return False
  
 @app.route('/business_completed_jobs')
+@csrf.exempt
 @login_required
 def business_completed_jobs():
     # Retrieve the business profile of the current user
@@ -1538,6 +1546,7 @@ def select_job_categories_and_locations():
                            selected_locations=selected_locations)
 
 @app.route('/close_job/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 def close_job(job_id):
     job = Job.query.get(job_id)
 
@@ -1611,6 +1620,7 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
         return None
 
 @app.route('/find-tradies', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def find_tradies():
     # Ensure the user has a labourer profile
