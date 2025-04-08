@@ -1365,6 +1365,10 @@
   transform: translateY(0);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
   </style>
   <body>
     <header>
@@ -1384,9 +1388,9 @@
 
       <div id="dropdown-menu" class="dropdown-menu hidden">
         <ul>
-          <li><a href="{{ url_for('profile') }}">Contact Us</a></li>
-          <li><a href="{{ url_for('notifications') }}">Login</a></li>
-          <li><a href="{{ url_for('logout') }}">About Us</a></li>
+           <li><a href="#cs-contact-240">Contact Us</a></li>
+          <li><a href="{{ url_for('login') }}">Login</a></li>
+          <li><a href="#faq-1263">FAQ Section</a></li>
         </ul>
       </div>
     </header>
@@ -1618,7 +1622,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
               <picture class="cs-picture">
                 <img
                   class="cs-icon"
-                  src="/static/app_images/Phone_image1.jpeg"
+                  src="/static/app_images/Phone_image5.png"
                   alt="App Screenshot"
                   width="300"
                   height="300"
@@ -1638,7 +1642,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
               <picture class="cs-picture">
                 <img
                   class="cs-icon"
-                  src="/static/app_images/Phone_image2.jpeg"
+                  src="/static/app_images/Phone_image6.jpg"
                   alt="App Screenshot"
                   width="300"
                   height="300"
@@ -1667,11 +1671,9 @@ All tradies are ID and insurance verified and provide access to reviews and soci
                   aria-hidden="true"
                 />
               </picture>
-              <h3>Compare & Hire</h3>
+              <h3>Review Interested Tradies</h3>
               <p class="cs-item-p">
-                Review profiles, ratings, and quotes from different tradesmen.
-                Choose the one that best fits your needs and budget with
-                confidence.
+                Explore the profiles, ratings, websites, and social media of tradesmen who have applied, giving you all the information you need to make an informed decision
               </p>
             </li>
             <li class="cs-item">
@@ -1725,43 +1727,29 @@ All tradies are ID and insurance verified and provide access to reviews and soci
         <li class="cs-faq-item">
           <button class="cs-button">
             <span class="cs-button-text">
-              How do I find the right tradesman for my project?
+              Can I chat with tradesmen before making a decision?
             </span>
           </button>
           <p class="cs-item-p">
-            When a tradesman applies for your job, you'll be able to view
-            their profile, including details such as their social media
-            accounts, website, any reviews from past jobs and previous work.
-            This allows you to make an informed decision before moving forward
-            with the hiring process.
+            Definitely! Once a tradesman applies to your job, you’re both able to message each other freely through the platform. This makes it easy to ask questions, share details, and get a feel for whether they’re the right fit — all with no pressure to hire until you’re ready.
           </p>
         </li>
         <li class="cs-faq-item">
           <button class="cs-button">
             <span class="cs-button-text">
-              Does it cost to join as a tradesman?
+              Are there any costs involved for homeowners?
             </span>
           </button>
           <p class="cs-item-p">
-            No, it's completely free to join as a tradesman! You can create
-            your profile and browse job posts without any charges. We only
-            charge a small fee of $4.99 when you want to contact a homeowner
-            about a job you're interested in. This helps keep the platform
-            affordable and accessible for all tradesmen.
+            Nope — posting a job and using the platform is 100% free for homeowners. There are no hidden fees or commissions. Tradesmen pay a small one-time fee to make contact with you, which means there’s no markup or added costs passed on to you. You only pay the price you agree on directly with the tradie — simple, transparent, and fair.
           </p>
         </li>
         <li class="cs-faq-item">
           <button class="cs-button">
-            <span class="cs-button-text">Do you take a commission on jobs?</span>
+            <span class="cs-button-text">What types of jobs can I post?</span>
           </button>
           <p class="cs-item-p">
-            No, unlike many of our competitors, we do not take any commission
-            on the jobs posted or completed through our platform. Our goal is
-            to make it as easy and affordable as possible for homeowners to
-            find skilled tradesmen and for tradesmen to connect with potential
-            clients. Instead of charging commission fees, we have a simple and
-            transparent pricing model, ensuring that both homeowners and
-            tradesmen keep more of their hard-earned money.
+            From quick fixes to major renovations, you can post jobs of all sizes — plumbing, painting, electrical, gardening, cleaning, roofing, and more. If it’s a task around the house, chances are we’ve got a tradie for it.
           </p>
         </li>
       </ul>
@@ -1901,24 +1889,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
                 >
               </div>
             </li>
-            <li class="cs-li">
-              <div class="cs-icon-wrapper">
-                <i class="fas fa-phone-alt cs-icon"></i>
-              </div>
-              <div class="cs-flex-group">
-                <span class="cs-header">Phone</span>
-                <a href="tel:206-987-6543" class="cs-link">020 473 1353</a>
-              </div>
-            </li>
-            <li class="cs-li">
-              <div class="cs-icon-wrapper">
-                <i class="fas fa-map-marker-alt cs-icon"></i>
-              </div>
-              <div class="cs-flex-group">
-                <span class="cs-header">Address</span>
-                <a href="" class="cs-link">67 Cameron Rd, Tauranga, BOP 3186</a>
-              </div>
-            </li>
+            
           </ul>
         </div>
       </div>
@@ -2136,14 +2107,26 @@ All tradies are ID and insurance verified and provide access to reviews and soci
         footer.style.transform = "translateY(100%)"; // Hide footer
       }
     });
-    document.addEventListener("DOMContentLoaded", function () {
-      const menuToggle = document.getElementById("hamburger-menu");
-      const menu = document.getElementById("dropdown-menu");
+document.addEventListener("DOMContentLoaded", function () {
+  const menuToggle = document.getElementById("hamburger-menu");
+  const menu = document.getElementById("dropdown-menu");
 
-      menuToggle.addEventListener("click", function () {
-        menu.classList.toggle("hidden");
-      });
+  // Toggle the menu visibility when hamburger icon is clicked
+  menuToggle.addEventListener("click", function () {
+    menu.classList.toggle("hidden");
+  });
+
+  // Get all the links inside the dropdown
+  const menuLinks = menu.querySelectorAll("a");
+
+  // Close the dropdown menu when any link is clicked
+  menuLinks.forEach(function(link) {
+    link.addEventListener("click", function() {
+      menu.classList.add("hidden");  // Close the menu by adding the 'hidden' class
     });
+  });
+});
+
 
 const tradieBtn = document.getElementById('tradieBtn');
 const homeownerBtn = document.getElementById('homeownerBtn');
