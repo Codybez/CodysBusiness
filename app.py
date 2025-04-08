@@ -2192,25 +2192,23 @@ def messages():
 
 def create_message(sender_id, receiver_id, content, job_application_id=None, room=None):
     # Create a timezone-aware UTC datetime
-    utc_time = datetime.now(timezone.utc)
+    utc_time = datetime.now(pytz.utc)
 
-    # Optionally, you can convert this time to New Zealand Standard Time (NZST)
-    nzst = timezone(timedelta(hours=12))  # NZST is UTC +12 hours
-    local_time = utc_time.astimezone(nzst)
+    # Convert UTC time to New Zealand Standard Time (NZST) or New Zealand Daylight Time (NZDT)
+    nz_tz = pytz.timezone('Pacific/Auckland')  # Handles both NZST and NZDT automatically
+    local_time = utc_time.astimezone(nz_tz)
 
     # Create and add the message to the database
     message = Message(
         sender_id=sender_id,
         receiver_id=receiver_id,
         content=content,
-        timestamp=local_time,  # Store the time in NZST
+        timestamp=local_time,  # Store the time in NZST or NZDT
         job_application_id=job_application_id,
         room=room,
     )
     db.session.add(message)
     db.session.commit()
-
-
 def get_or_create_labourer_chat_room(user1_id, user2_id):
     """
     Creates or retrieves a chat room for two users.
