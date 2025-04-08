@@ -1333,6 +1333,7 @@ def view_tradesman_profile(user_id):
 
 @app.route('/notifications/unread')
 @login_required
+@csrf.exempt
 def get_unread_notifications():
     notifications = Notification.query.filter_by(
         user_id=current_user.id,
@@ -1346,6 +1347,7 @@ def get_unread_notifications():
 
 @app.route('/notifications/<int:notification_id>', methods=['POST'])
 @login_required
+@csrf.exempt
 def mark_notification_read(notification_id):
     notification = Notification.query.get(notification_id)
     if notification and notification.user_id == current_user.id:
@@ -1357,6 +1359,7 @@ def mark_notification_read(notification_id):
 
 @app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
 @login_required
+@csrf.exempt
 def delete_notification(notification_id):
     notification = Notification.query.get(notification_id)
     if notification and notification.user_id == current_user.id:
@@ -1964,6 +1967,7 @@ def send_async_email(to, subject, template_name, context):
     thread.start()
 
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def chat(job_id, user_id):
     try:
@@ -2064,6 +2068,7 @@ def chat(job_id, user_id):
         return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/messages')
+@csrf.exempt
 @login_required
 def messages():
     try:
@@ -2192,6 +2197,7 @@ def get_or_create_labourer_chat_room(user1_id, user2_id):
 
 @app.route('/labourer_chat/<int:user2_id>', methods=['GET', 'POST'])
 @login_required
+@csrf.exempt
 def labourer_chat(user2_id):
     """
     Handles labourer-to-labourer chat functionality.
