@@ -32,7 +32,8 @@ from threading import Thread
 from dotenv import load_dotenv
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
+import pytz
 
 
 load_dotenv()
@@ -2089,6 +2090,11 @@ def messages():
             (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
         ).all()
 
+        # Convert timestamp to NZST (New Zealand Standard Time)
+        nz_tz = pytz.timezone('Pacific/Auckland')
+        for message in messages:
+            message.timestamp = message.timestamp.astimezone(nz_tz)  # Convert to local NZST
+
         # Group unread counts by room
         unread_counts = db.session.query(Message.room, db.func.count(Message.id)).filter(
             Message.receiver_id == current_user.id,
@@ -2197,7 +2203,7 @@ def create_message(sender_id, receiver_id, content, job_application_id=None, roo
     db.session.add(message)
     db.session.commit()
 
-    
+
 def get_or_create_labourer_chat_room(user1_id, user2_id):
     """
     Creates or retrieves a chat room for two users.
