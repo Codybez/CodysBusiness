@@ -32,7 +32,7 @@ from threading import Thread
 from dotenv import load_dotenv
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
-from datetime import datetime
+from datetime import datetime, timezone
 import pytz
 
 
@@ -2052,6 +2052,13 @@ def chat(job_id, user_id):
 
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
 
+        # Make sure each message's timestamp is timezone-aware
+        for message in messages:
+            if message.timestamp:
+                if message.timestamp.tzinfo is None:
+                    message.timestamp = message.timestamp.replace(tzinfo=timezone.utc)
+                message.timestamp = message.timestamp.astimezone(timezone.utc)
+
         Message.query.filter_by(
             job_application_id=job_application.id,
             receiver_id=current_user.id,
@@ -2280,6 +2287,12 @@ def labourer_chat(user2_id):
 
         # Fetch all messages in the chat room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
+
+        for message in messages:
+            if message.timestamp:
+                if message.timestamp.tzinfo is None:
+                    message.timestamp = message.timestamp.replace(tzinfo=timezone.utc)
+                message.timestamp = message.timestamp.astimezone(timezone.utc)
 
         # Mark all unread messages as read for the current user
         Message.query.filter_by(room=room, receiver_id=current_user.id, is_read=False).update({"is_read": True})
