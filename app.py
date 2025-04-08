@@ -2022,12 +2022,17 @@ def chat(job_id, user_id):
             else:
                 receiver_id = job_application.user_id
 
+              # Get the current time in NZST
+            nz_tz = pytz.timezone('Pacific/Auckland')
+            nz_now = datetime.now(nz_tz)  # Get the current time in NZST
+
             message = Message(
                 sender_id=current_user.id,
                 receiver_id=receiver_id,
                 content=content,
                 job_application_id=job_application.id,
                 room=room,
+                timestamp=nz_now
             )
             db.session.add(message)
             db.session.commit()
@@ -2052,12 +2057,6 @@ def chat(job_id, user_id):
 
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
 
-        # Make sure each message's timestamp is timezone-aware
-        for message in messages:
-            if message.timestamp:
-                if message.timestamp.tzinfo is None:
-                    message.timestamp = message.timestamp.replace(tzinfo=timezone.utc)
-                message.timestamp = message.timestamp.astimezone(timezone.utc)
 
         Message.query.filter_by(
             job_application_id=job_application.id,
@@ -2259,13 +2258,18 @@ def labourer_chat(user2_id):
             content = request.form.get('message')
             if not content:
                 return jsonify({"error": "Message content cannot be empty."}), 400
+            
+            # Get the current time in NZST
+            nz_tz = pytz.timezone('Pacific/Auckland')
+            nz_now = datetime.now(nz_tz)  # Get the current time in NZST
 
             # Save the message
             message = Message(
                 sender_id=current_user.id,
                 receiver_id=user2_id,
                 content=content,
-                room=room
+                room=room,
+                timestamp=nz_now
             )
             db.session.add(message)
             db.session.commit()
@@ -2287,12 +2291,6 @@ def labourer_chat(user2_id):
 
         # Fetch all messages in the chat room
         messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
-
-        for message in messages:
-            if message.timestamp:
-                if message.timestamp.tzinfo is None:
-                    message.timestamp = message.timestamp.replace(tzinfo=timezone.utc)
-                message.timestamp = message.timestamp.astimezone(timezone.utc)
 
         # Mark all unread messages as read for the current user
         Message.query.filter_by(room=room, receiver_id=current_user.id, is_read=False).update({"is_read": True})
