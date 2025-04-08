@@ -182,7 +182,7 @@ class JobApplication(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime(timezone=True), default=func.now())
+    timestamp = db.Column(db.DateTime(timezone=True))
     is_read = db.Column(db.Boolean, default=False, nullable=True)
     room = db.Column(db.String(50), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey
@@ -196,7 +196,7 @@ class Notification(db.Model):
     message = db.Column(db.String(255), nullable=False)
     read = db.Column(db.Boolean, default=False)
     notification_type = db.Column(db.String(50))
-    timestamp = db.Column(db.DateTime(timezone=True), default=func.now())
+    timestamp = db.Column(db.DateTime(timezone=True))
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  
     job = db.relationship('Job', backref='notifications', lazy=True)
     user2_id = db.Column(db.Integer, nullable=True)  # Add user2_id here
@@ -267,7 +267,7 @@ class Chat(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Sender of the message
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Receiver of the message
     content = db.Column(db.Text, nullable=False)  # The chat message content
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)  # When the message was sent
+    timestamp = db.Column(db.DateTime(timezone=True))  # When the message was sent
     room = db.Column(db.String(255), nullable=False)
     is_read = db.Column(db.Boolean, default=False, nullable=False)  # Notification field for unread/read status
 
