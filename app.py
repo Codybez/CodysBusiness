@@ -49,17 +49,9 @@ Session(app)
 
 bcrypt = Bcrypt(app)
 
-uri = os.getenv("DATABASE_URL")
-
-if uri and uri.startswith("postgres://"):
-    uri = uri.replace("postgres://", "postgresql://", 1)
-else:
-    uri = "sqlite:///C:/Users/User/Desktop/My Website/instance/new_database.db"
-
-
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/new_database.db'
+
 
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
