@@ -530,7 +530,7 @@ def submit_job():
                 for photo_upload in photo_uploads:
                     if photo_upload.filename != '':
                         filename = secure_filename(photo_upload.filename)
-                        file_path = os.path.join(app.root_path,'static', 'job_images', filename)
+                        file_path = os.path.join('/home/codybeznec/CodysBusiness/static/job_images', filename)
                         photo_upload.save(file_path)
                         image_paths.append(filename)
 
