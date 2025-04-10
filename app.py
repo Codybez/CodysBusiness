@@ -1837,7 +1837,7 @@ def remove_image():
         return jsonify({"success": False, "message": "Missing required data"}), 400
 
     # Delete the image file from the server
-    upload_folder = os.path.join('static', 'tradies_post_images')
+    upload_folder = os.path.join(app.root_path,'static', 'tradies_post_images')
     file_path = os.path.join(upload_folder, image_filename)
 
     if os.path.exists(file_path):
