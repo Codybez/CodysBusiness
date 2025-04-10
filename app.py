@@ -2370,7 +2370,9 @@ def upload_id_image():
 
     if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
         filename = secure_filename(file.filename)
-        upload_path = os.path.join('static', 'id_images', filename)
+        upload_folder = os.path.join(app.root_path, 'static', 'id_images')
+        os.makedirs(upload_folder, exist_ok=True)  # Create the folder if it doesn't exist
+        upload_path = os.path.join(upload_folder, filename)
         file.save(upload_path)
 
         # Append to the existing ID image path
@@ -2418,7 +2420,7 @@ def upload_liability_insurance():
     for file in files:
         if file and '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
             filename = secure_filename(file.filename)
-            file_path = os.path.join('static', 'insurance_images', filename)
+            file_path = os.path.join(app.root_path,'static', 'insurance_images', filename)
             file.save(file_path)
             file_paths.append(filename)
         else:
