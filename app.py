@@ -1707,7 +1707,7 @@ def create_tradie_post():
             allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
             files = request.files.getlist('post_images')
 
-            upload_folder = os.path.join('static', 'tradies_post_images')
+            upload_folder = os.path.join(app.root_path,'static', 'tradies_post_images')
             os.makedirs(upload_folder, exist_ok=True)  # Ensure the folder exists
 
             for file in files:
