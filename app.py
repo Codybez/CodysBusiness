@@ -1784,7 +1784,7 @@ def edit_tradie_post(post_id):
 
         print("FILES RECEIVED:", files)  # Debugging step
 
-        upload_folder = os.path.join('static', 'tradies_post_images')
+        upload_folder = os.path.join(app.root_path,'static', 'tradies_post_images')
         os.makedirs(upload_folder, exist_ok=True)  # Ensure the folder exists
 
         for file in files:
@@ -1903,6 +1903,7 @@ def remove_saved_post(post_id):
     return redirect(url_for('tradies_saved_posts'))
 
 @app.route('/delete_post/<int:post_id>', methods=['POST'])
+@csrf.exempt
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
