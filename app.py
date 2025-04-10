@@ -50,7 +50,8 @@ Session(app)
 bcrypt = Bcrypt(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/new_database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/codybeznec/CodysBusiness/instance/new_database.db'
+
 
 
   # You can use any database URL here
