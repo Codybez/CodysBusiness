@@ -50,7 +50,17 @@ Session(app)
 bcrypt = Bcrypt(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/codybeznec/CodysBusiness/instance/new_database.db'
+# Define the path to your production database
+prod_db_path = '/home/codybeznec/CodysBusiness/instance/new_database.db'
+
+# Define the path to your local database (replace with your local path)
+local_db_path = 'sqlite:///new_database.db'
+
+# Check if the production database exists
+if os.path.exists(prod_db_path):
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{prod_db_path}'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = local_db_path
 
 
 
