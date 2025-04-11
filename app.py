@@ -602,6 +602,7 @@ def submit_job():
         flash('You must be logged in to submit a job.', 'error')
         return redirect(url_for('login'))
 
+@app.route('/job/<int:job_id>')
 def display_job(job_id):
     # Retrieve the job from the database with the related business profile
     job = (
