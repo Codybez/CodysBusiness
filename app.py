@@ -3129,6 +3129,8 @@ def remove_job_image():
 def start_payment(job_id):
     job = Job.query.get_or_404(job_id)
 
+    stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+
     try:
         # Create the Stripe Checkout session
         checkout_session = stripe.checkout.Session.create(
