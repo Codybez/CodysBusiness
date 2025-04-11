@@ -3184,7 +3184,7 @@ def stripe_webhook():
             return jsonify({'error': 'Missing metadata'}), 400
 
         job = Job.query.get(job_id)
-        user = User.query.get(user_id)
+        user = current_user.query.get(user_id)
 
         if not job or not user:
             return jsonify({'error': 'Job or user not found'}), 404
