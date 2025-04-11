@@ -3145,6 +3145,7 @@ def start_payment(job_id):
                 },
                 'quantity': 1,
             }],
+            mode='payment',
             metadata={
                 'user_id': current_user.id,
                 'job_id': job.id,
