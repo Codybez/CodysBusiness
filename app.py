@@ -34,6 +34,7 @@ from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from datetime import datetime, timezone
 import pytz
+import stripe
 
 
 load_dotenv()
@@ -46,6 +47,10 @@ app.config['WTF_CSRF_SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback-secret-key
 
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+
 
 bcrypt = Bcrypt(app)
 
@@ -3116,6 +3121,133 @@ def remove_job_image():
 
     # Return a success response
     return jsonify({"success": True})
+
+
+@app.route('/start_payment/<int:job_id>')
+@login_required
+def start_payment(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    try:
+        # Create the Stripe Checkout session
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'nzd',  # Currency for the payment
+                    'unit_amount': 500,  # $5.00 in cents
+                    'product_data': {
+                        'name': f"Application for job: {job.job_name}",
+                    },
+                },
+                'quantity': 1,
+            }],
+            metadata={
+                'user_id': current_user.id,
+                'job_id': job.id,
+            },
+            success_url=f"{request.url_root}payment_success?session_id={{CHECKOUT_SESSION_ID}}",  # Redirect URL after successful payment
+            cancel_url=f"{request.url_root}job/{job.id}",  # Redirect URL if the user cancels the payment
+        )
+
+        return redirect(checkout_session.url)
+
+    except Exception as e:
+        flash(f"Payment setup failed: {str(e)}", "danger")
+        return redirect(url_for('job_detail', job_id=job.id))
+
+
+@app.route('/stripe_webhook', methods=['POST'])
+@csrf.exempt
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get('Stripe-Signature')
+    webhook_secret = app.config['STRIPE_WEBHOOK_SECRET']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except ValueError as e:
+        return jsonify({"error": "Invalid payload"}), 400
+    except stripe.error.SignatureVerificationError as e:
+        return jsonify({"error": "Invalid signature"}), 400
+
+    # Handle the event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        metadata = session.get('metadata', {})
+
+        user_id = int(metadata.get('user_id', 0))
+        job_id = int(metadata.get('job_id', 0))
+
+        if not user_id or not job_id:
+            return jsonify({'error': 'Missing metadata'}), 400
+
+        job = Job.query.get(job_id)
+        user = User.query.get(user_id)
+
+        if not job or not user:
+            return jsonify({'error': 'Job or user not found'}), 404
+
+        # Check if user has already applied
+        application = JobApplication.query.filter_by(user_id=user.id, job_id=job.id).first()
+
+        if application:
+            application.status = 'paid'  # Update status if the application exists
+        else:
+            application = JobApplication(user_id=user.id, job_id=job.id, status='paid')
+            db.session.add(application)
+
+        db.session.commit()
+
+        # Notify the job poster (via notification system)
+        create_job_application_notification(
+            receiver_id=job.user_id,
+            job_id=job.id,
+            trading_name=user.company_details.trading_name,
+            applicant_name=user.first_name
+        )
+
+        # Prepare email context and send email
+        email_context = {
+            "job_poster_name": job.user.first_name,
+            "job_title": job.job_name,
+            "applicant_name": user.first_name,
+            "trading_name": user.company_details.trading_name,
+            "message_link": f"{request.url_root}login"
+        }
+
+        send_async_email(
+            to=job.user.email,
+            subject=f"New Application for '{job.job_name}'",
+            template_name="email/job_application_notification.html",
+            context=email_context
+        )
+
+    return jsonify({'status': 'success'}), 200
+
+
+@app.route('/payment_success')
+@login_required
+def payment_success():
+    session_id = request.args.get('session_id')
+
+    # Retrieve the session from Stripe using the session_id
+    session = stripe.checkout.Session.retrieve(session_id)
+
+    # Get user ID and job ID from the session metadata
+    user_id = int(session.metadata['user_id'])
+    job_id = int(session.metadata['job_id'])
+
+    # Ensure application is marked as paid (this should already be handled in the webhook, but we can do it here for safety)
+    job_application = JobApplication.query.filter_by(user_id=user_id, job_id=job_id).first()
+    if job_application and job_application.status != 'paid':
+        job_application.status = 'paid'
+        db.session.commit()
+
+    flash("Payment successful! You've applied for the job.", "success")
+    return redirect(url_for('applied_jobs'))
+
 
 if __name__ == "__main__":
   

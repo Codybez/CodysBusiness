@@ -208,14 +208,11 @@
     <div>
       {% if current_user.is_authenticated and current_user.id not in
       job.applicants|map(attribute='user_id') %}
-      <a
-        id="applybutton"
-        href="https://buy.stripe.com/test_fZe8zIguHcZC2CkaEF"
-        target="_blank"
-      >
+      <a id="applybutton" href="{{ url_for('start_payment', job_id=job.id) }}">
         <b>Continue To Payment</b>
         <i class="fas fa-arrow-right"></i>
       </a>
+
       {% endif %}
     </div>
 
