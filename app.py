@@ -3154,7 +3154,7 @@ def start_payment(job_id):
 
     except Exception as e:
         flash(f"Payment setup failed: {str(e)}", "danger")
-        return redirect(url_for('job_detail', job_id=job.id))
+        return redirect(url_for('display_job', job_id=job.id))
 
 
 @app.route('/stripe_webhook', methods=['POST'])
