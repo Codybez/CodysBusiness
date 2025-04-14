@@ -3169,6 +3169,9 @@ def stripe_webhook():
     webhook_secret = app.config['STRIPE_WEBHOOK_SECRET']
     event = None
 
+    print(f"Stripe Webhook Secret: {app.config.get('STRIPE_WEBHOOK_SECRET')}")
+
+
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
     except ValueError as e:
