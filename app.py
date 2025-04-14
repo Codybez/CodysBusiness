@@ -3181,8 +3181,8 @@ def stripe_webhook():
         session = event['data']['object']
         metadata = session.get('metadata', {})
 
-        user_id = int(metadata.get('user_id', 0))
-        job_id = int(metadata.get('job_id', 0))
+        user_id = int(metadata.get('user_id'))
+        job_id = int(metadata.get('job_id'))
 
         if not user_id or not job_id:
             return jsonify({'error': 'Missing metadata'}), 400
