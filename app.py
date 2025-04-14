@@ -3166,10 +3166,11 @@ def start_payment(job_id):
 def stripe_webhook():
     payload = request.data
     sig_header = request.headers.get('Stripe-Signature')
-    webhook_secret = app.config['STRIPE_WEBHOOK_SECRET']
+    webhook_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
     event = None
+    print(f"Stripe Webhook Secret: {webhook_secret}")
 
-    print(f"Stripe Webhook Secret: {app.config.get('STRIPE_WEBHOOK_SECRET')}")
+
 
 
     try:
