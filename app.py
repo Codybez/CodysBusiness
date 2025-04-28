@@ -99,10 +99,33 @@ mail = Mail(app)
 
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])  # <-- Accept both GET and POST
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        # Pull the form fields
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message_body = request.form.get('Message')  # <-- careful: 'Message' must match name attribute in form
+        
+        # Create the email message
+        msg = Message(
+            subject=f"New Public Contact Form Submission: {name}",
+            sender=email,
+            recipients=[os.getenv('MAIL_USERNAME')],  # Sending to your saved email
+            body=f"From: {name}\nEmail: {email}\n\nMessage:\n{message_body}"
+        )
+        
+        try:
+            mail.send(msg)
+            flash('Your message has been sent successfully!', 'success')
+        except Exception as e:
+            print(f"Error sending message: {e}")
+            flash('An error occurred while sending your message.', 'danger')
 
+        return redirect(url_for('index'))  # Just reload homepage after submit
+
+    # GET method: normal page load
+    return render_template('index.html')
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1497,7 +1520,6 @@ def business_completed_jobs():
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
 
-# Contact route
 @app.route('/contact', methods=['GET', 'POST'])
 @csrf.exempt
 def contact():
@@ -1505,20 +1527,26 @@ def contact():
         # Get form data
         name = request.form['name']
         email = request.form['email']
-        message = request.form['message']
+        message_body = request.form['message']
 
-        # Process the form data (e.g., save to database, send email, etc.)
-        # For now, just print to console
-        print(f"Message from {name} ({email}): {message}")
+        # Prepare the email
+        msg = Message(
+            subject=f"New Contact Form Message from {name}",
+            sender=email,  # So you know who sent it
+            recipients=[os.getenv('MAIL_USERNAME')],  # send it to your own email
+            body=f"From: {name}\nEmail: {email}\n\nMessage:\n{message_body}"
+        )
 
-        # Flash a success message
-        flash('Your message has been sent successfully!', 'success')
+        try:
+            mail.send(msg)
+            flash('Your message has been sent successfully!', 'success')
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            flash('An error occurred while sending your message.', 'danger')
 
-        # Optionally, clear the form after submission
         return redirect(url_for('contact'))
 
     return render_template('contact_us.html')
-
 
 @app.route('/select_job_categories_and_locations', methods=['GET', 'POST'])
 @csrf.exempt
