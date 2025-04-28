@@ -99,7 +99,8 @@ mail = Mail(app)
 
 
 
-@app.route('/', methods=['GET', 'POST'])  # <-- Accept both GET and POST
+@app.route('/', methods=['GET', 'POST']) 
+@csrf.exempt
 def index():
     if request.method == 'POST':
         # Pull the form fields
