@@ -109,7 +109,7 @@ def index():
         message_body = request.form.get('Message')  # <-- careful: 'Message' must match name attribute in form
         
         # Create the email message
-        msg = Message(
+        msg = emailmessage(
             subject=f"New Public Contact Form Submission: {name}",
             sender=email,
             recipients=[os.getenv('MAIL_USERNAME')],  # Sending to your saved email
@@ -1531,7 +1531,7 @@ def contact():
         message_body = request.form['message']
 
         # Prepare the email
-        msg = Message(
+        msg = emailmessage(
             subject=f"New Contact Form Message from {name}",
             sender=email,  # So you know who sent it
             recipients=[os.getenv('MAIL_USERNAME')],  # send it to your own email
