@@ -2264,5 +2264,15 @@ let words = [
       observer.observe(item);
     });
   });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        const notificationBox = document.querySelector('.notification-box');
+        
+        if (notificationBox) {
+          setTimeout(() => {
+            notificationBox.classList.add('hidden');  // Hide the notification after 3 seconds
+          }, 3000);  // Hide after 3 seconds (3000 milliseconds)
+        }
+      });
   </script>
 </html>
