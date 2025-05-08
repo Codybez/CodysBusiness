@@ -208,7 +208,7 @@
     <div>
       {% if current_user.is_authenticated and current_user.id not in
       job.applicants|map(attribute='user_id') %}
-      <a id="applybutton" href="{{ url_for('apply_for_job', job_id=job.id) }}">
+      <a id="applybutton" href="{{ url_for('start_payment', job_id=job.id) }}">
         <b>Continue To Payment</b>
         <i class="fas fa-arrow-right"></i>
       </a>

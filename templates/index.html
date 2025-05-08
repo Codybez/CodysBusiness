@@ -11,6 +11,35 @@
   />
 
   <style>
+
+    .flash-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 80%;
+    max-width: 500px;
+}
+
+.flash {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.flash.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.flash.error {
+    background-color: #F44336;
+    color: white;
+}
+
     body {
       font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
         "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
@@ -171,7 +200,7 @@
         position: absolute;
         height: 100%;
         width: 0%;
-        background: #fff;
+      
         opacity: 1;
         top: 0;
         left: 0;
@@ -779,6 +808,7 @@
         overflow: hidden;
         position: relative;
         z-index: 1;
+        margin-top: -80px;
       }
       #steps-1171 .cs-container {
         width: 100%;
@@ -1293,6 +1323,82 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    .user-type-link {
+      margin-top: -50px;
+      color: #ff6600;
+      text-decoration: none;
+      margin-bottom: 40px;
+    }
+    .user-type-link a {
+      margin-top: -40px;
+      color: #ff6600;
+      text-decoration: none;
+    }
+    .user-type-link a.active {
+      color: #ff7148;
+      text-decoration: underline;
+    }
+
+    .toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  background-color: var(--bodyTextColorWhite);
+  padding-bottom: 50px;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.3s ease;
+  padding-top: 30px;
+
+}
+
+.toggle-button:hover {
+  color: #ff6600;
+}
+
+.toggle-button.active {
+  border-color: #ff6600;
+  color: #ff6600;
+  font-weight: bold;
+}
+
+.cursor {
+  display: inline-block;
+  animation: blink 1s infinite;
+  color: #fff,
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.scroll-fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
   </style>
   <body>
     <header>
@@ -1312,9 +1418,9 @@
 
       <div id="dropdown-menu" class="dropdown-menu hidden">
         <ul>
-          <li><a href="{{ url_for('profile') }}">Contact Us</a></li>
-          <li><a href="{{ url_for('notifications') }}">Login</a></li>
-          <li><a href="{{ url_for('logout') }}">About Us</a></li>
+           <li><a href="#cs-contact-240">Contact Us</a></li>
+          <li><a href="{{ url_for('login') }}">Login</a></li>
+          <li><a href="#faq-1263">FAQ Section</a></li>
         </ul>
       </div>
     </header>
@@ -1323,19 +1429,19 @@
       <div class="cs-container">
         <h1 class="cs-title">
           <br />
-          <span>Get Work.</span> <br />
-          Get Connected.
-          <br /><span>Grow Your </span>Business.
+          <span>Connecting</span> <br />
+          Homeowners &
+          <br /><span>Trusted </span><br><span id="dynamic-word" style="color: #fff;display: inline-block">Tradesmen</span><span class="cursor">|</span>
         </h1>
-        <p class="cs-text">
-          We Deliver The Jobs & Connections - <br />
-          So You Can Focus On What You Do Best.
-        </p>
+<p class="cs-text">
+  Getting your project done has never been easier.
+</p>
+
         <a
           href="{{ url_for('register') }}"
           class="cs-button-solid"
           style="background-color: #ff6600; color: white"
-          >Join Today</a
+          >Get Started Today</a
         >
       </div>
 
@@ -1365,271 +1471,400 @@
     <!--                   Services                   -->
     <!-- ============================================ -->
 
-    <section id="h-services-143">
-      <ul class="cs-card-group">
-        <li class="cs-item">
-          <br />
-          <picture class="cs-icon">
-            <i
-              class="fas fa-briefcase"
-              style="font-size: 30px; color: #ff6600"
-              aria-hidden="true"
-            ></i>
-          </picture>
-          <h2 class="cs-title">Get More Jobs & Leads</h2>
-          <p class="cs-text">
-            We bring job opportunities directly to you, delivered instantly to
-            your inbox so you can focus on what you do best.
-          </p>
-        </li>
-        <li class="cs-item">
-          <picture class="cs-icon">
-            <i
-              class="fas fa-users"
-              style="font-size: 30px; color: #ff6600"
-              aria-hidden="true"
-            ></i>
-          </picture>
-          <h2 class="cs-title">Connect With Other Tradesmen</h2>
-          <p class="cs-text">
-            Need a subcontractor, equipment rental or an extra set of hands? Its
-            free to post in our find-tradies section and connect with other
-            tradesmen.
-          </p>
-        </li>
-        <li class="cs-item">
-          <picture class="cs-icon">
-            <i
-              class="fas fa-credit-card"
-              style="font-size: 30px; color: #ff6600"
-              aria-hidden="true"
-            ></i>
-          </picture>
-          <h2 class="cs-title">Simple Fee Structure</h2>
-          <p class="cs-text">
-            Reach out to job posters for just $4.99 and secure work quickly. No
-            subscriptions and zero commissions on your jobs.
-          </p>
-        </li>
-        <li class="cs-item">
-          <picture class="cs-icon">
-            <i
-              class="fas fa-comments"
-              style="font-size: 30px; color: #ff6600"
-              aria-hidden="true"
-            ></i>
-          </picture>
-          <h2 class="cs-title">In-App Chat</h2>
-          <p class="cs-text">
-            Message job posters and other tradesmen directly through the app,
-            keeping all your work-related conversations in one place.
-          </p>
-        </li>
-      </ul>
-    </section>
+<section id="h-services-143">
+  <ul class="cs-card-group">
+
+    <li class="cs-item scroll-fade-up">
+      <picture class="cs-icon">
+        <i class="fas fa-users" style="font-size: 30px; color: #ff6600" aria-hidden="true"></i>
+      </picture>
+      <h2 class="cs-title">One Platform for Every Project</h2>
+      <p class="cs-text">
+We connect homeowners and tradies for every type of job across all trades — from small repairs and maintenance to large-scale renovations and new construction.
+      </p>
+    </li>
+    <li class="cs-item scroll-fade-up">
+  <picture class="cs-icon">
+    <i class="fas fa-credit-card" style="font-size: 30px; color: #ff6600" aria-hidden="true"></i>
+  </picture>
+  <h2 class="cs-title">Fair Pricing</h2>
+  <p class="cs-text">
+    Post jobs for free with no hidden costs or commissions. Our platform offers straightforward pricing, ensuring transparency for both homeowners and tradies.
+  </p>
+</li>
+<li class="cs-item scroll-fade-up">
+  <picture class="cs-icon">
+    <i class="fas fa-check-circle" style="font-size: 30px; color: #ff6600" aria-hidden="true"></i>
+  </picture>
+  <h2 class="cs-title">Verified & Trusted</h2>
+  <p class="cs-text">
+All tradies are ID and insurance verified and provide access to reviews and social profiles, so you can hire with confidence.
+  </p>
+</li>
+
+
+    <li class="cs-item scroll-fade-up">
+      <picture class="cs-icon">
+        <i class="fas fa-comments" style="font-size: 30px; color: #ff6600" aria-hidden="true"></i>
+      </picture>
+  <h2 class="cs-title">In-App Chat</h2>
+  <p class="cs-text">
+    Receive applications, connect with tradies and chat through the details-all within the platform for a smooth, stress-free experience.
+  </p>
+    </li>
+  </ul>
+</section>
+
+
+
 
     <!-- ============================================ -->
     <!--                   Steps                      -->
     <!-- ============================================ -->
+    <div class="toggle-buttons">
+      <button id="homeownerBtn" class="toggle-button active">Homeowner</button>
+      <button id="tradieBtn" class="toggle-button">Tradie</button>
 
-    <section id="steps-1171">
-      <div class="cs-container">
-        <div class="cs-content">
-          <span class="cs-topper">Our Process For Tradies</span>
-          <h2 class="cs-title">How To Get Started</h2>
-          <p class="cs-text">
-            Whether you're looking for work, subcontractors to help on your job
-            or to rent out or hire equipment, our platform makes it easy. Create
-            your profile, find jobs that match your skills, connect with other
-            tradesmen, and manage everything through our in-app chat. Join today
-            and start building your network.
+    </div>
+
+   <!-- Tradie Section Wrapper -->
+    <div class="steps-wrapper tradie-section" style="display: none;">
+      <section id="steps-1171">
+        <div class="cs-container">
+          <div class="cs-content">
+            <span class="cs-topper">Our Process For Tradies</span>
+            <h2 class="cs-title">How To Get Started</h2>
+            <p class="cs-text">
+              Whether you're looking for work, subcontractors to help on your job
+              or to rent out or hire equipment, our platform makes it easy. Create
+              your profile, find jobs that match your skills, connect with other
+              tradesmen, and manage everything through our in-app chat. Join today
+              and start building your network.
+            </p>
+          </div>
+          <ul class="cs-card-group">
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image1.jpeg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Create Your Profile</h3>
+              <p class="cs-item-p">
+                This process will take just 5 to 10 minutes. Once complete, our
+                team will verify your ID and insurance within 24 hours to ensure
+                trust and transparency for clients. You'll be notified as soon as
+                your profile is approved and ready to go.
+              </p>
+            </li>
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image2.jpeg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Find Jobs</h3>
+              <p class="cs-item-p">
+                Once your profile is verified, you can browse job listings in your
+                area. New opportunities are posted instantly, you'll get
+                notifications for jobs that match your trade and location. Apply
+                directly and connect with job posters to secure work fast.
+              </p>
+            </li>
+           
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image4.jpeg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>In-App Chat</h3>
+              <p class="cs-item-p">
+                Communicate directly with job posters and other tradies through
+                our in-app chat. Ask questions, discuss job details, and organize
+                work—all in one place. Keep your business running smoothly without
+                the hassle of back-and-forth calls.
+              </p>
+            </li>
+             <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image3.jpeg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Connect With Tradesman</h3>
+              <p class="cs-item-p">
+                Looking for a subcontractor, some specialized equipment or an
+                extra set of hands? Post in the Find Tradies section for free and
+                connect with skilled tradesmen in your area. Whether it's a
+                one-off job or ongoing work, finding the right team has never been
+                easier.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <!-- Homeowner Section Wrapper (Hidden by Default) -->
+    <div class="steps-wrapper homeowner-section">
+      <section id="steps-1171">
+        <div class="cs-container">
+          <div class="cs-content">
+            <span class="cs-topper">Our Process For Homeowners</span>
+            <h2 class="cs-title">How To Get Started</h2>
+            <p class="cs-text">
+              Need a reliable tradesman for your next project? Our platform makes
+              it simple. Sign up, post your job, receive quotes from skilled
+              tradesmen, and chat with them directly to find the right fit. Get
+              started today and bring your project to life.
+            </p>
+          </div>
+          <ul class="cs-card-group">
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image5.jpg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Sign Up</h3>
+              <p class="cs-item-p">
+                Create your free account in just a few minutes. Once signed up,
+                you can start posting jobs and reviewing responses from
+                experienced tradesmen in your area.
+              </p>
+            </li>
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image6.jpg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Post Your Job</h3>
+              <p class="cs-item-p">
+                Describe the work you need done, set your location, and post your
+                job for free. Tradesmen will reach out with quotes, giving you
+                multiple options to choose from.
+              </p>
+            </li>
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image1.jpeg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Review Interested Tradies</h3>
+              <p class="cs-item-p">
+                Explore the profiles, ratings, websites, and social media of tradesmen who have applied, giving you all the information you need to make an informed decision
+              </p>
+            </li>
+            <li class="cs-item">
+              <picture class="cs-picture">
+                <img
+                  class="cs-icon"
+                  src="/static/app_images/Phone_image4.jpeg"
+                  alt="App Screenshot"
+                  width="300"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+              </picture>
+              <h3>Chat & Finalize</h3>
+              <p class="cs-item-p">
+                Use our in-app chat to discuss job details, agree on terms, and
+                get the work started. Keep all communication in one place for a
+                smooth experience.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+
+   <!-- Homeowner FAQ -->
+<div class="faq-wrapper homeowner-faq scroll-fade-up">
+  <section id="faq-1263">
+    <div class="cs-container">
+      <div class="cs-content">
+        <span class="cs-topper">FAQ</span>
+        <h2 class="cs-title">Frequently Asked Questions</h2>
+      </div>
+      <ul class="cs-faq-group">
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">How do I post a job?</span>
+          </button>
+          <p class="cs-item-p">
+            To post a job, simply sign up and log in to your account. Navigate
+            to the "Post a Job" section. Fill in the required details such as
+            job title, description, location, and category. After completing
+            the form, click "Submit" to make your job listing live. You will
+            receive email notifications when a user applies for your job and
+            when they message you!
           </p>
-        </div>
-        <ul class="cs-card-group">
-          <li class="cs-item">
-            <picture class="cs-picture">
-              <img
-                class="cs-icon"
-                src="/static/app_images/Phone_image1.jpeg"
-                alt="App Screenshot"
-                width="300"
-                height="300"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-            </picture>
-            <h3 class="">Create Your Profile</h3>
-            <p class="cs-item-p">
-              This process will take just 5 to 10 minutes. Once complete, our
-              team will verify your ID and insurance within 24 hours to ensure
-              trust and transparency for clients. You'll be notified as soon as
-              your profile is approved and ready to go.
-            </p>
-          </li>
-          <li class="cs-item">
-            <picture class="cs-picture">
-              <img
-                class="cs-icon"
-                src="/static/app_images/Phone_image2.jpeg"
-                alt="App Screenshot"
-                width="300"
-                height="300"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-            </picture>
-            <h3 class="">Find Jobs</h3>
-            <p class="cs-item-p">
-              Once your profile is verified, you can browse job listings in your
-              area. New opportunities are posted instantly, you'll get
-              notifications for jobs that match your trade and location. Apply
-              directly and connect with job posters to secure work fast.
-            </p>
-          </li>
-          <li class="cs-item">
-            <picture class="cs-picture">
-              <img
-                class="cs-icon"
-                src="/static/app_images/Phone_image3.jpeg"
-                alt="App Screenshot"
-                width="300"
-                height="300"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-            </picture>
-            <h3 class="">Connect With Tradesman</h3>
-            <p class="cs-item-p">
-              Looking for a subcontractor, some specialized equipment or an
-              extra set of hands? Post in the Find Tradies section for free and
-              connect with skilled tradesmen in your area. Whether it's a
-              one-off job or ongoing work, finding the right team has never been
-              easier..
-            </p>
-          </li>
-          <li class="cs-item">
-            <picture class="cs-picture">
-              <img
-                class="cs-icon"
-                src="/static/app_images/Phone_image4.jpeg"
-                alt="App Screenshot"
-                width="300"
-                height="300"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-            </picture>
-            <h3 class="">In-App Chat</h3>
-            <p class="cs-item-p">
-              Communicate directly with job posters and other tradies through
-              our in-app chat. Ask questions, discuss job details, and organize
-              work—all in one place. Keep your business running smoothly without
-              the hassle of back-and-forth calls.
-            </p>
-          </li>
-        </ul>
+        </li>
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">
+              Can I chat with tradesmen before making a decision?
+            </span>
+          </button>
+          <p class="cs-item-p">
+            Definitely! Once a tradesman applies to your job, you’re both able to message each other freely through the platform. This makes it easy to ask questions, share details, and get a feel for whether they’re the right fit — all with no pressure to hire until you’re ready.
+          </p>
+        </li>
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">
+              Are there any costs involved for homeowners?
+            </span>
+          </button>
+          <p class="cs-item-p">
+            Nope — posting a job and using the platform is 100% free for homeowners. There are no hidden fees or commissions. Tradesmen pay a small one-time fee to make contact with you, which means there’s no markup or added costs passed on to you. You only pay the price you agree on directly with the tradie — simple, transparent, and fair.
+          </p>
+        </li>
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">What types of jobs can I post?</span>
+          </button>
+          <p class="cs-item-p">
+            From quick fixes to major renovations, you can post jobs of all sizes — plumbing, painting, electrical, gardening, cleaning, roofing, and more. If it’s a task around the house, chances are we’ve got a tradie for it.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<!-- Tradie FAQ -->
+<div class="faq-wrapper tradie-faq scroll-fade-up" style="display: none;">
+  <section id="faq-1263">
+    <div class="cs-container">
+      <div class="cs-content">
+        <span class="cs-topper">FAQ</span>
+        <h2 class="cs-title">Frequently Asked Questions</h2>
       </div>
-    </section>
-    <section id="faq-1263">
-      <div class="cs-container">
-        <div class="cs-content">
-          <span class="cs-topper">FAQ</span>
-          <h2 class="cs-title">Frequently Asked Questions</h2>
-        </div>
-        <ul class="cs-faq-group">
-          <!-- Active class added as default -->
-          <li class="cs-faq-item">
-            <button class="cs-button">
-              <span class="cs-button-text">
-                Can I join if I'm self-employed or a subcontractor?
-              </span>
-            </button>
-            <p class="cs-item-p">
-              Yes! Whether you're a self-employed tradesman, subcontractor, or
-              part of a company, you can sign up and start applying for jobs.
-              Our platform is designed to connect all types of tradespeople with
-              job opportunities, making it easy for you to find work and grow
-              your business.
-            </p>
-          </li>
-          <li class="cs-faq-item">
-            <button class="cs-button">
-              <span class="cs-button-text">
-                Can I add my social media or website to my profile?
-              </span>
-            </button>
-            <p class="cs-item-p">
-              Absolutely! You can add links to your social media pages, website,
-              google reviews or portfolio in your profile. This helps potential
-              clients see your past work, customer reviews, and get a better
-              idea of your skills and experience. A well-completed profile can
-              increase your chances of getting hired.
-            </p>
-          </li>
-          <li class="cs-faq-item">
-            <button class="cs-button">
-              <span class="cs-button-text"> Does it cost to join? </span>
-            </button>
-            <p class="cs-item-p">
-              No, it's completely free to join as a tradesman! You can create
-              your profile and browse job posts without any charges. We only
-              charge a small fee of $4.99 when you want to contact a homeowner
-              about a job you're interested in. This helps keep the platform
-              affordable and accessible for all tradesmen.
-            </p>
-          </li>
-          <li class="cs-faq-item">
-            <button class="cs-button">
-              <span class="cs-button-text">
-                Does the platform take a commission from my earnings?
-              </span>
-            </button>
-            <p class="cs-item-p">
-              No, we do not take any commission on the jobs posted or completed
-              through our platform. Our goal is to make it as easy and
-              affordable as possible for homeowners to find skilled tradesmen
-              and for tradesmen to connect with potential clients. Instead of
-              charging commission fees, we have a simple and transparent pricing
-              model, ensuring that both homeowners and tradesmen keep more of
-              their hard-earned money.
-            </p>
-          </li>
-        </ul>
-      </div>
-      <!--SVG Waves-->
-      <picture class="cs-background">
-        <!--Mobile Image-->
-        <source
-          media="(max-width: 600px)"
-          srcset="
-            https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-waves-m.svg
-          "
-        />
-        <!--Tablet and above Image-->
-        <source
-          media="(min-width: 601px)"
-          srcset="
-            https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-waves.svg
-          "
-        />
-        <img
-          aria-hidden="true"
-          src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/white-waves.svg"
-          loading="lazy"
-          decoding="async"
-          alt="moon"
-          width="1920"
-          height="647"
-        />
-      </picture>
-    </section>
+      <ul class="cs-faq-group">
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">Can I join if I'm self-employed or a subcontractor?</span>
+          </button>
+          <p class="cs-item-p">
+            Yes! Whether you're a self-employed tradesman, subcontractor, or
+            part of a company, you can sign up and start applying for jobs.
+            Our platform is designed to connect all types of tradespeople with
+            job opportunities, making it easy for you to find work and grow
+            your business.
+          </p>
+        </li>
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">Can I add my social media or website to my profile?</span>
+          </button>
+          <p class="cs-item-p">
+            Absolutely! You can add links to your social media pages, website,
+            Google reviews or portfolio in your profile. This helps potential
+            clients see your past work, customer reviews, and get a better
+            idea of your skills and experience. A well-completed profile can
+            increase your chances of getting hired.
+          </p>
+        </li>
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">Does it cost to join?</span>
+          </button>
+          <p class="cs-item-p">
+            No, it's completely free to join as a tradesman! You can create
+            your profile and browse job posts without any charges. We only
+            charge a small fee of $4.99 when you want to contact a homeowner
+            about a job you're interested in. This helps keep the platform
+            affordable and accessible for all tradesmen.
+          </p>
+        </li>
+        <li class="cs-faq-item">
+          <button class="cs-button">
+            <span class="cs-button-text">Does the platform take a commission from my earnings?</span>
+          </button>
+          <p class="cs-item-p">
+            No, we do not take any commission on the jobs posted or completed
+            through our platform. Our goal is to make it as easy and
+            affordable as possible for homeowners to find skilled tradesmen
+            and for tradesmen to connect with potential clients. Instead of
+            charging commission fees, we have a simple and transparent pricing
+            model, ensuring that both homeowners and tradesmen keep more of
+            their hard-earned money.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>
+
     <!-- ============================================ -->
     <!--                Contact Form                  -->
     <!-- ============================================ -->
+
+        <!-- Flash messages section -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <section id="cs-contact-240">
       <div class="cs-container">
@@ -1644,7 +1879,7 @@
               you as soon as possible.
             </p>
           </div>
-          <form id="cs-form-240" name="Contact Form" method="post">
+          <form id="cs-form-240" name="Contact Form" method="post" action="{{ url_for('index') }}">
             <label class="cs-label">
               Name
               <input
@@ -1695,24 +1930,7 @@
                 >
               </div>
             </li>
-            <li class="cs-li">
-              <div class="cs-icon-wrapper">
-                <i class="fas fa-phone-alt cs-icon"></i>
-              </div>
-              <div class="cs-flex-group">
-                <span class="cs-header">Phone</span>
-                <a href="tel:206-987-6543" class="cs-link">020 473 1353</a>
-              </div>
-            </li>
-            <li class="cs-li">
-              <div class="cs-icon-wrapper">
-                <i class="fas fa-map-marker-alt cs-icon"></i>
-              </div>
-              <div class="cs-flex-group">
-                <span class="cs-header">Address</span>
-                <a href="" class="cs-link">67 Cameron Rd, Tauranga, BOP 3186</a>
-              </div>
-            </li>
+            
           </ul>
         </div>
       </div>
@@ -1924,19 +2142,129 @@
       var footer = document.getElementById("floating-footer");
 
       // Show the footer when the user scrolls down 100px or more
-      if (window.scrollY > 100) {
+      if (window.scrollY > 200) {
         footer.style.transform = "translateY(0)"; // Show footer
       } else {
         footer.style.transform = "translateY(100%)"; // Hide footer
       }
     });
-    document.addEventListener("DOMContentLoaded", function () {
-      const menuToggle = document.getElementById("hamburger-menu");
-      const menu = document.getElementById("dropdown-menu");
+document.addEventListener("DOMContentLoaded", function () {
+  const menuToggle = document.getElementById("hamburger-menu");
+  const menu = document.getElementById("dropdown-menu");
 
-      menuToggle.addEventListener("click", function () {
-        menu.classList.toggle("hidden");
-      });
+  // Toggle the menu visibility when hamburger icon is clicked
+  menuToggle.addEventListener("click", function () {
+    menu.classList.toggle("hidden");
+  });
+
+  // Get all the links inside the dropdown
+  const menuLinks = menu.querySelectorAll("a");
+
+  // Close the dropdown menu when any link is clicked
+  menuLinks.forEach(function(link) {
+    link.addEventListener("click", function() {
+      menu.classList.add("hidden");  // Close the menu by adding the 'hidden' class
     });
+  });
+});
+
+
+const tradieBtn = document.getElementById('tradieBtn');
+const homeownerBtn = document.getElementById('homeownerBtn');
+const tradieSection = document.querySelector('.tradie-section');
+const homeownerSection = document.querySelector('.homeowner-section');
+const tradieFaq = document.querySelector('.faq-wrapper.tradie-faq');
+const homeownerFaq = document.querySelector('.faq-wrapper.homeowner-faq');
+
+tradieBtn.addEventListener('click', () => {
+  tradieBtn.classList.add('active');
+  homeownerBtn.classList.remove('active');
+
+  tradieSection.style.display = 'block';
+  homeownerSection.style.display = 'none';
+
+  tradieFaq.style.display = 'block';
+  homeownerFaq.style.display = 'none';
+});
+
+homeownerBtn.addEventListener('click', () => {
+  homeownerBtn.classList.add('active');
+  tradieBtn.classList.remove('active');
+
+  homeownerSection.style.display = 'block';
+  tradieSection.style.display = 'none';
+
+  homeownerFaq.style.display = 'block';
+  tradieFaq.style.display = 'none';
+});
+
+
+let words = [
+    'Tradesmen', 'Builders', 'Electricians', 'Plumbers', 'Roofers',
+    'Landscapers', 'Painters',  'Concreters' , 'Floorers', 'Tilers', 'Cleaners', 'Handymen', 'Glaziers',
+   
+  ];
+
+  let i = 0;
+  let currentWord = 'Tradesmen';
+  let isDeleting = false;
+  let wordIndex = 0;
+  let speed = 150;  // Typing speed
+  let deleteSpeed = 150;  // Deleting speed
+
+  function type() {
+    const dynamicWordElement = document.getElementById('dynamic-word');
+
+    if (isDeleting) {
+      currentWord = currentWord.substring(0, currentWord.length - 1);
+      dynamicWordElement.textContent = currentWord;
+    } else {
+      currentWord = words[wordIndex].substring(0, currentWord.length + 1);
+      dynamicWordElement.textContent = currentWord;
+    }
+
+    // If the word is fully typed, start deleting after a pause
+    if (!isDeleting && currentWord === words[wordIndex]) {
+      setTimeout(() => {
+        isDeleting = true;
+      }, 1000); // Pause after word is fully typed
+    }
+
+    // Once the word is fully deleted, move to the next word
+    if (isDeleting && currentWord === '') {
+      wordIndex = (wordIndex + 1) % words.length; // Loop through the words
+      isDeleting = false;
+    }
+
+    // Keep space for the word, don't affect layout
+    dynamicWordElement.style.visibility = currentWord === '' ? 'hidden' : 'visible';
+
+    // Handle the typing and deleting speed
+    let typingSpeed = isDeleting ? deleteSpeed : speed;
+    setTimeout(type, typingSpeed);
+  }
+
+  // Start typing when the page loads
+  window.onload = type;
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const items = document.querySelectorAll('.scroll-fade-up');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.3
+    });
+
+    items.forEach(item => {
+      observer.observe(item);
+    });
+  });
+
+
   </script>
 </html>

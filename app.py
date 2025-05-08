@@ -30,21 +30,50 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from threading import Thread
 from dotenv import load_dotenv
+from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
+from datetime import datetime, timezone
+import pytz
+import stripe
+
 
 load_dotenv()
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
+SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
+
+app.config['WTF_CSRF_SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback-secret-key')
+
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
 bcrypt = Bcrypt(app)
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Define the path to your production database
+prod_db_path = '/home/codybeznec/CodysBusiness/instance/new_database.db'
+
+# Define the path to your local database (replace with your local path)
+local_db_path = 'sqlite:///new_database.db'
+
+# Check if the production database exists
+if os.path.exists(prod_db_path):
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{prod_db_path}'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = local_db_path
+
+
 
   # You can use any database URL here
 app.config['profile_pics'] = os.path.join(app.root_path, 'static', 'profile_pics')
-serializer = URLSafeTimedSerializer = (os.getenv('SECRET_KEY'))
+
+
+serializer = URLSafeTimedSerializer(SECRET_KEY)
 
 socketio = SocketIO(app)
 
@@ -53,6 +82,8 @@ migrate = Migrate(app, db)
 
 login_manager = LoginManager(app)  # Create a LoginManager instance
 login_manager.login_view = 'login'  # Set the login view
+login_manager.init_app(app)
+
 
 # Email Configuration
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
@@ -68,10 +99,34 @@ mail = Mail(app)
 
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST']) 
+@csrf.exempt
 def index():
-    return render_template('index.html')
+    if request.method == 'POST':
+        # Pull the form fields
+        name = request.form.get('name')
+        email = request.form.get('email')
+        message_body = request.form.get('Message')  # <-- careful: 'Message' must match name attribute in form
+        
+        # Create the email message
+        msg = emailmessage(
+            subject=f"New Public Contact Form Submission: {name}",
+            sender=email,
+            recipients=[os.getenv('MAIL_USERNAME')],  # Sending to your saved email
+            body=f"From: {name}\nEmail: {email}\n\nMessage:\n{message_body}"
+        )
+        
+        try:
+            mail.send(msg)
+            flash('Your message has been sent successfully!', 'success')
+        except Exception as e:
+            print(f"Error sending message: {e}")
+            flash('An error occurred while sending your message.', 'danger')
 
+        return redirect(url_for('index'))  # Just reload homepage after submit
+
+    # GET method: normal page load
+    return render_template('index.html')
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,9 +134,9 @@ class User(UserMixin, db.Model):
     email_verified = db.Column(db.Boolean, default=False)  # Column to track if email is verified
     verification_token = db.Column(db.String(500), nullable=True)  # New column for verification token
     user_type = db.Column(db.String(20), nullable=False, default='labourer')
-    location = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(500), nullable=False)
+    email = db.Column(db.String(500), unique=True, nullable=False)
+    password = db.Column(db.String(500), nullable=False)
     first_name = db.Column(db.String(50), nullable=True)  # Initially nullable
     last_name = db.Column(db.String(50), nullable=True)   # Initially nullable
     jobs_completed = db.Column(db.Integer, default=0)
@@ -159,7 +214,7 @@ class JobApplication(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True))
     is_read = db.Column(db.Boolean, default=False, nullable=True)
     room = db.Column(db.String(50), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey
@@ -173,7 +228,7 @@ class Notification(db.Model):
     message = db.Column(db.String(255), nullable=False)
     read = db.Column(db.Boolean, default=False)
     notification_type = db.Column(db.String(50))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True))
     job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=True)  
     job = db.relationship('Job', backref='notifications', lazy=True)
     user2_id = db.Column(db.Integer, nullable=True)  # Add user2_id here
@@ -244,7 +299,7 @@ class Chat(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Sender of the message
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Receiver of the message
     content = db.Column(db.Text, nullable=False)  # The chat message content
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)  # When the message was sent
+    timestamp = db.Column(db.DateTime(timezone=True))  # When the message was sent
     room = db.Column(db.String(255), nullable=False)
     is_read = db.Column(db.Boolean, default=False, nullable=False)  # Notification field for unread/read status
 
@@ -341,13 +396,14 @@ def verify_email(token):
 
 
 def generate_verification_token(email):
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    serializer = URLSafeTimedSerializer(SECRET_KEY)
     return serializer.dumps(email, salt='email-verify-salt')
 
 
 
 
 @app.route('/register', methods=['GET', 'POST'])
+@csrf.exempt
 def register():
     if request.method == 'POST':
         user_type = request.form.get('userType')
@@ -368,9 +424,11 @@ def register():
             return redirect(url_for('login'))  # Redirect to login page if email exists
 
         # If the email doesn't exist, create a new user
-        hashed_password = bcrypt.generate_password_hash(password)
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        print(f"Generated Password Hash: {hashed_password}")
+
+        serializer = URLSafeTimedSerializer(SECRET_KEY)
 
         # Generate a token using itsdangerous with an expiration time of 1 hour (3600 seconds)
         token = serializer.dumps(email, salt='email-verify-salt')
@@ -420,6 +478,7 @@ def register():
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
+@csrf.exempt
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -429,6 +488,10 @@ def login():
         if user:
             # Check if the password is correct and if the account is not soft deleted
             if bcrypt.check_password_hash(user.password, password):
+
+                print(f"Stored password hash: {user.password}")
+                print(f"Input password: {password}")
+
                 if user.soft_deleted:
                     flash('Your account has been deactivated. Please contact support.', 'error')
                     return redirect(url_for('login'))
@@ -493,6 +556,7 @@ def send_job_notification_email_async(user, job_name, tasks, job_id, employer_na
     send_async_email(user.email, subject, template_name, context)
 
 @app.route('/submit_job', methods=['POST'])
+@csrf.exempt
 def submit_job():
     if current_user.is_authenticated:
         if current_user.user_type == 'Business' and current_user.business_profile:
@@ -505,7 +569,7 @@ def submit_job():
                 for photo_upload in photo_uploads:
                     if photo_upload.filename != '':
                         filename = secure_filename(photo_upload.filename)
-                        file_path = f'static/job_images/{filename}'
+                        file_path = os.path.join('/home/codybeznec/CodysBusiness/static/job_images', filename)
                         photo_upload.save(file_path)
                         image_paths.append(filename)
 
@@ -562,6 +626,7 @@ def submit_job():
         flash('You must be logged in to submit a job.', 'error')
         return redirect(url_for('login'))
 
+@app.route('/job/<int:job_id>')
 def display_job(job_id):
     # Retrieve the job from the database with the related business profile
     job = (
@@ -589,6 +654,7 @@ def business_dashboard():
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
+@csrf.exempt
 def profile():
     if request.method == 'POST':
         file = request.files['profile_image']
@@ -616,6 +682,7 @@ def profile():
     return render_template('business_profile.html')
 
 @app.route('/profile/labourer/image', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_image():
     if request.method == 'POST':
@@ -645,6 +712,7 @@ def labourer_image():
 
 @app.route('/profile/business')
 @login_required
+@csrf.exempt
 def business_profile():
     # Fetch the full profile information of the current business user from the database
     user = current_user
@@ -699,6 +767,7 @@ def labourer_profile():
 
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def edit_profile():
     user = User.query.get(current_user.id)
@@ -730,6 +799,7 @@ def edit_profile():
 
 
 @app.route('/profile/labourer/edit', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def edit_labourer_profile():
     user = User.query.get(current_user.id)
@@ -809,6 +879,7 @@ from flask import flash
 # ... (previous imports) ...
 
 @app.route('/apply_for_job/<int:job_id>')
+@csrf.exempt
 @login_required
 def apply_for_job(job_id):
     job = Job.query.get_or_404(job_id)
@@ -933,6 +1004,7 @@ def view_applicants(job_id):
     )
 
 @app.route('/process_applications/<int:job_id>/<int:user_id>', methods=['POST'])
+@csrf.exempt
 def process_applications(job_id, user_id):
     # Update the status of all applications for the job
     job_applications = JobApplication.query.filter_by(job_id=job_id).all()
@@ -959,6 +1031,7 @@ def process_applications(job_id, user_id):
 
 
 @app.route('/confirm_user/<int:job_id>/<int:user_id>', methods=['GET'])
+@csrf.exempt
 @login_required
 def confirm_user(job_id, user_id):
     # Fetch details about the accepted user and job
@@ -1070,6 +1143,7 @@ def search_jobs():
     return render_template('your_template.html', job_data=job_data)
 
 @app.route('/active_jobs')
+@csrf.exempt
 @login_required
 def active_jobs():
     # Retrieve jobs where the current user has been accepted
@@ -1092,6 +1166,7 @@ def active_jobs():
     return render_template('active_jobs.html', active_jobs=active_jobs, applicant=current_user, is_dashboard_page=True)
 
 @app.route('/remove_application/<int:job_id>')
+@csrf.exempt
 @login_required
 def remove_application(job_id):
     # Find the job and application
@@ -1108,6 +1183,7 @@ def remove_application(job_id):
 
 
 @app.route('/delete_job/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def delete_job(job_id):
     job = Job.query.get(job_id)
@@ -1132,6 +1208,7 @@ def delete_job(job_id):
 
 
 @app.route('/edit_tradesman_profile', methods=['GET', 'POST'])
+@csrf.exempt
 def edit_tradesman_profile():
     if request.method == 'POST':
         # Similar to the previous route, handle the form submission
@@ -1185,6 +1262,7 @@ def edit_tradesman_profile():
 
 
 @app.route('/review/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 def tradesman_review(job_id):
     # Fetch the job details based on job_id
     job = Job.query.get(job_id)
@@ -1242,6 +1320,7 @@ def tradesman_review(job_id):
     return render_template('labourer_review.html', job=job, selected_user=selected_user, existing_review=existing_review)
 
 @app.route('/edit_social_links', methods=['GET', 'POST'])
+@csrf.exempt
 def edit_social_links():
     if request.method == 'POST':
         facebook = request.form.get('facebook')
@@ -1276,6 +1355,7 @@ def edit_social_links():
     return render_template('edit_social_links.html')
 
 @app.route('/tradesman_profile/<int:user_id>')
+@csrf.exempt
 def view_tradesman_profile(user_id):
     # Query the database for the user
     user = User.query.get_or_404(user_id)  # Get the user by ID
@@ -1295,11 +1375,13 @@ def view_tradesman_profile(user_id):
 
 @app.route('/notifications/unread')
 @login_required
+@csrf.exempt
 def get_unread_notifications():
     notifications = Notification.query.filter_by(
         user_id=current_user.id,
         read=False
     ).all()
+    
     
     return jsonify({
         "notifications": [{"id": n.id, "message": n.message, "timestamp": n.timestamp, "notification_type": n.notification_type, 
@@ -1308,6 +1390,7 @@ def get_unread_notifications():
 
 @app.route('/notifications/<int:notification_id>', methods=['POST'])
 @login_required
+@csrf.exempt
 def mark_notification_read(notification_id):
     notification = Notification.query.get(notification_id)
     if notification and notification.user_id == current_user.id:
@@ -1319,6 +1402,7 @@ def mark_notification_read(notification_id):
 
 @app.route('/notifications/delete/<int:notification_id>', methods=['POST'])
 @login_required
+@csrf.exempt
 def delete_notification(notification_id):
     notification = Notification.query.get(notification_id)
     if notification and notification.user_id == current_user.id:
@@ -1367,10 +1451,16 @@ def create_message_notification(receiver_id, message_content, job_application_id
 
 
 @app.route('/notifications')
+@csrf.exempt
 @login_required
 def notifications():
     # Fetch the notifications for the current user
     notifications = Notification.query.filter_by(user_id=current_user.id).all()
+
+    # Convert timestamps to NZST (New Zealand Standard Time)
+    nz_tz = pytz.timezone('Pacific/Auckland')
+    for notification in notifications:
+        notification.timestamp = notification.timestamp.astimezone(nz_tz)  # Convert to NZST
 
     # Render the notifications page template with the notifications data
     return render_template('notifications.html', notifications=notifications, is_dashboard_page=True)
@@ -1416,6 +1506,7 @@ def create_job_application_notification(receiver_id, job_id, applicant_name, tra
         return False
  
 @app.route('/business_completed_jobs')
+@csrf.exempt
 @login_required
 def business_completed_jobs():
     # Retrieve the business profile of the current user
@@ -1430,29 +1521,36 @@ def business_completed_jobs():
     flash("Business profile not found.", "error")
     return redirect(url_for('business_dashboard'))
 
-# Contact route
 @app.route('/contact', methods=['GET', 'POST'])
+@csrf.exempt
 def contact():
     if request.method == 'POST':
         # Get form data
         name = request.form['name']
         email = request.form['email']
-        message = request.form['message']
+        message_body = request.form['message']
 
-        # Process the form data (e.g., save to database, send email, etc.)
-        # For now, just print to console
-        print(f"Message from {name} ({email}): {message}")
+        # Prepare the email
+        msg = emailmessage(
+            subject=f"New Contact Form Message from {name}",
+            sender=email,  # So you know who sent it
+            recipients=[os.getenv('MAIL_USERNAME')],  # send it to your own email
+            body=f"From: {name}\nEmail: {email}\n\nMessage:\n{message_body}"
+        )
 
-        # Flash a success message
-        flash('Your message has been sent successfully!', 'success')
+        try:
+            mail.send(msg)
+            flash('Your message has been sent successfully!', 'success')
+        except Exception as e:
+            print(f"Error sending email: {e}")
+            flash('An error occurred while sending your message.', 'danger')
 
-        # Optionally, clear the form after submission
         return redirect(url_for('contact'))
 
     return render_template('contact_us.html')
 
-
 @app.route('/select_job_categories_and_locations', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def select_job_categories_and_locations():
     # Predefined categories and locations
@@ -1495,6 +1593,7 @@ def select_job_categories_and_locations():
                            selected_locations=selected_locations)
 
 @app.route('/close_job/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 def close_job(job_id):
     job = Job.query.get(job_id)
 
@@ -1568,6 +1667,7 @@ def create_job_acceptance_notification(receiver_id, job_id, employer_name,job_na
         return None
 
 @app.route('/find-tradies', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def find_tradies():
     # Ensure the user has a labourer profile
@@ -1626,6 +1726,7 @@ import os
 from werkzeug.utils import secure_filename
 
 @app.route('/create_tradie_post', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def create_tradie_post():
     try:
@@ -1651,7 +1752,7 @@ def create_tradie_post():
             allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
             files = request.files.getlist('post_images')
 
-            upload_folder = os.path.join('static', 'tradies_post_images')
+            upload_folder = os.path.join(app.root_path,'static', 'tradies_post_images')
             os.makedirs(upload_folder, exist_ok=True)  # Ensure the folder exists
 
             for file in files:
@@ -1707,6 +1808,7 @@ def create_tradie_post():
         return redirect(url_for('create_tradie_post'))
 
 @app.route('/edit_tradie_post/<int:post_id>', methods=['GET', 'POST'])
+@csrf.exempt
 def edit_tradie_post(post_id):
     post = Post.query.get_or_404(post_id)
 
@@ -1727,7 +1829,7 @@ def edit_tradie_post(post_id):
 
         print("FILES RECEIVED:", files)  # Debugging step
 
-        upload_folder = os.path.join('static', 'tradies_post_images')
+        upload_folder = os.path.join(app.root_path,'static', 'tradies_post_images')
         os.makedirs(upload_folder, exist_ok=True)  # Ensure the folder exists
 
         for file in files:
@@ -1765,6 +1867,7 @@ def edit_tradie_post(post_id):
 
 
 @app.route('/remove_image', methods=['POST'])
+@csrf.exempt
 def remove_image():
     data = request.get_json()
     image_filename = data.get('image_filename')
@@ -1779,7 +1882,7 @@ def remove_image():
         return jsonify({"success": False, "message": "Missing required data"}), 400
 
     # Delete the image file from the server
-    upload_folder = os.path.join('static', 'tradies_post_images')
+    upload_folder = os.path.join(app.root_path,'static', 'tradies_post_images')
     file_path = os.path.join(upload_folder, image_filename)
 
     if os.path.exists(file_path):
@@ -1845,6 +1948,7 @@ def remove_saved_post(post_id):
     return redirect(url_for('tradies_saved_posts'))
 
 @app.route('/delete_post/<int:post_id>', methods=['POST'])
+@csrf.exempt
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -1868,6 +1972,7 @@ def delete_post(post_id):
     return redirect(url_for('tradies_my_posts'))  # Redirect to the user's posts page
 
 @app.route('/tradies_saved_posts')
+@csrf.exempt
 @login_required  # Ensure the user is logged in
 def tradies_saved_posts():
     # Get the current logged-in user
@@ -1920,6 +2025,7 @@ def send_async_email(to, subject, template_name, context):
     thread.start()
 
 @app.route('/chat/<int:job_id>/<int:user_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def chat(job_id, user_id):
     try:
@@ -1967,6 +2073,7 @@ def chat(job_id, user_id):
                 content=content,
                 job_application_id=job_application.id,
                 room=room,
+                timestamp=datetime.now(pytz.timezone('Pacific/Auckland'))  # ✅ Proper timestamp
             )
             db.session.add(message)
             db.session.commit()
@@ -1990,6 +2097,12 @@ def chat(job_id, user_id):
                 send_async_email(receiver_user.email, email_subject, "email/email_job_message.html", email_context)
 
         messages = Message.query.filter_by(job_application_id=job_application.id).order_by(Message.timestamp).all()
+
+        nz_tz = pytz.timezone('Pacific/Auckland')
+        for message in messages:
+            if message.timestamp:
+                message.timestamp = message.timestamp.astimezone(nz_tz)
+
 
         Message.query.filter_by(
             job_application_id=job_application.id,
@@ -2020,6 +2133,7 @@ def chat(job_id, user_id):
         return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/messages')
+@csrf.exempt
 @login_required
 def messages():
     try:
@@ -2027,6 +2141,11 @@ def messages():
         messages = Message.query.filter(
             (Message.sender_id == current_user.id) | (Message.receiver_id == current_user.id)
         ).all()
+
+        # Convert timestamp to NZST (New Zealand Standard Time)
+        nz_tz = pytz.timezone('Pacific/Auckland')
+        for message in messages:
+            message.timestamp = message.timestamp.astimezone(nz_tz)  # Convert to local NZST
 
         # Group unread counts by room
         unread_counts = db.session.query(Message.room, db.func.count(Message.id)).filter(
@@ -2117,19 +2236,24 @@ def messages():
 
 
 def create_message(sender_id, receiver_id, content, job_application_id=None, room=None):
+    # Create a timezone-aware UTC datetime
+    utc_time = datetime.now(pytz.utc)
+
+    # Convert UTC time to New Zealand Standard Time (NZST) or New Zealand Daylight Time (NZDT)
+    nz_tz = pytz.timezone('Pacific/Auckland')  # Handles both NZST and NZDT automatically
+    local_time = utc_time.astimezone(nz_tz)
+
+    # Create and add the message to the database
     message = Message(
         sender_id=sender_id,
         receiver_id=receiver_id,
         content=content,
-        timestamp=datetime.utcnow(),
+        timestamp=local_time,  # Store the time in NZST or NZDT
         job_application_id=job_application_id,
         room=room,
-        
     )
     db.session.add(message)
     db.session.commit()
-
-
 def get_or_create_labourer_chat_room(user1_id, user2_id):
     """
     Creates or retrieves a chat room for two users.
@@ -2148,6 +2272,7 @@ def get_or_create_labourer_chat_room(user1_id, user2_id):
 
 @app.route('/labourer_chat/<int:user2_id>', methods=['GET', 'POST'])
 @login_required
+@csrf.exempt
 def labourer_chat(user2_id):
     """
     Handles labourer-to-labourer chat functionality.
@@ -2177,13 +2302,18 @@ def labourer_chat(user2_id):
             content = request.form.get('message')
             if not content:
                 return jsonify({"error": "Message content cannot be empty."}), 400
+            
+            # Get the current time in NZST
+            nz_tz = pytz.timezone('Pacific/Auckland')
+            nz_now = datetime.now(nz_tz)  # Get the current time in NZST
 
             # Save the message
             message = Message(
                 sender_id=current_user.id,
                 receiver_id=user2_id,
                 content=content,
-                room=room
+                room=room,
+                timestamp=nz_now
             )
             db.session.add(message)
             db.session.commit()
@@ -2271,6 +2401,7 @@ import os
 from werkzeug.utils import secure_filename
 
 @app.route('/upload_id_image', methods=['POST'])
+@csrf.exempt
 @login_required
 def upload_id_image():
     if 'id_image' not in request.files:
@@ -2285,7 +2416,9 @@ def upload_id_image():
 
     if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
         filename = secure_filename(file.filename)
-        upload_path = os.path.join('static', 'id_images', filename)
+        upload_folder = os.path.join(app.root_path, 'static', 'id_images')
+        os.makedirs(upload_folder, exist_ok=True)  # Create the folder if it doesn't exist
+        upload_path = os.path.join(upload_folder, filename)
         file.save(upload_path)
 
         # Append to the existing ID image path
@@ -2312,6 +2445,7 @@ def upload_id_image():
         return jsonify({"error": "Invalid file format. Only PNG, JPG, and JPEG are allowed."}), 400
 
 @app.route('/upload_liability_insurance', methods=['POST'])
+@csrf.exempt
 @login_required
 def upload_liability_insurance():
     if 'liability_insurance' not in request.files:
@@ -2332,7 +2466,7 @@ def upload_liability_insurance():
     for file in files:
         if file and '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
             filename = secure_filename(file.filename)
-            file_path = os.path.join('static', 'insurance_images', filename)
+            file_path = os.path.join(app.root_path,'static', 'insurance_images', filename)
             file.save(file_path)
             file_paths.append(filename)
         else:
@@ -2362,6 +2496,7 @@ def upload_liability_insurance():
 
 
 @app.route('/reviews/<int:user_id>')
+@csrf.exempt
 def reviews_page(user_id):
     user = User.query.get_or_404(user_id)  # Fetch user by ID
     # Fetch all reviews for the user and join with the Job table to get job details
@@ -2386,6 +2521,7 @@ def calculate_overall_rating(user):
     return round(overall_rating, 2)  # Round to 2 decimal places
 
 @app.route('/delete_account', methods=['POST' , 'GET'])
+@csrf.exempt
 def delete_account():
     # Get the current user (assuming they are logged in)
     user = current_user  # or however you're retrieving the user
@@ -2403,6 +2539,7 @@ def delete_account():
 
 
 @app.route('/change-email', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def change_email():
     if request.method == 'POST':
@@ -2427,6 +2564,7 @@ def change_email():
 
 
 @app.route('/change-password', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def change_password():
     if request.method == 'POST':
@@ -2453,6 +2591,7 @@ def change_password():
     return render_template('business_profile.html')
 
 @app.route('/save_location', methods=['POST'])
+@csrf.exempt
 @login_required
 def save_location():
     location = request.form.get('location')
@@ -2466,6 +2605,7 @@ def save_location():
     return redirect(url_for('business_profile'))  # Replace with your appropriate redirect
 
 @app.route('/labourer-change-email', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_change_email():
     if request.method == 'POST':
@@ -2487,6 +2627,7 @@ def labourer_change_email():
 
 
 @app.route('/labourer-change-password', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def labourer_change_password():
     if request.method == 'POST':
@@ -2514,6 +2655,7 @@ def labourer_change_password():
 
 
 @app.route('/labourer-save-location', methods=['POST'])
+@csrf.exempt
 @login_required
 def labourer_save_location():
     location = request.form.get('location')
@@ -2538,6 +2680,7 @@ def admin_required(f):
     return decorated_function
 
 @app.route('/admin', methods=['GET'])
+@csrf.exempt
 @login_required
 @admin_required
 def admin_dashboard():
@@ -2555,6 +2698,7 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', users=users, jobs=jobs, pending_verifications=pending_verifications, tradesman_users=tradesman_users,total_job_contacts=total_job_contacts,homeowner_users=homeowner_users)
 
 @app.route('/admin/user/<int:user_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 @admin_required
 def admin_user_details(user_id):
@@ -2571,6 +2715,7 @@ def admin_user_details(user_id):
     return render_template('admin_user_details.html', user=user)
 
 @app.route('/verify-profile', methods=['POST'])
+@csrf.exempt
 @login_required
 def verify_profile():
     confirmation = request.form.get('confirmation')
@@ -2585,6 +2730,7 @@ def verify_profile():
     return redirect(url_for('labourer_profile'))
 
 @app.route('/update_verification/<int:user_id>', methods=['POST'])
+@csrf.exempt
 @login_required
 @admin_required
 def update_verification(user_id):
@@ -2635,6 +2781,7 @@ def update_verification(user_id):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/impersonate/<int:user_id>', methods=['GET'])
+@csrf.exempt
 @login_required
 def impersonate(user_id):
     for rule in app.url_map.iter_rules():
@@ -2673,6 +2820,7 @@ def impersonate(user_id):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/end_impersonation', methods=['POST'])
+@csrf.exempt
 def end_impersonation():
     # Ensure the session contains impersonation data
     if not session.get('is_impersonating'):
@@ -2695,6 +2843,7 @@ def end_impersonation():
     return redirect(url_for('login'))
 
 @app.route('/admin_tradesman', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def admin_tradesman():
     if not current_user.is_admin:
@@ -2723,6 +2872,7 @@ def admin_tradesman():
 from sqlalchemy import or_
 
 @app.route('/admin_homeowners')
+@csrf.exempt
 @login_required
 def admin_homeowners():
     if not current_user.is_admin:
@@ -2758,6 +2908,7 @@ def admin_homeowners():
     return render_template('admin_homeowners.html', homeowners_with_jobs=homeowners_with_jobs, search=search)
 
 @app.route('/admin_jobs')
+@csrf.exempt
 def admin_jobs():
     search = request.args.get('search', '')  # Get the search term from the URL, default to empty string if not provided
 
@@ -2893,6 +3044,7 @@ def create_equipment_listing():
     return render_template('create_equipment_listing.html')
 
 @app.route('/edit_job/<int:job_id>', methods=['GET', 'POST'])
+@csrf.exempt
 @login_required
 def edit_job(job_id):
     job = Job.query.get_or_404(job_id)
@@ -2952,6 +3104,7 @@ def edit_job(job_id):
 
 
 @app.route('/remove_job_image', methods=['DELETE'])
+@csrf.exempt
 def remove_job_image():
     # Parse incoming JSON data from the request
     data = request.get_json()
@@ -2999,6 +3152,141 @@ def remove_job_image():
     # Return a success response
     return jsonify({"success": True})
 
+
+@app.route('/start_payment/<int:job_id>')
+@login_required
+def start_payment(job_id):
+    job = Job.query.get_or_404(job_id)
+
+    stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+
+    try:
+        # Create the Stripe Checkout session
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'nzd',  # Currency for the payment
+                    'unit_amount': 500,  # $5.00 in cents
+                    'product_data': {
+                        'name': f"Application for job: {job.job_name}",
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            metadata={
+                'user_id': current_user.id,
+                'job_id': job.id,
+            },
+            success_url=f"{request.url_root}payment_success?session_id={{CHECKOUT_SESSION_ID}}",  # Redirect URL after successful payment
+            cancel_url=f"{request.url_root}job/{job.id}",  # Redirect URL if the user cancels the payment
+        )
+
+        return redirect(checkout_session.url)
+
+    except Exception as e:
+        flash(f"Payment setup failed: {str(e)}", "danger")
+        return redirect(url_for('display_job', job_id=job.id))
+
+
+@app.route('/stripe_webhook', methods=['POST'])
+@csrf.exempt
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get('Stripe-Signature')
+    webhook_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+    event = None
+    print(f"Stripe Webhook Secret: {webhook_secret}")
+
+
+
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except ValueError as e:
+        return jsonify({"error": "Invalid payload"}), 400
+    except stripe.error.SignatureVerificationError as e:
+        return jsonify({"error": "Invalid signature"}), 400
+
+    # Handle the event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        metadata = session.get('metadata', {})
+
+        user_id = int(metadata.get('user_id'))
+        job_id = int(metadata.get('job_id'))
+
+        if not user_id or not job_id:
+            return jsonify({'error': 'Missing metadata'}), 400
+
+        job = Job.query.get(job_id)
+        user = User.query.get(user_id)
+
+        if not job or not user:
+            return jsonify({'error': 'Job or user not found'}), 404
+
+        # Check if user has already applied
+        application = JobApplication.query.filter_by(user_id=user.id, job_id=job.id).first()
+
+        if application:
+            application.status = 'paid'  # Update status if the application exists
+        else:
+            application = JobApplication(user_id=user.id, job_id=job.id, status='paid')
+            db.session.add(application)
+
+        db.session.commit()
+
+        # Notify the job poster (via notification system)
+        create_job_application_notification(
+            receiver_id=job.user_id,
+            job_id=job.id,
+            trading_name=user.company_details.trading_name,
+            applicant_name=user.first_name
+        )
+
+        # Prepare email context and send email
+        email_context = {
+            "job_poster_name": job.user.first_name,
+            "job_title": job.job_name,
+            "applicant_name": user.first_name,
+            "trading_name": user.company_details.trading_name,
+            "message_link": f"{request.url_root}login"
+        }
+
+        send_async_email(
+            to=job.user.email,
+            subject=f"New Application for '{job.job_name}'",
+            template_name="email/job_application_notification.html",
+            context=email_context
+        )
+
+    return jsonify({'status': 'success'}), 200
+
+
+@app.route('/payment_success')
+@login_required
+def payment_success():
+    session_id = request.args.get('session_id')
+
+    # Retrieve the session from Stripe using the session_id
+    session = stripe.checkout.Session.retrieve(session_id)
+
+    # Get user ID and job ID from the session metadata
+    user_id = int(session.metadata['user_id'])
+    job_id = int(session.metadata['job_id'])
+
+    # Ensure application is marked as paid (this should already be handled in the webhook, but we can do it here for safety)
+    job_application = JobApplication.query.filter_by(user_id=user_id, job_id=job_id).first()
+    if job_application and job_application.status != 'paid':
+        job_application.status = 'paid'
+        db.session.commit()
+
+    flash("Payment successful! You've applied for the job.", "success")
+    return redirect(url_for('applied_jobs'))
+
+
 if __name__ == "__main__":
+  
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 
