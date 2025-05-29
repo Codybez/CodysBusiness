@@ -11,14 +11,13 @@
     <style>
       /* Center the entire body content */
       body {
-        display: flex;
-        justify-content: center; /* Horizontally center */
         align-items: center; /* Vertically center */
         height: 100vh; /* Take full height of the viewport */
         margin: 0; /* Remove default margin */
-        margin-top: 40px;
+        margin-top: 30px;
         background-color: #ffffff; /* Optional, for better visibility */
         min-height: 100vh; /* Ensure that the body is at least 100% of the viewport height */
+        padding: 10px;
       }
 
       /* Container styling */
@@ -28,27 +27,27 @@
         padding-right: 20px;
         padding-left: 20px;
         padding-bottom: 20px;
-        margin: 20px auto;
-        border: 1px solid #e0e0e0;
+        margin: 5px auto;
+
         border-radius: 15px;
-        max-width: 600px;
+        max-width: 400px;
         width: 100%;
 
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
         box-sizing: border-box; /* Ensures padding doesn't push content */
       }
 
       /* Form title */
       .registration-container h1.form-title {
-        font-size: 24px;
-        color: #333333;
-        text-align: center;
-        margin-bottom: 20px;
+        font-size: 22px;
+        color: #ff6600;
+        text-align: left;
+        margin-bottom: 30px;
+        margin-top: 50px;
       }
 
       /* Label styling */
       .registration-container label {
-        font-size: 14px;
+        font-size: 12px;
         color: #555555;
         font-weight: 600;
         margin-bottom: 5px;
@@ -96,6 +95,7 @@
         font-size: 16px;
         font-weight: bold;
         border: none;
+        margin-top: 20px;
         padding: 10px;
         width: 100%; /* Full width button */
         border-radius: 5px;
@@ -130,61 +130,61 @@
     {% block content %}
     <div class="registration-container">
       <div>
-        <h1 class="form-title">Sign Up</h1>
+        <h1 class="form-title">Please enter your details.</h1>
       </div>
 
       <form action="{{ url_for('register') }}" method="post">
         <!-- First Name -->
         <div>
-          <label for="first_name"></label>
+          <label for="first_name">First Name</label>
           <input
             type="text"
             id="first_name"
             name="first_name"
             required
-            placeholder="First Name"
+            placeholder="Your first name"
           />
         </div>
 
         <!-- Last Name -->
         <div>
-          <label for="last_name"></label>
+          <label for="last_name">Last Name</label>
           <input
             type="text"
             id="last_name"
             name="last_name"
             required
-            placeholder="Last Name"
+            placeholder="Your last Name"
           />
         </div>
 
         <!-- Email -->
         <div>
-          <label for="email"></label>
+          <label for="email">Email</label>
           <input
             type="email"
             id="email"
             name="email"
             required
-            placeholder="Email"
+            placeholder="Your email"
           />
         </div>
 
         <!-- Password -->
         <div>
-          <label for="password"></label>
+          <label for="password">Password</label>
           <input
             type="password"
             id="password"
             name="password"
             required
-            placeholder="Password"
+            placeholder="Enter a password"
           />
         </div>
 
         <!-- Location Dropdown -->
         <div>
-          <label for="location"></label>
+          <label for="location">Location</label>
           <select id="location" name="location" required>
             <option value="" disabled selected>Choose Your Location</option>
             <option value="Northland">Northland</option>
@@ -208,17 +208,17 @@
 
         <!-- User Type Dropdown -->
         <div>
-          <label for="userType"></label>
+          <label for="userType">Account Type</label>
           <select id="userType" name="userType" required>
-            <option value="" disabled selected>I want to...</option>
-            <option value="Labourer">Join As a Tradesman</option>
-            <option value="Business">Post a Job</option>
+            <option value="" disabled selected>Select Account Type</option>
+            <option value="Labourer">Tradesman Account</option>
+            <option value="Business">Homeowner Account</option>
           </select>
         </div>
 
         <!-- Submit Button -->
         <div>
-          <button type="submit" id="register-button">Sign Up</button>
+          <button type="submit" id="register-button">Create Account</button>
         </div>
       </form>
 
