@@ -426,7 +426,6 @@ def register():
         # If the email doesn't exist, create a new user
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        print(f"Generated Password Hash: {hashed_password}")
 
         serializer = URLSafeTimedSerializer(SECRET_KEY)
 
@@ -489,8 +488,6 @@ def login():
             # Check if the password is correct and if the account is not soft deleted
             if bcrypt.check_password_hash(user.password, password):
 
-                print(f"Stored password hash: {user.password}")
-                print(f"Input password: {password}")
 
                 if user.soft_deleted:
                     flash('Your account has been deactivated. Please contact support.', 'error')
@@ -3197,9 +3194,7 @@ def stripe_webhook():
     sig_header = request.headers.get('Stripe-Signature')
     webhook_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
     event = None
-    print(f"Stripe Webhook Secret: {webhook_secret}")
-
-
+  
 
 
     try:
@@ -3288,5 +3283,5 @@ def payment_success():
 
 if __name__ == "__main__":
   
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False)
 
