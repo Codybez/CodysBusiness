@@ -126,6 +126,8 @@
         height: 100%;
         width: 100%;
         object-fit: cover;
+        object-position: 57% center; 
+
       }
       #hero-143 .cs-container {
         width: 100%;
@@ -218,7 +220,7 @@
     /* Desktop - 1300px (To make image background parallax) */
     @media only screen and (min-width: 81.25rem) {
       #hero-143 {
-        background: url("https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen.jpg");
+        background: url("static/app_images/Couple_chat.png");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -1445,26 +1447,27 @@ html {
         >
       </div>
 
-      <!-- Background Image -->
-      <picture class="cs-background">
-        <source
-          media="(max-width: 600px)"
-          srcset="https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen-m.jpg"
-        />
-        <source
-          media="(min-width: 601px)"
-          srcset="https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen.jpg"
-        />
-        <img
-          loading="lazy"
-          decoding="async"
-          src="https://csimg.nyc3.digitaloceanspaces.com/Hero/kitchen.jpg"
-          alt="kitchen"
-          width="2250"
-          height="1500"
-          aria-hidden="true"
-        />
-      </picture>
+<!-- Background Image -->
+<picture class="cs-background">
+  <source
+    media="(max-width: 600px)"
+    srcset="static/app_images/Couple_chat.png"
+  />
+  <source
+    media="(min-width: 601px)"
+    srcset="static/app_images/Couple_chat.png"
+  />
+  <img
+    loading="lazy"
+    decoding="async"
+    src="static/app_images/Couple_chat.png"
+    alt="background image"
+    width="2250"
+    height="1500"
+    aria-hidden="true"
+  />
+</picture>
+
     </section>
 
     <!-- ============================================ -->
@@ -1926,7 +1929,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
               <div class="cs-flex-group">
                 <span class="cs-header">Email</span>
                 <a href="mailto:support@yourdomain.com" class="cs-link"
-                  >support@openwork.co.nz</a
+                  >openworknz@gmail.com</a
                 >
               </div>
             </li>
