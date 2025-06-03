@@ -21,6 +21,35 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
       rel="stylesheet"
     />
+    <meta
+      name="description"
+      content="Login to your OpenWorkNZ account to connect with trusted tradies across New Zealand."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Login To Your Account - OpenWorkNZ" />
+    <meta
+      property="og:description"
+      content="Sign in to access job listings, connect with tradespeople, and manage your profile."
+    />
+    <meta
+      property="og:image"
+      content="{{ url_for('static', filename='app_images/icon-image.png', _external=True) }}"
+    />
+    <meta property="og:url" content="{{ request.url }}" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Login To Your Account - OpenWorkNZ" />
+    <meta
+      name="twitter:description"
+      content="Sign in to connect with trusted tradespeople across New Zealand."
+    />
+    <meta
+      name="twitter:image"
+      content="{{ url_for('static', filename='app_images/icon-image.png', _external=True) }}"
+    />
 
     <style>
       * {
