@@ -20,17 +20,30 @@
       type="image/png"
       href="{{ url_for('static', filename='app_images/icon-image.png') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <style>
+      body,
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Montserrat", sans-serif !important;
+      }
+      /* Global font application */
       body {
-        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+        font-family: "Montserrat", sans-serif;
       }
 
       footer {
-        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+        font-family: "Montserrat", sans-serif;
       }
+
       /* Styling for the new message icon */
       .fas.fa-envelope,
       .fas.fa-bell,
@@ -212,7 +225,7 @@
         z-index: 9999;
         cursor: pointer;
         display: inline-block; /* Prevents extra space from being added */
-        max-width: 30%; /* Ensures the box doesn't overflow the screen */
+        max-width: 80%; /* Ensures the box doesn't overflow the screen */
         text-align: center; /* Centers the text */
 
         overflow: hidden; /* Truncates overflow if needed */
