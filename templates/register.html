@@ -8,7 +8,32 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='register.css') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
+      i[class^="fa"],
+      i[class*=" fa"] {
+        font-family: "Font Awesome 6 Free" !important;
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+      }
+      body,
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Montserrat", sans-serif !important;
+      }
+      * {
+        font-family: "Poppins", sans-serif !important;
+      }
       /* Center the entire body content */
       body {
         align-items: center; /* Vertically center */
@@ -38,10 +63,10 @@
 
       /* Form title */
       .registration-container h1.form-title {
-        font-size: 22px;
+        font-size: 20px;
         color: #ff6600;
         text-align: left;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         margin-top: 50px;
       }
 

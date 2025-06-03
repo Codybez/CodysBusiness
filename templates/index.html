@@ -10,12 +10,26 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     rel="stylesheet"
   />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+
+
   <meta name="description" content="OpenWorkNZ connects New Zealanders with trusted tradies like plumbers, electricians, and builders. Free to post jobs and sign up.">
   <link rel="icon" type="image/png" href="/static/app_images/icon-image.png" />
 
   
 
   <style>
+i[class^="fa"],
+i[class*=" fa"] {
+  font-family: "Font Awesome 6 Free" !important;
+}
+
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
 
     .flash-messages {
     position: fixed;
@@ -58,7 +72,9 @@
     background-color: #F44336;
     color: white;
 }
-
+  * {
+    font-family: 'Poppins', sans-serif !important;
+  }
     body {
       font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
         "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
@@ -155,6 +171,9 @@
       }
       #hero-143 .cs-title {
         /* 39px - 61px */
+        font-family: 'Montserrat', sans-serif;
+        font-size: 3rem;
+        font-weight: 700;
         font-size: clamp(2.4375rem, 6.4vw, 3.8125rem);
         font-weight: 700;
         line-height: 1.2em;
@@ -1443,6 +1462,7 @@ html {
 
   </style>
   </head>
+
   <body>
     <header>
       <a href="{{ url_for('login') }}" class="login-button">Log in</a>
@@ -2320,4 +2340,5 @@ let words = [
   });
 
   </script>
+
 </html>

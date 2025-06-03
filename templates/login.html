@@ -13,7 +13,19 @@
       type="image/png"
       href="{{ url_for('static', filename='app_images/icon-image.png') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
     <style>
+      * {
+        font-family: "Poppins", sans-serif !important;
+      }
       body {
         display: flex;
         justify-content: center; /* Horizontally center */
@@ -21,6 +33,20 @@
         height: 100vh; /* Take full height of the viewport */
         margin: 0; /* Remove default margin */
         background-color: #ffffff; /* Optional, for better visibility */
+      }
+      i[class^="fa"],
+      i[class*=" fa"] {
+        font-family: "Font Awesome 6 Free" !important;
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+      }
+      body,
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Montserrat", sans-serif !important;
       }
 
       /* Container styling */
@@ -34,7 +60,7 @@
 
       /* Form title */
       .registration-container h1 {
-        font-size: 22px;
+        font-size: 20px;
         color: #ff6600;
         text-align: left;
         margin-bottom: 20px;
