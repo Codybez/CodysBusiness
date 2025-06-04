@@ -3280,6 +3280,12 @@ def payment_success():
     flash("Payment successful! You've applied for the job.", "success")
     return redirect(url_for('applied_jobs'))
 
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static', 'sitemap.xml')
+
+
+
 
 if __name__ == "__main__":
   
