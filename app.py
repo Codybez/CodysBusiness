@@ -35,7 +35,7 @@ from flask_wtf.csrf import CSRFProtect
 from datetime import datetime, timezone
 import pytz
 import stripe
-
+from flask import send_from_directory
 
 load_dotenv()
 
