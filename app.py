@@ -44,31 +44,6 @@ csrf = CSRFProtect(app)
 
 
 
-@app.route('/sitemap.xml')
-def sitemap():
-    return send_from_directory('static', 'sitemap.xml')
-
-@app.route('/robots.txt')
-def robots_txt():
-    return (
-        "User-agent: *\n"
-        "Disallow:\n"
-        "Sitemap: https://www.openwork.co.nz/sitemap.xml\n",
-        200,
-        {'Content-Type': 'text/plain'}
-    )
-
-@app.after_request
-def apply_hsts(response):
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    return response
-
-@app.before_request
-def force_https_permanent_redirect():
-    if request.headers.get('X-Forwarded-Proto', 'http') == 'http':
-        url = request.url.replace('http://', 'https://', 1)
-        return redirect(url, code=301)
-
 
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
@@ -3307,6 +3282,22 @@ def payment_success():
 
     flash("Payment successful! You've applied for the job.", "success")
     return redirect(url_for('applied_jobs'))
+
+
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static', 'sitemap.xml')
+
+@app.route('/robots.txt')
+def robots_txt():
+    return (
+        "User-agent: *\n"
+        "Disallow:\n"
+        "Sitemap: https://www.openwork.co.nz/sitemap.xml\n",
+        200,
+        {'Content-Type': 'text/plain'}
+    )
 
 
 if __name__ == "__main__":
