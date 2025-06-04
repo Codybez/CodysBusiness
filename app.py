@@ -3284,6 +3284,15 @@ def payment_success():
 def sitemap():
     return send_from_directory('static', 'sitemap.xml')
 
+@app.route('/robots.txt')
+def robots_txt():
+    return (
+        "User-agent: *\n"
+        "Disallow:\n"
+        "Sitemap: https://www.openwork.co.nz/sitemap.xml\n",
+        200,
+        {'Content-Type': 'text/plain'}
+    )
 
 
 
