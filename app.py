@@ -3299,6 +3299,12 @@ def apply_hsts(response):
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     return response
 
+@app.before_request
+def force_https_permanent_redirect():
+    if request.headers.get('X-Forwarded-Proto', 'http') == 'http':
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
+
 if __name__ == "__main__":
   
     socketio.run(app, host="0.0.0.0", port=5000, debug=False)
