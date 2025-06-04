@@ -3294,7 +3294,10 @@ def robots_txt():
         {'Content-Type': 'text/plain'}
     )
 
-
+@app.after_request
+def apply_hsts(response):
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
 
 if __name__ == "__main__":
   
