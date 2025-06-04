@@ -36,14 +36,20 @@ from datetime import datetime, timezone
 import pytz
 import stripe
 from flask import send_from_directory
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 load_dotenv()
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-
-
+@app.before_request
+def redirect_to_https():
+    if not request.is_secure and not request.host.startswith("localhost"):
+        url = request.url.replace("http://", "https://", 1)
+        return redirect(url, code=301)
 
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
