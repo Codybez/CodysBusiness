@@ -45,12 +45,13 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+#the request for local or non local connection NEEDS TO BE INSERTED HERE
+
 @app.before_request
 def redirect_to_https():
     if not request.is_secure and not request.host.startswith("localhost"):
         url = request.url.replace("http://", "https://", 1)
         return redirect(url, code=301)
-
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'this')
 
@@ -575,7 +576,7 @@ def submit_job():
                 for photo_upload in photo_uploads:
                     if photo_upload.filename != '':
                         filename = secure_filename(photo_upload.filename)
-                        file_path = os.path.join('/home/codybeznec/CodysBusiness/static/job_images', filename)
+                        file_path = os.path.join(app.root_path, 'static', 'job_images', filename)
                         photo_upload.save(file_path)
                         image_paths.append(filename)
 
@@ -3163,6 +3164,54 @@ def remove_job_image():
 @login_required
 def start_payment(job_id):
     job = Job.query.get_or_404(job_id)
+    user = current_user
+
+    # Check if user has already applied
+    application = JobApplication.query.filter_by(user_id=user.id, job_id=job.id).first()
+
+    if application:
+        flash("You have already applied for this job.", "info")
+        return redirect(url_for('applied_jobs'))
+
+    # Create free application directly
+    application = JobApplication(user_id=user.id, job_id=job.id, status='paid')
+    db.session.add(application)
+    db.session.commit()
+
+    # Notify the job poster
+    create_job_application_notification(
+        receiver_id=job.user_id,
+        job_id=job.id,
+        trading_name=user.company_details.trading_name,
+        applicant_name=user.first_name
+    )
+
+    # Send email
+    email_context = {
+        "job_poster_name": job.user.first_name,
+        "job_title": job.job_name,
+        "applicant_name": user.first_name,
+        "trading_name": user.company_details.trading_name,
+        "message_link": f"{request.url_root}login"
+    }
+
+    send_async_email(
+        to=job.user.email,
+        subject=f"New Application for '{job.job_name}'",
+        template_name="email/job_application_notification.html",
+        context=email_context
+    )
+
+    flash("You've successfully applied for the job!", "success")
+    return redirect(url_for('applied_jobs'))
+
+"""
+Oringinal route below - change with above route if going back to payments
+
+@app.route('/start_payment/<int:job_id>')
+@login_required
+def start_payment(job_id):
+    job = Job.query.get_or_404(job_id)
 
     stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
@@ -3195,6 +3244,7 @@ def start_payment(job_id):
         flash(f"Payment setup failed: {str(e)}", "danger")
         return redirect(url_for('display_job', job_id=job.id))
 
+"""
 
 @app.route('/stripe_webhook', methods=['POST'])
 @csrf.exempt
@@ -3307,6 +3357,5 @@ def robots_txt():
 
 
 if __name__ == "__main__":
-  
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False, ssl_context="adhoc")
 

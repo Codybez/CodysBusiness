@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -60,7 +60,7 @@
       input,
       select,
       textarea {
-        font-family: "Montserrat", sans-serif !important;
+        font-family: "Poppins", sans-serif !important;
       }
       * {
         font-family: "Poppins", sans-serif !important;
@@ -151,9 +151,11 @@
         font-size: 16px;
         font-weight: bold;
         border: none;
-        margin-top: 20px;
-        padding: 10px;
-        width: 100%; /* Full width button */
+        margin-top: 30px;
+        width: auto;
+        padding: 8px 16px;
+        display: block;
+        margin: 0 auto 10px;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
@@ -191,6 +193,16 @@
 
       <form action="{{ url_for('register') }}" method="post">
         <!-- First Name -->
+
+        <!-- User Type Dropdown -->
+        <div>
+          <label for="userType">Account Type</label>
+          <select id="userType" name="userType" required>
+            <option value="" disabled selected>Select Account Type</option>
+            <option value="Labourer">Tradesman Account</option>
+            <option value="Business">Homeowner Account</option>
+          </select>
+        </div>
         <div>
           <label for="first_name">First Name</label>
           <input
@@ -259,16 +271,6 @@
             <option value="Canterbury">Canterbury</option>
             <option value="Otago">Otago</option>
             <option value="Southland">Southland</option>
-          </select>
-        </div>
-
-        <!-- User Type Dropdown -->
-        <div>
-          <label for="userType">Account Type</label>
-          <select id="userType" name="userType" required>
-            <option value="" disabled selected>Select Account Type</option>
-            <option value="Labourer">Tradesman Account</option>
-            <option value="Business">Homeowner Account</option>
           </select>
         </div>
 

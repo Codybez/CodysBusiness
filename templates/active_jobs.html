@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <link
@@ -145,37 +145,36 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 10px;
-        margin-bottom: 28px;
+        margin: 15px 10px 28px;
+        background-color: #f5f5f5;
+        border-radius: 30px;
+        padding: 5px;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .action-button {
-        background-color: #ffffff;
-        color: #333;
+        background-color: transparent;
+        color: #555;
         font-size: 13px;
-        font-weight: bold;
-        padding: 5px 5px;
-        margin-right: 5px;
-        margin-left: 5px;
+        font-weight: 600;
+        padding: 8px 14px;
         border: none;
-        border-radius: 0;
+        border-radius: 25px;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.3s ease;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
       }
-
-      .action-button .arrowblack {
-        margin-left: 3px;
-      }
-
       .action-button.active {
-        border: 2px solid #ff6600;
-        border-radius: 20px;
+        background-color: #ffffff;
         color: #ff6600;
-        padding: 5px 10px; /* Optional: Change text color to orange */
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 8px 14px;
       }
-
       .star-icon {
         color: gold;
       }
@@ -237,7 +236,7 @@
           type="submit"
           class="action-button {{ 'active' if request.endpoint == 'applied_jobs' else '' }}"
         >
-          Applied Jobs <span class="arrowblack">&#9662;</span>
+          Applied Jobs
         </button>
       </form>
       <form
@@ -249,7 +248,7 @@
           type="submit"
           class="action-button {{ 'active' if request.endpoint == 'active_jobs' else '' }}"
         >
-          Won Jobs <span class="arrowblack">&#9662;</span>
+          Won Jobs
         </button>
       </form>
     </div>

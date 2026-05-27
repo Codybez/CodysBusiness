@@ -44,7 +44,7 @@ i[class*=" fa"] {
 
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
     .flash-messages {
@@ -161,7 +161,7 @@ body {
         width: 100%;
         height: 100%;
         background: #000;
-        opacity: 0.3;
+        opacity: 0.45;
         position: absolute;
         display: block;
         top: 0;
@@ -187,7 +187,7 @@ body {
       }
       #hero-143 .cs-title {
         /* 39px - 61px */
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: 3rem;
         font-weight: 700;
         font-size: clamp(2.4375rem, 6.4vw, 3.8125rem);
@@ -298,6 +298,7 @@ body {
         position: relative;
         /* give a higher z index than the hero so it can sit on top */
         z-index: 10;
+        margin-bottom: -25px;
       }
       #h-services-143 .cs-card-group {
         width: 100%;
@@ -580,45 +581,58 @@ body {
       display: none;
     }
 
-    .dropdown-menu {
-      position: absolute;
-      top: 6vh; /* Matches header height */
-      right: 10px;
-      background-color: #ffffff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 10px 0;
-      z-index: 1000;
-    }
+.dropdown-menu {
+  position: fixed;
+  top: 9vh;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: 8px 16px;
+  z-index: 1000;
+}
 
-    .dropdown-menu ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
+.dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
 
-    .dropdown-menu ul li {
-      padding: 10px 20px;
-    }
+.dropdown-menu ul li {
+  padding: 0;
+}
 
-    .dropdown-menu ul li a {
-      color: #333;
-      text-decoration: none;
-    }
+.dropdown-menu ul li a {
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
 
-    .dropdown-menu ul li:hover {
-      background-color: #f9f9f9;
-    }
+.dropdown-menu ul li a:hover {
+  background-color: #fff5f0;
+  color: #ff6600;
+}
         .login-button {
       text-decoration: none;
-      color: #fff;
-      font-weight: bold;
+      color: #ff6600;
+      
       padding: 3px 7px;
       border: 2px solid #ff6600;
       border-radius: 25px;
       font-size: 12px;
-      background-color: #ff6600;
+      background-color: #fff;
       position: relative;
       left: -10px;
      
@@ -819,9 +833,9 @@ body {
       bottom: 0;
       left: 0;
       width: 100%;
-      background-color: rgba(240, 240, 240, 0.752);
+      background-color:#f5f5f5;
       color: #333;
-      padding: 10px 20px;
+      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -836,14 +850,14 @@ body {
     }
 
     .post-job-button {
-      background-color: #ff6600;
-      color: white;
+      background-color:  #ff6600;
+      color: whitesmoke;
       border: none;
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 4px 8px;
+      font-size: 14px;
 
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 15px;
       text-decoration: none;
     }
 
@@ -1132,9 +1146,14 @@ body {
         width: 100%;
       }
       #cs-contact-240 .cs-submit {
-        width: 100%;
-        border: none;
-        border-radius: 0.5rem;
+  width: auto;
+  min-width: 120px;
+  max-width: 200px;
+  border: none;
+  border-radius: 0.5rem;
+  line-height: 2.5rem;
+  padding: 0 1rem;
+  margin: 0 auto;
       }
       #cs-contact-240 .cs-right-section {
         width: 100%;
@@ -1299,12 +1318,12 @@ body {
         height: 27.375rem;
       }
     }
-    .cs-contact-image {
-  max-width: 100%;
+.cs-contact-image {
+  max-width: 160px;
   height: auto;
   display: block;
-  margin-bottom: 20px;
-  border-radius: 10px; /* Optional: softens edges */
+  margin: 0 auto 8px;
+  border-radius: 10px;
 }
 
     .user-type-link {
@@ -1402,17 +1421,19 @@ body {
       text-decoration: none;
     }
     .user-type-link a.active {
-      color: #ff7148;
+      color: #ff6600;
       text-decoration: underline;
     }
 
-    .toggle-buttons {
+.toggle-buttons {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
   gap: 1rem;
   background-color: var(--bodyTextColorWhite);
   padding-bottom: 50px;
+  padding-top: 40px;  /* add this */
+ 
 }
 
 .toggle-button {
@@ -1420,11 +1441,11 @@ body {
   border: none;
   font-size: 1.2rem;
   padding: 0.5rem 1rem;
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
+  border: 3px solid transparent;
+
   color: #333;
   transition: all 0.3s ease;
-  padding-top: 30px;
+  padding-top: 10px;
 
 }
 
@@ -1434,8 +1455,13 @@ body {
 
 .toggle-button.active {
   border-color: #ff6600;
+  border-radius: 25px;
   color: #ff6600;
   font-weight: bold;
+
+  background-color: #fff;
+
+  
 }
 
 .cursor {
@@ -1495,32 +1521,33 @@ html {
         </div>
       </nav>
 
-      <div id="dropdown-menu" class="dropdown-menu hidden">
-        <ul>
-           <li><a href="#cs-contact-240">Contact Us</a></li>
-          <li><a href="{{ url_for('login') }}">Login</a></li>
-          <li><a href="#faq-1263">FAQ Section</a></li>
-        </ul>
-      </div>
+<div id="dropdown-menu" class="dropdown-menu hidden">
+  <ul>
+    <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+    <li><a href="#cs-contact-240"><i class="fas fa-envelope"></i> Contact Us</a></li>
+    <li><a href="#faq-1263"><i class="fas fa-question-circle"></i> FAQ</a></li>
+    <li><a href="#"><i class="fas fa-newspaper"></i> Blog & Articles</a></li>
+  </ul>
+</div>
     </header>
 
     <section id="hero-143">
       <div class="cs-container">
         <h1 class="cs-title">
           <br />
-          <span>Connecting</span> <br />
-          Homeowners &
-          <br /><span>Trusted </span><br><span id="dynamic-word" style="color: #fff;display: inline-block">Tradesmen</span><span class="cursor">|</span>
+          We Connect <br />
+          Homeowners <br> with
+          <span>Trusted </span><br><span id="dynamic-word" style="color: #fff;display: inline-block">Tradesmen</span><span class="cursor">|</span>
         </h1>
 <p class="cs-text">
-  Getting your project done has never been easier.
+  New Zealand's <em style="color: #ffffff; font-style: italic; margin-right: 3px; text-decoration: underline; text-decoration-color: #ff6600; text-underline-offset: 3px;">free</em> platform for finding local tradies
 </p>
 
         <a
           href="{{ url_for('register') }}"
           class="cs-button-solid"
           style="background-color: #ff6600; color: white"
-          >Get Started Today</a
+          >Start Today</a
         >
       </div>
 
@@ -1560,7 +1587,7 @@ html {
       </picture>
       <h2 class="cs-title">One Platform for Every Project</h2>
       <p class="cs-text">
-We connect homeowners and tradies for every type of job across all trades — from small repairs and maintenance to large-scale renovations and new construction.
+We connect homeowners and tradies for every type of job across all trades - from small repairs and maintenance to large-scale renovations and new construction.
       </p>
     </li>
     <li class="cs-item scroll-fade-up">
@@ -1569,7 +1596,7 @@ We connect homeowners and tradies for every type of job across all trades — fr
   </picture>
   <h2 class="cs-title">Fair Pricing</h2>
   <p class="cs-text">
-    Post jobs for free with no hidden costs or commissions. Our platform offers straightforward pricing, ensuring transparency for both homeowners and tradies.
+    Post and apply for jobs for free with no hidden costs. Our platform offers straightforward pricing, ensuring transparency for both homeowners and tradies.
   </p>
 </li>
 <li class="cs-item scroll-fade-up">
@@ -1578,7 +1605,7 @@ We connect homeowners and tradies for every type of job across all trades — fr
   </picture>
   <h2 class="cs-title">Verified & Trusted</h2>
   <p class="cs-text">
-All tradies are ID and insurance verified and provide access to reviews and social profiles, so you can hire with confidence.
+Tradie profiles includes reviews, website and social links making it easy for homeowners to find the right fit. Verified tradies display badges confirming their ID and insurances have been confirmed.
   </p>
 </li>
 
@@ -1587,7 +1614,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
       <picture class="cs-icon">
         <i class="fas fa-comments" style="font-size: 30px; color: #ff6600" aria-hidden="true"></i>
       </picture>
-  <h2 class="cs-title">In-App Chat</h2>
+  <h2 class="cs-title">Everything in one Place</h2>
   <p class="cs-text">
     Receive applications, connect with tradies and chat through the details-all within the platform for a smooth, stress-free experience.
   </p>
@@ -1680,13 +1707,10 @@ All tradies are ID and insurance verified and provide access to reviews and soci
                   aria-hidden="true"
                 />
               </picture>
-              <h3>In-App Chat</h3>
-              <p class="cs-item-p">
-                Communicate directly with job posters and other tradies through
-                our in-app chat. Ask questions, discuss job details, and organize
-                work—all in one place. Keep your business running smoothly without
-                the hassle of back-and-forth calls.
-              </p>
+<h3>Everything in One Place</h3>
+<p class="cs-item-p">
+  Manage your entire workflow through the app - apply for jobs, chat directly with homeowners, discuss the details, and organise your work all in one place. No juggling multiple apps, just a smooth experience from application to job done.
+</p>
             </li>
              <li class="cs-item">
               <picture class="cs-picture">
@@ -1733,7 +1757,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
               <picture class="cs-picture">
                 <img
                   class="cs-icon"
-                  src="/static/app_images/Phone_image5.jpg"
+                  src="/static/app_images/signupimage.jpeg"
                   alt="App Screenshot"
                   width="300"
                   height="300"
@@ -1852,7 +1876,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
             </span>
           </button>
           <p class="cs-item-p">
-            Nope — posting a job and using the platform is 100% free for homeowners. There are no hidden fees or commissions. Tradesmen pay a small one-time fee to make contact with you, which means there’s no markup or added costs passed on to you. You only pay the price you agree on directly with the tradie — simple, transparent, and fair.
+            Nope - posting a job and using the platform is 100% free for homeowners. There are no hidden fees, no commissions, and no costs passed on to you from tradesmen either. The platform is completely free for everyone, so you only ever pay the price you agree on directly with your tradie.
           </p>
         </li>
         <li class="cs-faq-item">
@@ -1860,7 +1884,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
             <span class="cs-button-text">What types of jobs can I post?</span>
           </button>
           <p class="cs-item-p">
-            From quick fixes to major renovations, you can post jobs of all sizes — plumbing, painting, electrical, gardening, cleaning, roofing, and more. If it’s a task around the house, chances are we’ve got a tradie for it.
+            From quick fixes to major renovations, you can post jobs of all sizes - plumbing, painting, electrical, gardening, cleaning, roofing, and more. If it’s a task around the house, chances are we’ve got a tradie for it.
           </p>
         </li>
       </ul>
@@ -1906,11 +1930,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
             <span class="cs-button-text">Does it cost to join?</span>
           </button>
           <p class="cs-item-p">
-            No, it's completely free to join as a tradesman! You can create
-            your profile and browse job posts without any charges. We only
-            charge a small fee of $4.99 when you want to contact a homeowner
-            about a job you're interested in. This helps keep the platform
-            affordable and accessible for all tradesmen.
+It's completely free to join and use as a tradesman! You can create your profile, browse job posts, and contact homeowners about jobs you're interested in - all at no cost. We believe in making the platform accessible and affordable for every tradesman.
           </p>
         </li>
         <li class="cs-faq-item">
@@ -1918,13 +1938,7 @@ All tradies are ID and insurance verified and provide access to reviews and soci
             <span class="cs-button-text">Does the platform take a commission from my earnings?</span>
           </button>
           <p class="cs-item-p">
-            No, we do not take any commission on the jobs posted or completed
-            through our platform. Our goal is to make it as easy and
-            affordable as possible for homeowners to find skilled tradesmen
-            and for tradesmen to connect with potential clients. Instead of
-            charging commission fees, we have a simple and transparent pricing
-            model, ensuring that both homeowners and tradesmen keep more of
-            their hard-earned money.
+Our platform is completely free to join and use — no sign-up fees, no commissions, no hidden costs. We simply accept optional tips after a successful project, which is how we keep the platform running for everyone. No surprises, just a straightforward way to connect and get work done.
           </p>
         </li>
       </ul>
@@ -1993,38 +2007,45 @@ All tradies are ID and insurance verified and provide access to reviews and soci
                 placeholder="Write message..."
               ></textarea>
             </label>
-            <button class="cs-button-solid cs-submit" type="submit">
-              Send Message
-            </button>
+<div style="text-align: center;">
+  <button class="cs-button-solid cs-submit" type="submit">
+    Send
+  </button>
+</div>
           </form>
         </div>
         <div class="cs-right-section">
-                     <img src="{{ url_for('static', filename='app_images/NZ-image.png') }}" alt="New Zealand Map" class="cs-contact-image" />
-          <ul class="cs-ul">
-<li class="cs-li" style="display: flex; justify-content: center; align-items: center; text-align: center;">
-  <div class="cs-flex-group">
-    <span class="cs-header" style="color: #ff6600; font-weight: 600; font-size: 1.1rem;">
-      We Are 100% New Zealand Owned And Operated!
-    </span>
+  <img src="{{ url_for('static', filename='app_images/newzealand.png') }}" alt="New Zealand Map" class="cs-contact-image" />
+  
+  <p style="text-align: center; font-size: 1rem; font-weight: 700; color: #1a1a1a; margin: 12px 0 16px;">
+    100% New Zealand Owned & Operated
+  </p>
+
+  <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+    <div style="text-align: center; background: #f5f5f5; border-radius: 12px; padding: 14px 18px; flex: 1; min-width: 80px;">
+      <div style="font-size: 1.3rem; font-weight: 700; color: #ff6600;">100%</div>
+      <div style="font-size: 11px; color: #555; margin-top: 4px;">NZ Owned</div>
+    </div>
+    <div style="text-align: center; background: #f5f5f5; border-radius: 12px; padding: 14px 18px; flex: 1; min-width: 80px;">
+      <div style="font-size: 1.3rem; font-weight: 700; color: #ff6600;">Free</div>
+      <div style="font-size: 11px; color: #555; margin-top: 4px;">To Join</div>
+    </div>
+    <div style="text-align: center; background: #f5f5f5; border-radius: 12px; padding: 14px 18px; flex: 1; min-width: 80px;">
+      <div style="font-size: 1.3rem; font-weight: 700; color: #ff6600;">NZ</div>
+      <div style="font-size: 11px; color: #555; margin-top: 4px;">Tradies Only</div>
+    </div>
   </div>
-</li>
-
-
-            
-          </ul>
-
-        </div>
-      </div>
+</div>
     </section>
 
-    <div class="floating-footer" id="floating-footer">
-      <span class="footer-text">Sign up now for free!</span>
-      <a href="{{ url_for('register') }}" class="post-job-button">Sign Up</a>
-    </div>
+<div class="floating-footer" id="floating-footer">
+  <span class="footer-text">Sign up now for <em style="color: #ff6600; font-style: italic;">free!</em></span>
+  <a href="{{ url_for('register') }}" class="post-job-button">Sign Up</a>
+</div>
 
     <footer class="footer">
       <div class="footer-container">
-        <p class="footer-text">© 2025 Openwork All Rights Reserved.</p>
+        <p class="footer-text"><span style="color: #ff6600 ">©</span> 2026 Openwork All Rights Reserved.</p>
         <ul class="footer-links">
           <li>
             <a href="javascript:void(0);" onclick="openTermsModal()"
@@ -2122,10 +2143,9 @@ All tradies are ID and insurance verified and provide access to reviews and soci
 
 <h3>3. Payments & Fees</h3>
 <p>
-  - Tradespeople can create a profile and browse jobs for free. <br>
-  - A $4.99 fee applies when contacting job posters. <br>
-  - Openwork.co.nz does not take a commission from completed jobs. <br>
-  - The $4.99 contact fee is non-refundable, even if the job does not proceed.
+  - OpenWork is free to join and free to use for both homeowners and tradespeople. <br>
+  - There are no sign-up fees, no application fees, and no costs to post a job. <br>
+  - There are no hidden fees or surprise charges at any stage.
 </p>
 
 <h3>4. User Conduct</h3>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -13,287 +13,227 @@
       href="{{ url_for('static', filename='styles_create_a_job.css') }}"
     />
     <style>
+      * {
+        font-family: "Poppins", sans-serif !important;
+      }
+
+      i[class^="fa"],
+      i[class*=" fa"] {
+        font-family: "Font Awesome 6 Free" !important;
+      }
+
       body {
         background-color: #ffffff;
         padding: 0;
+        margin-bottom: 70px;
       }
 
       .container {
         max-width: 600px;
-        border-radius: 10px;
-        margin-bottom: 50px;
-        padding: 10px;
-        background-color: #ccccccdf;
         margin: auto;
-        margin-top: -40px;
+        padding: 20px;
         background-color: #fff;
         margin-bottom: 70px;
       }
 
-      h2 {
-        color: #000000;
-        margin-bottom: 50px;
-      }
-      h1 {
-        color: #ff6600;
-
-        margin-bottom: 10px;
-        margin-top: 20px;
+      .job-heading h1 {
+        color: #1a1a1a;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        margin-top: 10px;
       }
 
-      .logo {
-        color: #ff6600;
-        font-size: 29px;
+      .job-heading p {
+        color: #888;
+        font-size: 13px;
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+
+      form {
+        background-color: #ffffff;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .form-group {
         margin-bottom: 20px;
       }
 
-      .letter-o {
-        color: #ffffff;
-        font-size: 32px;
-      }
-
-      .form-group {
-        margin-bottom: 30px;
-        margin-top: 30px;
-      }
-
-
-
-            /* Form Styles */
-      form {
-        background-color: #f9f9f9;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      /* Style the form sections */
-      .form-section {
-        display: none;
-      }
-
-      .form-section.active {
-        display: block;
-      }
-
-      .form-group {
-        margin-bottom: 30px;
-      }
       label {
         display: block;
-
-        font-weight: bold;
-        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
       }
-      input[type="file"],
+
       input[type="text"],
       input[type="email"],
       input[type="tel"],
-      input[type="password"] {
-        width: 93.5%;
-        padding: 12px;
-        border-radius: 5px;
-        border: 1px solid #777;
-        font-size: 16px;
-        color: #333;
-      }
-      #job_description {
-        height: 50px;
-      }
-      textarea {
-        resize: vertical;
-      }
-      textarea {
-        width: 93.5%;
-        padding: 12px;
-        border-radius: 5px;
-        border: 1px solid #555;
-        font-size: 16px;
-        color: #333;
-        resize: vertical; /* This allows vertical resizing of the textarea 
-        */
-        font-family: Arial, Helvetica, sans-serif;
-      }
+      input[type="password"],
+      textarea,
       select {
         width: 100%;
-        padding: 12px;
-        border-radius: 5px;
-        border: 1px solid #555;
-        font-size: 16px;
-        color: #555;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #333;
+        background-color: #fafafa;
+        outline: none;
+        transition:
+          border 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
-      /* Style for the "Other" category input field */
-      .other-category {
-        display: none;
-      }
-      .hidden {
-        display: none;
-      }
-      /* Hide the default file input button */
-      input[type="file"] {
-        display:block;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #cccccc;
-        border-radius: 5px;
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="tel"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #ff6600;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+        background-color: #fff;
       }
 
-      /* Style the custom file input button */
+      textarea {
+        resize: vertical;
+        font-family: inherit;
+      }
 
-
-      /* Optional: Add hover and focus effects */
-
-      input[type="submit"] {
-        background-color: #555;
-        color: white;
-        border: none;
-        padding: 14px 24px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        border-radius: 5px;
+      select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
         cursor: pointer;
       }
 
-      input[type="submit"]:hover {
-        background-color: #ff8d6f;
+      .form-text {
+        font-size: 12px;
+        color: #999;
+        margin-top: 5px;
+        display: block;
       }
 
-      .info-container h1 {
+      input[type="file"] {
+        display: block;
+        padding: 10px 14px;
+        border: 1px dashed #e0e0e0;
+        border-radius: 10px;
+        background-color: #fafafa;
+        font-size: 13px;
         color: #555;
-        font-size: small;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: pointer;
       }
 
-      /* Style for the file preview container */
       .file-preview {
         display: inline-block;
         position: relative;
-        margin-right: 10px;
-        margin-bottom: 10px;
-        margin-top: 15px;
+        margin-right: 8px;
+        margin-top: 12px;
       }
 
       .preview-image {
-        width: 100%;
-        max-height: 220px;
-        border: 2px solid #ddd;
-        border-radius: 4px;
-        object-fit: cover; /* Make sure images fit nicely */
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
       }
 
-      /* Style for the remove button */
       .remove-btn {
         position: absolute;
-        top: 5px;
-        right: 5px;
+        top: 4px;
+        right: 4px;
         background-color: rgba(0, 0, 0, 0.5);
         color: white;
         border: none;
         border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        font-size: 18px;
+        width: 22px;
+        height: 22px;
+        font-size: 13px;
         text-align: center;
         cursor: pointer;
-        padding: 2px;
-        line-height: 16px; /* Vertically center the X */
+        line-height: 22px;
+        padding: 0;
       }
 
       .remove-btn:hover {
-        background-color: rgba(0, 0, 0, 0.7);
-      }
-
-      .alert {
-        padding: 10px;
-        margin: 20px 0;
-        border-radius: 5px;
-      }
-
-      .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-      }
-
-      /* Style for error message */
-      .error-message {
-        color: red;
-        font-size: 14px;
-        margin-top: 10px;
-      }
-
-      .note {
-        font-size: 0.9em;
-        color: #6c757d; /* Subtle gray color */
-      }
-
-      .form-text.text-muted {
-        font-size: 0.85em;
-        color: #6c757d;
-      }
-
-      .job-heading {
-        text-align: left;
-      }
-
-      .job-heading h1 {
-        color: #333; /* Orange color */
-        font-size: 24px; /* Adjust the size as needed */
-        margin-bottom: 20px;
-        margin-left: 5px;
-      }
-
-      .job-heading h1 span {
-        color: #ff6600;
-        font-size: 21px;
-        margin-bottom: -5px;
+        background-color: rgba(0, 0, 0, 0.75);
       }
 
       .button-container {
-        margin-top: 20px;
+        margin-top: 24px;
         display: flex;
         align-items: center;
-        justify-content: center;
-         margin-bottom: 20px;
-      }
-
-      .reset-button {
-        font-size: 14px;
-        color: #555;
-        background-color: #ccc;
-        border-radius: 5px;
-        border: #ccc solid 5px;
-        font-weight: bold;
+        justify-content: space-between;
+        margin-bottom: 20px;
       }
 
       .submit-button {
-         background-color: #ff6600;
+        background-color: #ff6600;
         color: white;
-        font-size: 1rem;
-        padding: 12px 20px;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 18px;
         border: none;
-        border-radius: 4px;
+        border-radius: 25px;
         cursor: pointer;
-      
-        margin-right: 10px;
-       
+        transition: background-color 0.2s ease;
       }
 
+      .submit-button:hover {
+        background-color: #e55a00;
+      }
+
+      .reset-button {
+        font-size: 13px;
+        color: #999;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: underline;
+        padding: 0;
+        margin-right: 20px;
+      }
+
+      .reset-button:hover {
+        color: #555;
+      }
+
+      .error-message {
+        color: #e55a00;
+        font-size: 13px;
+        margin-top: 10px;
+        padding: 10px 14px;
+        background-color: #fff5f0;
+        border-radius: 8px;
+        border-left: 3px solid #ff6600;
+      }
+
+      .section-divider {
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 24px 0;
+      }
     </style>
   </head>
   <body>
     {% extends 'base_business.html' %} {% block title %}Business{% endblock %}
     {% block content %}
-    <br /><br />
 
     <div class="container">
       <div class="job-heading">
-      <h1>
-        <span>Find Trusted Tradies,</span> <br />
-        Create Your Job Here.
-      </h1>
+        <h1>Post a Job</h1>
+        <p>Fill in the details below and get connected with local tradies.</p>
+      </div>
       <form
         id="job-form"
         method="POST"
@@ -301,7 +241,9 @@
         enctype="multipart/form-data"
       >
         <div class="form-group">
-          <label for="job_name">Job Name: *</label>
+          <label for="job_name"
+            >Job Name: <span style="color: #ff6600">*</span></label
+          >
           <input
             type="text"
             id="job_name"
@@ -317,7 +259,9 @@
         </div>
 
         <div class="form-group">
-          <label for="job_category">Job Category: *</label>
+          <label for="job_category"
+            >Job Category: <span style="color: #ff6600">*</span></label
+          >
           <select id="job-category" name="job-category" required>
             <option value="" disabled selected>Select a category</option>
             <option value="General Labouring">General Labouring</option>
@@ -343,7 +287,9 @@
         </div>
 
         <div class="form-group">
-          <label for="location">Region: *</label>
+          <label for="location"
+            >Region: <span style="color: #ff6600">*</span></label
+          >
           <select id="location" name="location" required>
             <option value="" disabled selected>Select a region</option>
             <option value="Northland">Northland</option>
@@ -366,7 +312,9 @@
         </div>
 
         <div class="form-group">
-          <label for="city">City/Town: *</label>
+          <label for="city"
+            >City/Town: <span style="color: #ff6600">*</span></label
+          >
           <input type="text" id="city" name="city" required />
           <small class="form-text text-muted">
             Enter the City/Town the job is located in.
@@ -374,7 +322,9 @@
         </div>
 
         <div class="form-group">
-          <label for="suburb">Suburb: *</label>
+          <label for="suburb"
+            >Suburb: <span style="color: #ff6600">*</span></label
+          >
           <input type="text" id="suburb" name="suburb" required />
           <small class="form-text text-muted">
             Enter the Suburb the job is located in.
@@ -392,7 +342,10 @@
         </div>
 
         <div class="form-group">
-          <label for="tasks">Basic Outline of Tasks: *</label>
+          <label for="tasks"
+            >Basic Outline of Tasks:
+            <span style="color: #ff6600">*</span></label
+          >
           <textarea id="tasks" name="tasks" rows="10" required></textarea>
           <small class="form-text text-muted">
             Provide a brief overview of the tasks to be completed. Be clear and
@@ -415,12 +368,8 @@
         </div>
 
         <div class="form-group">
-          <label for="photo-upload"
-            >Upload Photos:</label
-          >
-          <label for="photo-upload" 
-            > </label
-          >
+          <label for="photo-upload">Upload Photos:</label>
+          <label for="photo-upload"> </label>
           <input
             type="file"
             id="photo-upload"
@@ -429,7 +378,7 @@
             multiple
             onchange="updateFileLabel(this)"
           />
-            <small>You can upload multiple images (JPG, PNG, GIF).</small>
+          <small>You can upload multiple images (JPG, PNG, GIF).</small>
           <div id="selected-files"></div>
         </div>
 
@@ -449,43 +398,43 @@
 
     <script>
       function updateFileLabel(input) {
-    const selectedFilesContainer = document.getElementById("selected-files");
+        const selectedFilesContainer =
+          document.getElementById("selected-files");
 
-    // Clear the previous selected files
-    selectedFilesContainer.innerHTML = "";
+        // Clear the previous selected files
+        selectedFilesContainer.innerHTML = "";
 
-    const files = input.files;
-    if (files) {
-        Array.from(files).forEach((file) => {
+        const files = input.files;
+        if (files) {
+          Array.from(files).forEach((file) => {
             const existingFile = Array.from(
-                selectedFilesContainer.children
+              selectedFilesContainer.children,
             ).find((fileDiv) => fileDiv.dataset.filename === file.name);
 
             if (!existingFile) {
-                const fileDiv = document.createElement("div");
-                fileDiv.classList.add("file-preview");
-                fileDiv.dataset.filename = file.name;
+              const fileDiv = document.createElement("div");
+              fileDiv.classList.add("file-preview");
+              fileDiv.dataset.filename = file.name;
 
-                const img = document.createElement("img");
-                img.classList.add("preview-image");
-                img.src = URL.createObjectURL(file);
-                img.alt = file.name;
+              const img = document.createElement("img");
+              img.classList.add("preview-image");
+              img.src = URL.createObjectURL(file);
+              img.alt = file.name;
 
-                const removeBtn = document.createElement("button");
-                removeBtn.innerText = "X";
-                removeBtn.classList.add("remove-btn");
-                removeBtn.onclick = function () {
-                    removeFile(file, fileDiv);
-                };
+              const removeBtn = document.createElement("button");
+              removeBtn.innerText = "X";
+              removeBtn.classList.add("remove-btn");
+              removeBtn.onclick = function () {
+                removeFile(file, fileDiv);
+              };
 
-                fileDiv.appendChild(img);
-                fileDiv.appendChild(removeBtn);
-                selectedFilesContainer.appendChild(fileDiv);
+              fileDiv.appendChild(img);
+              fileDiv.appendChild(removeBtn);
+              selectedFilesContainer.appendChild(fileDiv);
             }
-        });
-    }
-}
-
+          });
+        }
+      }
 
       function removeFile(file, fileDiv) {
         const input = document.getElementById("photo-upload");
@@ -504,7 +453,7 @@
         document.getElementById("error-message").style.display = "none";
 
         const requiredFields = document.querySelectorAll(
-          ".form-group input[required], .form-group select[required], .form-group textarea[required]"
+          ".form-group input[required], .form-group select[required], .form-group textarea[required]",
         );
         let allFieldsValid = true;
 
@@ -526,8 +475,6 @@
           document.getElementById("job-form").submit();
         }
       }
-
-
     </script>
   </body>
   {% endblock %}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,94 +9,110 @@
       href="{{ url_for('static', filename='login.css') }}"
     />
     <style>
+      * {
+        font-family: "Poppins", sans-serif !important;
+      }
+
       body {
         display: flex;
-        justify-content: center; /* Horizontally center */
-        align-items: center; /* Vertically center */
-        height: 100vh; /* Take full height of the viewport */
-        margin: 0; /* Remove default
-        margin */
-        background-color: #ffffff; /* Optional, for better visibility */
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #ffffff;
         margin-bottom: 60px;
+        padding: 20px;
+        margin-top: 20px;
       }
 
-      /* Container styling */
       .contact-container {
         background-color: #ffffff;
-        padding: 20px;
-        border-radius: 15px;
-        width: 80%;
-      }
-
-      /* Form title */
-      .contact-container h1 span {
-        font-size: 40px;
-        color: #333333;
-        text-align: center;
-        margin-bottom: 20px;
+        padding: 30px 25px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 420px;
       }
 
       .contact-container h1 {
-        font-size: 24px;
-        color: #ff6600;
-        text-align: center;
-        margin-bottom: -10px;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-align: left;
+        margin-bottom: 4px;
       }
-      /* Label styling */
+
+      .contact-container h1 span {
+        color: #ff6600;
+      }
+
+      .contact-subtitle {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 28px;
+        text-align: left;
+      }
+
       .contact-container label {
-        font-size: 14px;
-        color: #555555;
+        font-size: 13px;
+        color: #555;
         font-weight: 600;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
         display: block;
       }
 
-      /* Input fields */
       .contact-container input[type="text"],
       .contact-container input[type="email"],
       .contact-container textarea {
         width: 100%;
         box-sizing: border-box;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #cccccc;
-        border-radius: 5px;
-        font-size: 16px;
-        color: #333333;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #333;
         outline: none;
-        transition: border 0.2s ease-in-out;
+        transition:
+          border 0.2s ease-in-out,
+          box-shadow 0.2s ease-in-out;
+        background-color: #fafafa;
       }
 
-      /* Input focus effect */
       .contact-container input:focus,
       .contact-container textarea:focus {
         border-color: #ff6600;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+        background-color: #fff;
       }
 
-      /* Button styling */
+      .contact-container textarea {
+        resize: none;
+      }
+
       .contact-container button {
         background-color: #ff6600;
         color: #ffffff;
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 15px;
+        font-weight: 600;
         border: none;
-        padding: 10px;
-        width: 100%; /* Full width button */
+        padding: 13px;
+        width: auto;
+        min-width: 120px;
+        display: block;
+        margin: 0 auto;
         border-radius: 25px;
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
-        margin-bottom: 10px;
       }
 
       .contact-container button:hover {
-        background-color: #ff5e33;
+        background-color: #e55a00;
       }
 
-      /* Link and text styling */
       .contact-container p {
         text-align: center;
-        font-size: 16px;
-        color: #555555;
+        font-size: 14px;
+        color: #555;
         margin-top: 15px;
       }
 
@@ -104,15 +120,18 @@
         color: #ff6600;
         text-decoration: none;
         font-weight: bold;
-        transition: color 0.2s ease-in-out;
       }
 
       .contact-container a:hover {
-        color: #ff5e33;
+        color: #e55a00;
       }
 
       .form-start {
-        margin-top: 30px;
+        margin-top: 10px;
+      }
+      i[class^="fa"],
+      i[class*=" fa"] {
+        font-family: "Font Awesome 6 Free" !important;
       }
     </style>
   </head>
@@ -123,7 +142,10 @@
     <div class="contact-container">
       <form method="POST" action="{{ url_for('contact') }}">
         <div>
-          <h1><span>Contact Us</span></h1>
+          <h1><span>Contact Us.</span></h1>
+          <p class="contact-subtitle">
+            We'll get back to you as soon as possible.
+          </p>
         </div>
 
         <!-- Name Input -->
