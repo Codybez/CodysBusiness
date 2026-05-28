@@ -13,6 +13,10 @@
       rel="stylesheet"
     />
     <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
       rel="stylesheet"
     />
@@ -53,7 +57,7 @@
         font-family: "Font Awesome 6 Free" !important;
       }
       body {
-        font-family: "Montserrat", sans-serif;
+        font-family: "Poppins", sans-serif;
       }
       body,
       button,
@@ -70,7 +74,7 @@
         align-items: center; /* Vertically center */
         height: 100vh; /* Take full height of the viewport */
         margin: 0; /* Remove default margin */
-        margin-top: 30px;
+        margin-top: 80px;
         background-color: #ffffff; /* Optional, for better visibility */
         min-height: 100vh; /* Ensure that the body is at least 100% of the viewport height */
         padding: 10px;
@@ -93,13 +97,13 @@
       }
 
       /* Form title */
-      .registration-container h1.form-title {
-        font-size: 20px;
-        color: #ff6600;
-        text-align: left;
-        margin-bottom: 20px;
-        margin-top: 50px;
-      }
+.registration-container h1.form-title {
+  font-size: 20px;
+  color: #ff6600;
+  text-align: left;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
 
       /* Label styling */
       .registration-container label {
@@ -151,12 +155,12 @@
         font-size: 16px;
         font-weight: bold;
         border: none;
-        margin-top: 30px;
+        margin-top: -10px;
         width: auto;
         padding: 8px 16px;
         display: block;
         margin: 0 auto 10px;
-        border-radius: 5px;
+        border-radius: 25px;
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
       }
@@ -164,6 +168,10 @@
       .registration-container button:hover {
         background-color: #ff5e33;
       }
+
+      .form-title {
+      margin-bottom: 5px;
+}
 
       /* Link styling */
       .registration-container p {
@@ -184,11 +192,14 @@
         color: #ff5e33;
       }
     </style>
-    {% extends 'base.html' %} {% block title %}Registration Form{% endblock %}
+  </head>
+    <body>
+      
+          {% extends 'base.html' %} {% block title %}Registration Form{% endblock %}
     {% block content %}
     <div class="registration-container">
       <div>
-        <h1 class="form-title">Sign up.</h1>
+        <h1 class="form-title">Create your account.</h1>
       </div>
 
       <form action="{{ url_for('register') }}" method="post">
@@ -273,6 +284,7 @@
             <option value="Southland">Southland</option>
           </select>
         </div>
+        <br />
 
         <!-- Submit Button -->
         <div>
@@ -289,4 +301,6 @@
     </div>
     {% endblock %}
   </head>
+</html>
+</body>
 </html>

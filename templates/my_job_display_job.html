@@ -114,7 +114,7 @@
 
       .chat-link,
       .view-job-link {
-        padding: 12px 20px;
+        padding: 8px 16px;
         text-align: center;
         border-radius: 25px;
         font-size: 14px;
@@ -126,8 +126,9 @@
       }
 
       .chat-link {
-        background-color: #ff6600;
-        color: white;
+        background-color: #fafafa;
+        color: #ff6600;
+        border: #ff6600 1px solid;
       }
 
       .chat-link:hover {
@@ -135,9 +136,9 @@
       }
 
       .view-job-link {
-        background-color: #ffffff;
+        background-color: #fafafa;
         color: #ff6600;
-        border: 2px solid #ff6600;
+        border: 1px solid #ff6600;
       }
 
       .view-job-link:hover {
@@ -206,6 +207,10 @@
         color: #fff;
         cursor: pointer;
       }
+      .view-job-link-r {
+        visibility: hidden;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
@@ -255,7 +260,7 @@
           Chat
         </a>
         {% if current_user.id == job.accepted_user_id %}
-        <a href="" class="view-job-link">Leave Review</a>
+        <a href="" class="view-job-link-r"></a>
         {% else %}
         <a
           href="{{ url_for('remove_application', job_id=job.id) }}"
