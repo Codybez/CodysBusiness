@@ -515,7 +515,7 @@ def forgot_password():
 
         if user:
             token = serializer.dumps(email, salt='password-reset-salt')
-            reset_link = url_for('reset_password', token=token, _external=True)
+            reset_link = f"https://www.openwork.co.nz/reset-password/{token}"   
 
             subject = "Reset your OpenWork password"
 
