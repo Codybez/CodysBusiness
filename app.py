@@ -486,6 +486,91 @@ def register():
 
     return render_template('register.html')
 
+
+
+from flask_mail import Message
+
+def send_email(to, subject, body):
+    msg = emailmessage(
+        subject=subject,
+        recipients=[to],
+        body=body
+    )
+    mail.send(msg)
+
+
+
+@app.route("/admin/all-users")
+def admin_all_users():
+    users = User.query.all()
+    return render_template("admin_all_users.html", users=users)
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+@csrf.exempt
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            token = serializer.dumps(email, salt='password-reset-salt')
+            reset_link = url_for('reset_password', token=token, _external=True)
+
+            subject = "Reset your OpenWork password"
+
+            body = f"""
+Hi,
+
+We received a request to reset your password.
+
+Click the link below to reset it:
+
+{reset_link}
+
+This link expires in 1 hour.
+
+If you didn’t request this, ignore this email.
+
+OpenWork Team
+"""
+
+            send_email(user.email, subject, body)
+
+            flash("Reset link sent to your email", "success")
+        else:
+            flash("No account found with that email", "danger")
+
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html')
+
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+@csrf.exempt
+def reset_password(token):
+    try:
+        email = serializer.loads(token, salt='password-reset-salt', max_age=3600)
+    except:
+        flash("Reset link expired or invalid", "danger")
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+            db.session.commit()
+
+            flash("Password updated successfully", "success")
+            return redirect(url_for('login'))
+
+    return render_template('reset_password.html')
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 @csrf.exempt
 def login():
@@ -2691,19 +2776,33 @@ def admin_required(f):
 @login_required
 @admin_required
 def admin_dashboard():
+
     total_job_contacts = db.session.query(func.count(JobApplication.id)).scalar()
+
     homeowner_users = User.query.join(BusinessProfile).all()
     tradesman_users = User.query.join(LabourerProfile).all()
-    users = User.query.all()
-    jobs = Job.query.all()  # Assuming you have a Job model
+
+    # ✅ FIX: recent users (newest first)
+    users = User.query.order_by(User.id.desc()).limit(5).all()
+
+    # ✅ FIX: recent jobs (newest first)
+    jobs = Job.query.order_by(Job.date_created.desc()).limit(5).all()
+
     pending_verifications = User.query.filter(
         User.labourer_profile.has(
             LabourerProfile.verification_ready == True
         )
     ).all()
 
-    return render_template('admin_dashboard.html', users=users, jobs=jobs, pending_verifications=pending_verifications, tradesman_users=tradesman_users,total_job_contacts=total_job_contacts,homeowner_users=homeowner_users)
-
+    return render_template(
+        'admin_dashboard.html',
+        users=users,
+        jobs=jobs,
+        pending_verifications=pending_verifications,
+        tradesman_users=tradesman_users,
+        homeowner_users=homeowner_users,
+        total_job_contacts=total_job_contacts
+    )
 @app.route('/admin/user/<int:user_id>', methods=['GET', 'POST'])
 @csrf.exempt
 @login_required

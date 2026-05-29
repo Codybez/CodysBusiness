@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Users</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 15px 20px;
+        text-align: center;
+      }
+
+      .container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-top: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      table th,
+      table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      table th {
+        background-color: #333;
+        color: #fff;
+      }
+
+      /* Header styles */
+      #admin-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #343a40;
+        color: white;
+        padding: 10px 20px;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .shortcuts {
+        display: flex;
+        gap: 15px;
+      }
+
+      .shortcuts a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      #logout-btn {
+        padding: 8px 16px;
+        background-color: #ff7148;
+        border: none;
+        color: #ffffff;
+        cursor: pointer;
+        margin-left: auto;
+        margin-right: 30px;
+      }
+
+      .page-wrapper {
+        margin-top: 80px;
+      }
+
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .search-box input {
+        padding: 10px;
+        width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .search-box button {
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+
+      th.sorted {
+        background-color: #555 !important;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Admin Header -->
+    <header id="admin-header">
+      <div class="header-content">
+        <nav class="shortcuts">
+          <a href="{{ url_for('admin_dashboard')}}">Dashboard</a>
+          <a href="{{ url_for('admin_tradesman') }}">Tradesman</a>
+          <a href="{{ url_for('admin_homeowners') }}">Homeowners</a>
+          <a href="{{ url_for('admin_jobs') }}">Jobs</a>
+          <a href="{{ url_for('admin_all_users') }}">All Users</a>
+        </nav>
+
+        <form action="{{ url_for('logout') }}">
+          <button type="submit" id="logout-btn">Logout</button>
+        </form>
+      </div>
+    </header>
+
+    <div class="page-wrapper">
+      <div class="container">
+        <div class="top-bar">
+          <h2>All Users</h2>
+        </div>
+        <input
+          type="text"
+          id="userSearch"
+          placeholder="Search users..."
+          style="padding: 10px; width: 50%; margin-bottom: 10px"
+        />
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Name</th>
+              <th>User Type</th>
+              <th>Profile Status</th>
+              <th>Location</th>
+              <th>Impersonate</th>
+              <!-- Changed header -->
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.first_name }} {{ user.last_name }}</td>
+              <td>
+                {% if user.user_type == 'Labourer' %} Tradesman {% elif
+                user.user_type == 'Business' %} Homeowner {% else %} {{
+                user.user_type }} {% endif %}
+              </td>
+              <td>
+                {% if user.labourer_profile %} Complete {% else %} New Signup {%
+                endif %}
+              </td>
+              <td>{{ user.location }}</td>
+              <td>
+                <form
+                  action="{{ url_for('impersonate', user_id=user.id) }}"
+                  method="GET"
+                >
+                  <button
+                    type="submit"
+                    class="impersonate-btn"
+                    style="
+                      padding: 5px 10px;
+                      border: none;
+                      border-radius: 4px;
+                      background-color: #007bff;
+                      color: white;
+                      cursor: pointer;
+                    "
+                  >
+                    Impersonate
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("userSearch")
+        .addEventListener("input", function () {
+          const filter = this.value.toLowerCase();
+          const rows = document.querySelectorAll("table tbody tr");
+
+          rows.forEach((row) => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+          });
+        });
+
+      let sortDirections = {};
+
+      function sortTable(colIndex, thElement) {
+        const table = thElement.closest("table");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.rows);
+
+        const isNumeric =
+          !isNaN(rows[0].cells[colIndex].innerText.trim()) &&
+          rows[0].cells[colIndex].innerText.trim() !== "";
+
+        // toggle direction
+        sortDirections[colIndex] = !sortDirections[colIndex];
+        const direction = sortDirections[colIndex] ? 1 : -1;
+
+        rows.sort((a, b) => {
+          let aText = a.cells[colIndex].innerText.trim();
+          let bText = b.cells[colIndex].innerText.trim();
+
+          if (isNumeric) {
+            return direction * (Number(aText) - Number(bText));
+          } else {
+            return direction * aText.localeCompare(bText);
+          }
+        });
+
+        // update arrows
+        table
+          .querySelectorAll(".sort-arrow")
+          .forEach((el) => (el.innerText = ""));
+        thElement.querySelector(".sort-arrow").innerText =
+          direction === 1 ? "▲" : "▼";
+
+        // reattach rows
+        rows.forEach((row) => tbody.appendChild(row));
+      }
+    </script>
+  </body>
+</html>
