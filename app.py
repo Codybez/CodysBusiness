@@ -3436,6 +3436,13 @@ def payment_success():
     flash("Payment successful! You've applied for the job.", "success")
     return redirect(url_for('applied_jobs'))
 
+@app.route('/blog')
+def blog():
+    return render_template('blog.html')
+
+@app.route('/builderscrack_alternative')
+def builderscrack_alternative():
+    return render_template('builderscrackalternativeblog.html')
 
 
 @app.route('/sitemap.xml')

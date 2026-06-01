@@ -1553,7 +1553,7 @@ html {
     <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
     <li><a href="#cs-contact-240"><i class="fas fa-envelope"></i> Contact Us</a></li>
     <li><a href="#faq-1263"><i class="fas fa-question-circle"></i> FAQ</a></li>
-    <li><a href="#"><i class="fas fa-newspaper"></i> Blog & Articles</a></li>
+    <li><a href="{{ url_for('blog') }}"><i class="fas fa-newspaper"></i> Blogs & Articles</a></li>
   </ul>
 </div>
     </header>
@@ -1574,7 +1574,7 @@ html {
           href="{{ url_for('register') }}"
           class="cs-button-solid"
           style="background-color: #ff6600; color: white"
-          >Start Today</a
+          >Start Today →</a
         >
       </div>
 
@@ -1583,13 +1583,15 @@ html {
   <source
     media="(max-width: 600px)"
     srcset="static/app_images/Couple_chat.png"
+    loading="eager"
   />
   <source
     media="(min-width: 601px)"
     srcset="static/app_images/Couple_chat.png"
+    loading="eager"
   />
   <img
-    loading="lazy"
+    loading="eager"
     decoding="async"
     src="static/app_images/Couple_chat.png"
     alt="background image"
