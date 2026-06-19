@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -69,10 +69,10 @@
       .save-button {
         display: block;
         margin: 20px auto;
-        padding: 10px 20px;
-        background-color: #333;
-        color: white;
-        border: none;
+        padding: 8px 16px;
+        background-color: white;
+        color: #ff6600;
+        border: #ff6600 2px solid;
         border-radius: 25px;
         cursor: pointer;
         font-size: 16px;
@@ -195,10 +195,10 @@
 
       // Elements where selected items will be displayed
       const selectedCategoriesList = document.getElementById(
-        "selected-categories-list"
+        "selected-categories-list",
       );
       const selectedLocationsList = document.getElementById(
-        "selected-locations-list"
+        "selected-locations-list",
       );
 
       function updateSelections() {

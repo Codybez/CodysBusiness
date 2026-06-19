@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+
+    body{
+      margin-top: 30px;
+
+    }
+    @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap");
+
+    :root {
+      --orange: #f55b00;
+      --orange-light: #ff7a2e;
+      --orange-muted: #fff3ec;
+      --ink: #111111;
+      --ink-mid: #444444;
+      --ink-light: #888888;
+      --border: #ebebeb;
+      --surface: #ffffff;
+      --bg: #fafaf8;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .blog-wrap {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ─── Layout ─── */
+    .blog-body {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* ─── Featured card ─── */
+    .featured-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 300px;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .featured-card:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.09);
+    }
+
+    .featured-card-visual {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .featured-card-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 30% 70%,
+        rgba(245, 91, 0, 0.35) 0%,
+        transparent 60%
+      );
+    }
+
+    .featured-card-icon {
+      font-size: 72px;
+      opacity: 0.15;
+      z-index: 1;
+    }
+
+    .featured-card-body {
+      padding: 36px 36px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* ─── Article grid ─── */
+    .article-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .article-card {
+      background: var(--surface);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 26px 24px 22px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .article-card:hover {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Tags ─── */
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      background: var(--orange-muted);
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+
+    /* ─── Typography ─── */
+    .card-title {
+      font-family: "Poppins", serif;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .article-card .card-title {
+      font-size: 17px;
+    }
+
+    .card-date {
+      font-size: 12px;
+      color: var(--ink-light);
+      font-weight: 400;
+    }
+
+    .card-excerpt {
+      font-size: 14.5px;
+      color: var(--ink-mid);
+      line-height: 1.65;
+      font-weight: 300;
+      flex: 1;
+    }
+
+    /* ─── CTA button ─── */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange);
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 11px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      width: fit-content;
+      margin-top: 8px;
+      transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+    }
+
+    .cta-btn:hover {
+      background: var(--orange-light);
+      transform: translateY(-1px);
+    }
+
+    .cta-btn-ghost {
+      background: transparent;
+      color: var(--orange);
+      border: 1.5px solid var(--orange);
+      font-size: 13px;
+      padding: 9px 18px;
+      margin-top: 4px;
+    }
+
+    .cta-btn-ghost:hover {
+      background: var(--orange-muted);
+    }
+
+    /* ─── Arrow icon ─── */
+    .arrow {
+      display: inline-block;
+      transition: transform 0.15s ease;
+    }
+    .cta-btn:hover .arrow {
+      transform: translateX(3px);
+    }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      position: sticky;
+      top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .sidebar-card h3 {
+      font-family: "Poppins", serif;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--ink);
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink-mid);
+      font-size: 14px;
+      line-height: 1.45;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.15s;
+    }
+
+    .sidebar-link:last-child {
+      border-bottom: none;
+    }
+    .sidebar-link:hover {
+      color: var(--orange);
+    }
+
+    .sidebar-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .cta-sidebar {
+      background: var(--ink);
+      border: none;
+      padding: 28px 24px;
+    }
+
+    .cta-sidebar h3 {
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .cta-sidebar p {
+      font-size: 13.5px;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.55;
+      font-weight: 300;
+      margin-bottom: 18px;
+    }
+
+    .cta-sidebar .cta-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .blog-body {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .sidebar {
+        position: static;
+      }
+      .featured-card {
+        grid-template-columns: 1fr;
+      }
+      .featured-card-visual {
+        height: 180px;
+      }
+      .blog-hero {
+        padding: 60px 24px 50px;
+      }
+      .filter-bar,
+      .blog-body {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .article-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    header {
+      background-color: #fff;
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between; /* Space between left, center, and right */
+      align-items: center;
+      height: 6vh;
+    }
+
+    .logo-container {
+      flex: 1; /* Take up space on the left */
+      display: flex;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 24px;
+      color: #333;
+      font-weight: normal;
+      line-height: 24px;
+      letter-spacing: -1px;
+      text-align: center;
+      flex: 2; /* Center block */
+      
+    }
+
+    .orange-letter {
+      color: #ff6600;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+
+
+    .back-arrow {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ff6600;
+      font-size: 20px;
+      text-decoration: none;
+      font-weight: lighter;
+    }
+  </style>
+  <body>
+    <div class="blog-wrap">
+      <header>
+        <a href="javascript:history.back()" class="back-arrow">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+
+        <div class="logo-container">
+          <span class="header-title">
+            <span class="orange-letter">o</span>penwork
+          </span>
+        </div>
+
+        <nav>
+      </header>
+      <!-- Hero -->
+
+      <!-- Main body -->
+      <div class="blog-body">
+        <main>
+          <!-- Featured article -->
+          <a
+            href="{{ url_for('builderscrack_alternative') }}"
+            class="featured-card"
+            style="text-decoration: none; color: inherit"
+          >
+            <div class="featured-card-visual">
+              <span class="featured-card-icon">🔨</span>
+            </div>
+            <div class="featured-card-body">
+              <div>
+                <span class="tag">Featured</span>
+                <p
+                  class="card-date"
+                  style="margin-top: 14px; margin-bottom: 10px"
+                >
+                  June 2026
+                </p>
+                <h2 class="card-title" style="font-size: 26px">
+                  Alternative to Builderscrack in New Zealand
+                </h2>
+                <p class="card-excerpt" style="margin-top: 12px">
+                  Looking for a Builderscrack alternative? Discover how OpenWork
+                  helps homeowners connect directly with tradies — no
+                  complicated bidding systems, no hidden fees.
+                </p>
+              </div>
+              <span class="cta-btn" style="margin-top: 24px"
+                >Read article <span class="arrow">→</span></span
+              >
+            </div>
+          </a>
+
+          <!-- Article grid -->
+          <div class="article-grid">
+            <a href="#" class="article-card">
+              <span class="tag">Tradesman Guide</span>
+              <p class="card-date">June 2026</p>
+              <h3 class="card-title">
+                How To Get More Building Jobs In New Zealand
+              </h3>
+              <p class="card-excerpt">
+                Practical ways builders, plumbers, electricians and other
+                tradies can generate more leads and secure consistent work
+                year-round.
+              </p>
+              <span class="cta-btn cta-btn-ghost"
+                >Read more <span class="arrow">→</span></span
+              >
+            </a>
+
+            <a href="#" class="article-card">
+              <span class="tag">Homeowner Guide</span>
+              <p class="card-date">June 2026</p>
+              <h3 class="card-title">How To Find A Reliable Tradie In NZ</h3>
+              <p class="card-excerpt">
+                A complete guide to finding trustworthy local tradespeople,
+                checking reviews, comparing quotes and avoiding common mistakes.
+              </p>
+              <span class="cta-btn cta-btn-ghost"
+                >Read more <span class="arrow">→</span></span
+              >
+            </a>
+
+            <a href="#" class="article-card">
+              <span class="tag">Hiring Advice</span>
+              <p class="card-date">June 2026</p>
+              <h3 class="card-title">
+                Questions To Ask Before Hiring A Builder
+              </h3>
+              <p class="card-excerpt">
+                Before choosing a builder, make sure you ask these important
+                questions about experience, insurance and timelines.
+              </p>
+              <span class="cta-btn cta-btn-ghost"
+                >Read more <span class="arrow">→</span></span
+              >
+            </a>
+
+            <a href="#" class="article-card">
+              <span class="tag">Industry Insights</span>
+              <p class="card-date">June 2026</p>
+              <h3 class="card-title">
+                What Does A Builder Cost In New Zealand?
+              </h3>
+              <p class="card-excerpt">
+                Understand labour rates, project pricing and the factors that
+                affect building costs across different regions of New Zealand.
+              </p>
+              <span class="cta-btn cta-btn-ghost"
+                >Read more <span class="arrow">→</span></span
+              >
+            </a>
+
+            <a href="#" class="article-card" style="grid-column: 1 / -1">
+              <span class="tag">OpenWork</span>
+              <p class="card-date">June 2026</p>
+              <h3 class="card-title">Why OpenWork Is Free For Tradies</h3>
+              <p class="card-excerpt">
+                Learn why OpenWork removed fees and how the platform is helping
+                connect homeowners with tradespeople throughout New Zealand —
+                and what that means for you.
+              </p>
+              <span class="cta-btn cta-btn-ghost"
+                >Read more <span class="arrow">→</span></span
+              >
+            </a>
+          </div>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-card">
+            <h3>Popular Articles</h3>
+            <a href="{{ url_for('builderscrack_alternative') }}" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Alternative to Builderscrack in
+              NZ</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>How to Find a Reliable Tradie</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>What Does a Builder Cost in
+              NZ?</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Questions to Ask Before
+              Hiring</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Why OpenWork is Free for
+              Tradies</a
+            >
+          </div>
+
+          <div class="sidebar-card cta-sidebar">
+            <h3>Are you a tradie?</h3>
+            <p>
+              Join OpenWork free and start connecting with homeowners looking
+              for your skills across New Zealand.
+            </p>
+            <a href="{{ url_for('register') }}" class="cta-btn"
+              >Get started free <span class="arrow">→</span></a
+            >
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Browse by Topic</h3>
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Homeowner Guides</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Tradesman Tips</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Hiring Advice</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>Industry Insights</a
+            >
+            <a href="#" class="sidebar-link"
+              ><span class="sidebar-dot"></span>About OpenWork</a
+            >
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

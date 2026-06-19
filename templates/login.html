@@ -1,14 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Form</title>
+    <title>Login To Your Account</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='login.css') }}"
     />
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='app_images/icon-image.png') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Login to your OpenWorkNZ account to connect with trusted tradies across New Zealand."
+    />
+    <link rel="canonical" href="https://www.openwork.co.nz/login" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Login To Your Account - OpenWorkNZ" />
+    <meta
+      property="og:description"
+      content="Sign in to access job listings, connect with tradespeople, and manage your profile."
+    />
+    <meta
+      property="og:image"
+      content="{{ url_for('static', filename='app_images/icon-image.png', _external=True) }}"
+    />
+    <meta property="og:url" content="{{ request.url }}" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Login To Your Account - OpenWorkNZ" />
+    <meta
+      name="twitter:description"
+      content="Sign in to connect with trusted tradespeople across New Zealand."
+    />
+    <meta
+      name="twitter:image"
+      content="{{ url_for('static', filename='app_images/icon-image.png', _external=True) }}"
+    />
+
     <style>
+      * {
+        font-family: "Poppins", sans-serif !important;
+      }
       body {
         display: flex;
         justify-content: center; /* Horizontally center */
@@ -17,26 +68,36 @@
         margin: 0; /* Remove default margin */
         background-color: #ffffff; /* Optional, for better visibility */
       }
+      i[class^="fa"],
+      i[class*=" fa"] {
+        font-family: "Font Awesome 6 Free" !important;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      body,
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Poppins", sans-serif !important;
+      }
 
       /* Container styling */
       .registration-container {
         background-color: #ffffff;
-        padding: 20px;
-        margin: 20px auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 15px;
-        max-width: 600px;
 
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-        box-sizing: border-box;
+        border-radius: 15px;
+        max-width: 400px;
+        min-width: 300px;
       }
 
       /* Form title */
       .registration-container h1 {
-        font-size: 24px;
-        color: #333333;
-        text-align: center;
-        margin-bottom: 20px;
+        font-size: 20px;
+        color: #ff6600;
+        text-align: left;
+        margin-bottom: 10px;
       }
 
       /* Label styling */
@@ -77,11 +138,15 @@
         font-weight: bold;
         border: none;
         padding: 10px;
-        width: 100%; /* Full width button */
-        border-radius: 5px;
+        width: auto;
+        padding: 8px 16px;
+        display: block;
+        margin: 0 auto 10px;
+        border-radius: 25px;
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
         margin-bottom: 10px;
+        margin-top: -10px;
       }
 
       .registration-container button:hover {
@@ -114,7 +179,7 @@
     <div class="registration-container">
       <form method="POST" action="{{ url_for('login') }}">
         <div>
-          <h1>Log in</h1>
+          <h1>Login.</h1>
         </div>
         <!-- Email Input -->
         <div>
@@ -138,6 +203,7 @@
             placeholder="Password"
           />
         </div>
+        <br />
         <!-- Login Button -->
         <div>
           <button type="submit" id="login-button">Login</button>
@@ -147,6 +213,9 @@
           <p>
             Don't have an account?
             <a href="{{ url_for('register') }}">Sign Up</a>
+          </p>
+          <p style="text-align: center; margin-top: 10px">
+            <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
           </p>
         </div>
       </form>

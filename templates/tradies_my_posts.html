@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -25,26 +25,39 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 10px;
+        gap: 8px;
+        margin: 15px 10px;
+        background-color: #f5f5f5;
+        border-radius: 30px;
+        padding: 5px;
       }
 
       .action-button {
-        background-color: #ffffff;
-        color: #333;
+        background-color: transparent;
+        color: #555;
         font-size: 13px;
-        margin-right: 5px;
-        margin-left: 5px;
-        font-weight: bold;
-        padding: 5px 5px;
+        font-weight: 600;
+        padding: 8px 14px;
         border: none;
-        border-radius: 0;
+        border-radius: 25px;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.3s ease;
         text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
       }
 
+      .action-button:hover {
+        color: #ff6600;
+      }
+
+      .action-button.active {
+        background-color: #ffffff;
+        color: #ff6600;
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 8px 14px;
+      }
       .action-button .arrow {
         margin-left: 3px;
       }
@@ -167,7 +180,9 @@
         border: solid 2px #ff6600;
         color: #ffffff;
         background-color: #ff6600;
-        transition: background-color 0.3s ease, color 0.3s ease; /* Optional hover effect */
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease; /* Optional hover effect */
       }
 
       .button:hover {
@@ -276,25 +291,25 @@
           href="/find-tradies"
           class="action-button {{ 'active' if request.endpoint == 'find_tradies' else '' }}"
         >
-          All Posts<span class="arrow">&#9662;</span>
+          All Posts
         </a>
         <a
           href="/create_tradie_post"
           class="action-button {{ 'active' if request.endpoint == 'create_tradie_post' else '' }}"
         >
-          New Post<span class="arrow">&#9662;</span>
+          + New Post
         </a>
         <a
           href="/tradies_my_posts"
           class="action-button {{ 'active' if request.endpoint == 'tradies_my_posts' else '' }}"
         >
-          My Posts<span class="arrow">&#9662;</span>
+          My Posts
         </a>
         <a
           href="/tradies_saved_posts"
           class="action-button {{ 'active' if request.endpoint == 'tradies_saved_posts' else '' }}"
         >
-          Saved<span class="arrow">&#9662;</span>
+          Saved
         </a>
       </div>
 

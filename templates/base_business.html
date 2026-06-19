@@ -1,6 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-EW4CM1GDMG"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-EW4CM1GDMG");
+    </script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -14,17 +28,41 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='app_images/icon-image.png') }}"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Include Socket.IO script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
     <style>
+      body,
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Poppins", sans-serif;
+      }
+      /* Global font application */
       body {
-        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+        font-family: "Poppins", sans-serif;
+      }
+      footer {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
       }
 
-      footer {
-        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
-      }
       /* Styling for the new message icon */
       .fas.fa-envelope,
       .fas.fa-bell,
@@ -39,12 +77,11 @@
         position: absolute;
         top: -10px; /* Adjust the distance from the top of the bell */
         right: 7px; /* Adjust the distance from the right of the bell */
-        background-color: rgb(255, 255, 255);
+        background-color: red;
         color: white;
         border-radius: 50%;
-        font-size: 12px;
+        font-size: 10px;
         padding: 2px 5px;
-        border-left: 4px solid #ff6600;
       }
 
       /* Ensure the bell icon is positioned relatively, not the envelope or home */
@@ -103,8 +140,9 @@
 
       .letter-o {
         color: #ffffffec;
-        font-size: 24px;
+        font-size: 19px;
         font-family: "Arial", sans-serif;
+        font-weight: normal;
       }
 
       /* Basic styling for the header */
@@ -119,7 +157,7 @@
         left: 0;
         right: 0;
         z-index: 50;
-        height: 4vh;
+        height: 5vh;
         font-weight: 400;
         display: flex;
         justify-content: space-between;
@@ -165,7 +203,13 @@
       .footers-button p {
         font-size: 14px;
       }
+      .footers-button.active p {
+        color: #ff6600 !important;
+      }
 
+      .footers-button.active i {
+        color: #ff6600 !important;
+      }
       .footers-button:hover {
         color: #f0f0f0;
       }
@@ -178,7 +222,7 @@
       .header-title {
         display: inline-block;
         margin-left: 35px; /* Adjust spacing between arrow and title */
-        font-size: 24px;
+        font-size: 19px;
         color: #333;
         font-weight: normal;
         line-height: 24px;
@@ -207,7 +251,7 @@
         z-index: 9999;
         cursor: pointer;
         display: inline-block; /* Prevents extra space from being added */
-        max-width: 30%; /* Ensures the box doesn't overflow the screen */
+        max-width: 80%; /* Ensures the box doesn't overflow the screen */
         text-align: center; /* Centers the text */
 
         overflow: hidden; /* Truncates overflow if needed */
@@ -237,39 +281,46 @@
 
       /* Dropdown menu */
       .dropdown-menu {
-        display: none; /* Hidden by default */
-        position: absolute;
+        display: none;
+        position: fixed;
+        top: 9vh;
+        left: 0;
         right: 0;
-        top: 30px;
+        width: 100%;
         background-color: #ffffff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        padding: 10px 0;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        padding: 8px 16px;
         z-index: 1000;
       }
 
-      /* Links inside dropdown */
       .dropdown-menu a {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 12px;
         color: #333;
-        padding: 10px 20px;
+        padding: 12px 16px;
         text-decoration: none;
-        font-size: 16px;
-        font-family: "Roboto", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
       }
 
-      .footers-button.active i {
-        color: #ff6600; /* Highlight the icon in orange */
+      .dropdown-menu a i {
+        width: 20px;
+        min-width: 20px;
+        text-align: center;
+        color: #ff6600;
+        flex-shrink: 0;
       }
 
-      .footers-button.active p {
-        color: #ff6600; /* Highlight the text in orange */
-      }
-
-      /* Hover effect for links */
       .dropdown-menu a:hover {
-        background-color: #ff6600;
-        color: white;
+        background-color: #fff5f0;
+        color: #ff6600;
       }
 
       #banner {
@@ -332,8 +383,12 @@
       <div class="hamburger-menu">
         <i class="fas fa-bars" id="menu-icon"></i>
         <div class="dropdown-menu" id="dropdown-menu">
-          <a href="{{ url_for('contact') }}">Contact Openwork</a>
-          <a href="{{ url_for('logout') }}">Logout</a>
+          <a href="{{ url_for('contact') }}">
+            <i class="fas fa-comment-dots"></i> Contact Openwork
+          </a>
+          <a href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
         </div>
       </div>
     </nav>
@@ -358,7 +413,10 @@
     <div
       class="notification-box"
       id="notificationBox"
-      onclick="this.remove(); checkNotifications()"
+      onclick="
+        this.remove();
+        checkNotifications();
+      "
     >
       {% for category, message in messages %}
       <div class="flash {{ category }}">{{ message }}</div>

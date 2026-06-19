@@ -202,10 +202,11 @@
         <div class="header-content">
             <!-- Add shortcuts for future use -->
             <nav class="shortcuts">
-                  <a href="{{ url_for('admin_dashboard')}}">Dashboard</a>
+                <a href="{{ url_for('admin_dashboard')}}">Dashboard</a>
                 <a href="{{ url_for('admin_tradesman') }}">Tradesman</a>
                 <a href="{{ url_for('admin_homeowners') }}">Homeowners</a>
                 <a href="{{ url_for('admin_jobs') }}">Jobs</a>
+                <a href="{{ url_for('admin_all_users') }}">All Users</a>
 
             </nav>
 
@@ -387,7 +388,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for user in users[:5] %}  <!-- Display only the first 5 recent users -->
+    {% for user in users %}  <!-- Display only the first 5 recent users -->
     <tr>
       <td>{{ user.email }}</td>
       <td>{{ user.first_name }} {{ user.last_name }}</td>
@@ -411,7 +412,7 @@
 </table>
 
 <!-- Link to all users -->
-<p><a href="">View All Users</a></p>
+<a href="{{ url_for('admin_all_users') }}">View All Users</a>
 
 <!-- Recent Jobs -->
 <h2>Recent Jobs</h2>
@@ -431,7 +432,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for job in jobs[:5] %}  <!-- Display only the first 5 recent jobs -->
+    {% for job in jobs %}  <!-- Display only the first 5 recent jobs -->
     <tr>
 
       <td>{{ job.job_name }}</td>

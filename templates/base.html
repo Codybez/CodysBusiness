@@ -1,9 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-EW4CM1GDMG"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-EW4CM1GDMG");
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}My Website{% endblock %}</title>
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='base.css') }}"
@@ -17,9 +31,24 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
 
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='app_images/icon-image.png') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       body {
-        font-family: "Roboto", sans-serif !important; /* Replace 'Roboto' with your chosen font */
+        font-family:
+          "Poppins", sans-serif !important; /* Replace 'Roboto' with your chosen font */
       }
 
       .notification-box {
@@ -52,7 +81,7 @@
       }
 
       header {
-        background-color: #ffffffa3;
+        background-color: #ffffff;
         color: #fff;
         text-align: center;
         padding: 10px;
@@ -81,6 +110,7 @@
         line-height: 24px;
         display: inline-block;
         letter-spacing: -1px;
+        font-family: "Poppins", sans-serif;
       }
 
       .orange-letter {

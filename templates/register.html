@@ -1,24 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register</title>
+    <title>Register With Openwork</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='register.css') }}"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Login to your OpenWorkNZ account to connect with trusted tradies across New Zealand."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Sign up to get started - OpenWorkNZ" />
+    <meta
+      property="og:description"
+      content="Sign up to access job listings, connect with tradespeople, and manage your profile."
+    />
+    <meta
+      property="og:image"
+      content="{{ url_for('static', filename='app_images/icon-image.png', _external=True) }}"
+    />
+    <meta property="og:url" content="{{ request.url }}" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sign Up To Get Started - OpenWorkNZ" />
+    <meta
+      name="twitter:description"
+      content="Sign up to connect with trusted tradespeople across New Zealand."
+    />
+    <meta
+      name="twitter:image"
+      content="{{ url_for('static', filename='app_images/icon-image.png', _external=True) }}"
+    />
+    <link rel="canonical" href="https://www.openwork.co.nz/register" />
+
     <style>
+      i[class^="fa"],
+      i[class*=" fa"] {
+        font-family: "Font Awesome 6 Free" !important;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      body,
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Poppins", sans-serif !important;
+      }
+      * {
+        font-family: "Poppins", sans-serif !important;
+      }
       /* Center the entire body content */
       body {
-        display: flex;
-        justify-content: center; /* Horizontally center */
         align-items: center; /* Vertically center */
         height: 100vh; /* Take full height of the viewport */
         margin: 0; /* Remove default margin */
-        margin-top: 40px;
+        margin-top: 80px;
         background-color: #ffffff; /* Optional, for better visibility */
         min-height: 100vh; /* Ensure that the body is at least 100% of the viewport height */
+        padding: 10px;
       }
 
       /* Container styling */
@@ -28,27 +87,27 @@
         padding-right: 20px;
         padding-left: 20px;
         padding-bottom: 20px;
-        margin: 20px auto;
-        border: 1px solid #e0e0e0;
+        margin: 5px auto;
+
         border-radius: 15px;
-        max-width: 600px;
+        max-width: 400px;
         width: 100%;
 
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
         box-sizing: border-box; /* Ensures padding doesn't push content */
       }
 
       /* Form title */
-      .registration-container h1.form-title {
-        font-size: 24px;
-        color: #333333;
-        text-align: center;
-        margin-bottom: 20px;
-      }
+.registration-container h1.form-title {
+  font-size: 20px;
+  color: #ff6600;
+  text-align: left;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
 
       /* Label styling */
       .registration-container label {
-        font-size: 14px;
+        font-size: 12px;
         color: #555555;
         font-weight: 600;
         margin-bottom: 5px;
@@ -96,9 +155,12 @@
         font-size: 16px;
         font-weight: bold;
         border: none;
-        padding: 10px;
-        width: 100%; /* Full width button */
-        border-radius: 5px;
+        margin-top: -10px;
+        width: auto;
+        padding: 8px 16px;
+        display: block;
+        margin: 0 auto 10px;
+        border-radius: 25px;
         cursor: pointer;
         transition: background-color 0.3s ease-in-out;
       }
@@ -106,6 +168,10 @@
       .registration-container button:hover {
         background-color: #ff5e33;
       }
+
+      .form-title {
+      margin-bottom: 5px;
+}
 
       /* Link styling */
       .registration-container p {
@@ -126,65 +192,78 @@
         color: #ff5e33;
       }
     </style>
-    {% extends 'base.html' %} {% block title %}Registration Form{% endblock %}
+  </head>
+    <body>
+      
+          {% extends 'base.html' %} {% block title %}Registration Form{% endblock %}
     {% block content %}
     <div class="registration-container">
       <div>
-        <h1 class="form-title">Sign Up</h1>
+        <h1 class="form-title">Create your account.</h1>
       </div>
 
       <form action="{{ url_for('register') }}" method="post">
         <!-- First Name -->
+
+        <!-- User Type Dropdown -->
         <div>
-          <label for="first_name"></label>
+          <label for="userType">Account Type</label>
+          <select id="userType" name="userType" required>
+            <option value="" disabled selected>Select Account Type</option>
+            <option value="Labourer">Tradesman Account</option>
+            <option value="Business">Homeowner Account</option>
+          </select>
+        </div>
+        <div>
+          <label for="first_name">First Name</label>
           <input
             type="text"
             id="first_name"
             name="first_name"
             required
-            placeholder="First Name"
+            placeholder="Your first name"
           />
         </div>
 
         <!-- Last Name -->
         <div>
-          <label for="last_name"></label>
+          <label for="last_name">Last Name</label>
           <input
             type="text"
             id="last_name"
             name="last_name"
             required
-            placeholder="Last Name"
+            placeholder="Your last Name"
           />
         </div>
 
         <!-- Email -->
         <div>
-          <label for="email"></label>
+          <label for="email">Email</label>
           <input
             type="email"
             id="email"
             name="email"
             required
-            placeholder="Email"
+            placeholder="Your email"
           />
         </div>
 
         <!-- Password -->
         <div>
-          <label for="password"></label>
+          <label for="password">Password</label>
           <input
             type="password"
             id="password"
             name="password"
             required
-            placeholder="Password"
+            placeholder="Enter a password"
           />
         </div>
 
         <!-- Location Dropdown -->
         <div>
-          <label for="location"></label>
+          <label for="location">Location</label>
           <select id="location" name="location" required>
             <option value="" disabled selected>Choose Your Location</option>
             <option value="Northland">Northland</option>
@@ -205,20 +284,11 @@
             <option value="Southland">Southland</option>
           </select>
         </div>
-
-        <!-- User Type Dropdown -->
-        <div>
-          <label for="userType"></label>
-          <select id="userType" name="userType" required>
-            <option value="" disabled selected>I want to...</option>
-            <option value="Labourer">Join As a Tradesman</option>
-            <option value="Business">Post a Job</option>
-          </select>
-        </div>
+        <br />
 
         <!-- Submit Button -->
         <div>
-          <button type="submit" id="register-button">Sign Up</button>
+          <button type="submit" id="register-button">Create Account</button>
         </div>
       </form>
 
@@ -231,4 +301,6 @@
     </div>
     {% endblock %}
   </head>
+</html>
+</body>
 </html>
